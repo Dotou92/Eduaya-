@@ -15800,10 +15800,25 @@ async function handleAuth() {
         email: email,
         plan: 'gratuit'
       });
-      showToast('✅ Compte créé ! Vérifie ton email.');
+      errorDiv.style.color = '#ccffcc';
+      errorDiv.textContent = '✅ Compte créé ! Vérifie ton email et clique sur le lien avant de te connecter.';
+      errorDiv.style.display = 'block';
+      switchAuthTab('connexion');
+      authBtn.textContent = 'Se connecter →';
+      authBtn.disabled = false;
+      return;
     } else {
       result = await supabaseClient.auth.signInWithPassword({ email, password });
       if (result.error) throw result.error;
+      if (!result.data.user.email_confirmed_at) {
+        errorDiv.style.color = '#ffcccc';
+        errorDiv.textContent = "⚠️ Confirme ton email d'abord. Vérifie ta boîte mail.";
+        errorDiv.style.display = 'block';
+        await supabaseClient.auth.signOut();
+        authBtn.textContent = 'Se connecter →';
+        authBtn.disabled = false;
+        return;
+      }
     }
     appState.userEmail = email;
     document.getElementById('step-2').style.display = 'none';
