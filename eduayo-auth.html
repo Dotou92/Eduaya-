@@ -16404,6 +16404,7 @@ async function sendMessage() {
     };
     if (hasPDF) headers["anthropic-beta"] = "pdfs-2024-09-25";
 
+    if (!verifierLimiteGratuit()) return;
     const response = await fetch("/api/proxy", {
       method: "POST",
       headers,
@@ -16970,6 +16971,7 @@ async function startEvalSession(saKey, seqNum) {
     <div style="font-size:13px;color:var(--text-soft);font-weight:600;">L'IA prépare tes 10 questions sur : <em>${saLabel}</em>…</div>`;
   body.appendChild(loader);
 
+  if (!verifierLimiteGratuit()) { loader.remove(); return; }
   try {
     const response = await fetch('/api/proxy', {
       method: 'POST',
