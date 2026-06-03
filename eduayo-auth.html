@@ -1469,6 +1469,32 @@ function downloadAsWord(text, filename) {
   </div>
   ${html}
   <div class="footer">Généré par EduAyo &bull; Cabinet La Lumière — SAVI Dotou Isaac</div>
+
+<!-- MODAL PREMIUM -->
+<div id="premium-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;justify-content:center;align-items:center;">
+  <div style="background:white;border-radius:24px;padding:32px 24px;max-width:360px;width:90%;text-align:center;">
+    <div style="font-size:48px;margin-bottom:12px;">⭐</div>
+    <h2 style="color:#007A4D;font-family:'Nunito',sans-serif;margin-bottom:8px;">Passe en Premium</h2>
+    <p style="color:#555;font-size:14px;margin-bottom:20px;">Tu as atteint ta limite quotidienne gratuite. Passe en Premium pour un accès illimité.</p>
+    <div style="background:#f0faf5;border-radius:16px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:28px;font-weight:800;color:#007A4D;font-family:'Nunito',sans-serif;">2 000 FCFA<span style="font-size:14px;font-weight:400;color:#888;">/mois</span></div>
+      <ul style="text-align:left;font-size:13px;color:#444;margin-top:12px;padding-left:16px;">
+        <li>✅ Toutes les matières illimitées</li>
+        <li>✅ Chat IA illimité</li>
+        <li>✅ Analyse de fichiers PDF</li>
+        <li>✅ Suivi de progression détaillé</li>
+      </ul>
+    </div>
+    <input id="payment-phone" type="tel" placeholder="Ton numéro Mobile Money (ex: 97000000)"
+      style="width:100%;padding:14px;border-radius:12px;border:2px solid #e0e0e0;font-size:15px;font-family:'Nunito',sans-serif;box-sizing:border-box;margin-bottom:12px;outline:none;">
+    <button onclick="initiatePaiement()" style="width:100%;padding:16px;background:#007A4D;color:white;border:none;border-radius:14px;font-size:16px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;margin-bottom:10px;">
+      💳 Payer 2 000 FCFA
+    </button>
+    <button onclick="document.getElementById('premium-modal').style.display='none'" style="background:none;border:none;color:#888;font-size:13px;cursor:pointer;font-family:'Nunito',sans-serif;">
+      Continuer en gratuit
+    </button>
+  </div>
+</div>
 </body></html>`;
 
   const blob = new Blob([docContent], { type: 'application/msword' });
@@ -17459,6 +17485,61 @@ window.addEventListener('load', () => {
 });
 
 // © 2026 Isaac Dotou SAVI — Cabinet La Lumière — Tous droits réservés
+
+
+// ============================================================
+// FREEMIUM & PAIEMENT
+// ============================================================
+const LIMITE_GRATUIT = 5; // requêtes par jour
+
+function verifierLimiteGratuit() {
+  if (appState.plan === 'premium') return true;
+  const today = new Date().toDateString();
+  if (appState.derniereRequete !== today) {
+    appState.requetesAujourdhui = 0;
+    appState.derniereRequete = today;
+    saveState();
+  }
+  if (appState.requetesAujourdhui >= LIMITE_GRATUIT) {
+    document.getElementById('premium-modal').style.display = 'flex';
+    return false;
+  }
+  appState.requetesAujourdhui = (appState.requetesAujourdhui || 0) + 1;
+  saveState();
+  return true;
+}
+
+async function initiatePaiement() {
+  const phone = document.getElementById('payment-phone').value.trim();
+  if (!phone || phone.length < 8) { showToast('⚠️ Entre ton numéro Mobile Money'); return; }
+  const btn = document.querySelector('#premium-modal button');
+  btn.textContent = '⏳ Traitement...';
+  btn.disabled = true;
+  try {
+    const resp = await fetch('/api/payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: 2000,
+        description: 'Abonnement EduAyo Premium - 1 mois',
+        customer: { email: appState.userEmail, firstname: appState.userName, phone_number: { number: phone, country: 'BJ' } }
+      })
+    });
+    const data = await resp.json();
+    if (data.v1) {
+      showToast('✅ Paiement initié ! Confirme sur ton téléphone.');
+      document.getElementById('premium-modal').style.display = 'none';
+    } else {
+      showToast('⚠️ Erreur paiement. Réessaie.');
+    }
+  } catch(e) {
+    showToast('⚠️ Erreur réseau. Réessaie.');
+  } finally {
+    btn.textContent = '💳 Payer 2 000 FCFA';
+    btn.disabled = false;
+  }
+}
+
 </script>
 
 <!-- FOOTER COPYRIGHT -->
