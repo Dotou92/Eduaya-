@@ -5,28 +5,24 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    // Parser le body manuellement si nécessaire
     let event = req.body;
-    if (typeof event === 'string') {
-      event = JSON.parse(event);
-    }
+    if (typeof event === 'string') event = JSON.parse(event);
 
-    console.log('Webhook FedaPay reçu:', JSON.stringify(event));
+    console.log('Webhook FedaPay reçu:', event.name);
 
-    const transaction = event.data?.transaction || event['v1/transaction'] || {};
     const eventName = event.name || '';
+    const entity = event.entity || {};
 
-    if (eventName === 'transaction.approved' || transaction.status === 'approved') {
-      const description = transaction.description || '';
-      const amount = transaction.amount;
-      const customerEmail = event.data?.customer?.email || transaction.customer?.email;
+    if (eventName === 'transaction.approved' || entity.status === 'approved') {
+      const description = entity.description || '';
+      const amount = entity.amount || 0;
+      const customerEmail = entity.customer?.email
+        || entity.metadata?.paid_customer?.email;
 
-      console.log('Email client:', customerEmail);
-      console.log('Description:', description);
-      console.log('Montant:', amount);
+      console.log('Email:', customerEmail, '| Desc:', description, '| Amount:', amount);
 
       if (!customerEmail) {
-        console.log('Email client non trouvé dans le webhook');
+        console.log('Email non trouvé');
         return res.status(200).json({ received: true });
       }
 
@@ -42,15 +38,18 @@ export default async function handler(req, res) {
         const expireAt = new Date();
         expireAt.setMonth(expireAt.getMonth() + 1);
 
-        const r = await fetch(`${SUPABASE_URL}/rest/v1/profils?email=eq.${encodeURIComponent(customerEmail)}`, {
-          method: 'PATCH',
-          headers,
-          body: JSON.stringify({
-            plan: 'premium',
-            premium_expire_at: expireAt.toISOString()
-          })
-        });
-        console.log('Supabase premium status:', r.status);
+        const r = await fetch(
+          `${SUPABASE_URL}/rest/v1/profils?email=eq.${encodeURIComponent(customerEmail)}`,
+          {
+            method: 'PATCH',
+            headers,
+            body: JSON.stringify({
+              plan: 'premium',
+              premium_expire_at: expireAt.toISOString()
+            })
+          }
+        );
+        console.log('Premium activé - Supabase status:', r.status);
 
       } else {
         let creditsToAdd = 0;
@@ -65,12 +64,15 @@ export default async function handler(req, res) {
           const profiles = await getResp.json();
           const currentCredits = profiles[0]?.credits || 0;
 
-          const r = await fetch(`${SUPABASE_URL}/rest/v1/profils?email=eq.${encodeURIComponent(customerEmail)}`, {
-            method: 'PATCH',
-            headers,
-            body: JSON.stringify({ credits: currentCredits + creditsToAdd })
-          });
-          console.log('Supabase credits status:', r.status, '- Credits ajoutés:', creditsToAdd);
+          const r = await fetch(
+            `${SUPABASE_URL}/rest/v1/profils?email=eq.${encodeURIComponent(customerEmail)}`,
+            {
+              method: 'PATCH',
+              headers,
+              body: JSON.stringify({ credits: currentCredits + creditsToAdd })
+            }
+          );
+          console.log(`${creditsToAdd} crédits ajoutés - Supabase status:`, r.status);
         }
       }
     }
