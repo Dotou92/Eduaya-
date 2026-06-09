@@ -6,7 +6,7 @@ export default async function handler(req, res) {
 
   try {
     const { amount, description, customer } = req.body;
-    const response = await fetch('https://sandbox-api.fedapay.com/v1/transactions', {
+    const response = await fetch('https://api.fedapay.com/v1/transactions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
