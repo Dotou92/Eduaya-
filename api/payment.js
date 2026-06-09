@@ -20,8 +20,12 @@ export default async function handler(req, res) {
       })
     });
     const data = await response.json();
+    // Log pour debug
+    console.log('STATUS FedaPay:', response.status);
+    console.log('REPONSE FedaPay:', JSON.stringify(data));
     res.status(response.status).json(data);
   } catch(e) {
+    console.log('ERREUR payment.js:', e.message);
     res.status(500).json({ error: e.message });
   }
 }
