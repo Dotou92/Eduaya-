@@ -9,6 +9,7 @@ export default async function handler(req, res) {
     if (typeof event === 'string') event = JSON.parse(event);
 
     console.log('Webhook FedaPay reçu:', event.name);
+    console.log('Entity complète:', JSON.stringify(event.entity || {}));
 
     const eventName = event.name || '';
     const entity = event.entity || {};
@@ -16,16 +17,20 @@ export default async function handler(req, res) {
     if (eventName === 'transaction.approved' || entity.status === 'approved') {
       const description = entity.description || '';
       const amount = entity.amount || 0;
+
       const customerEmail = entity.customer?.email
+        || entity.custom_metadata?.email
         || entity.metadata?.paid_customer?.email
         || entity.metadata?.email;
-      // Classe transmise au moment du paiement (voir api/payment.js → custom_metadata)
-      const premiumClasse = entity.metadata?.premium_classe || null;
+
+      const premiumClasse = entity.custom_metadata?.premium_classe
+        || entity.metadata?.premium_classe
+        || null;
 
       console.log('Email:', customerEmail, '| Desc:', description, '| Amount:', amount, '| Classe:', premiumClasse);
 
       if (!customerEmail) {
-        console.log('Email non trouvé');
+        console.log('⚠️ Email non trouvé — entity.customer:', JSON.stringify(entity.customer));
         return res.status(200).json({ received: true });
       }
 
@@ -53,7 +58,8 @@ export default async function handler(req, res) {
             })
           }
         );
-        console.log('Premium activé - Supabase status:', r.status, '- Classe:', premiumClasse);
+        const responseText = await r.text();
+        console.log('Premium activé - Supabase status:', r.status, '| Classe:', premiumClasse, '| Response:', responseText);
 
       } else {
         let creditsToAdd = 0;
@@ -76,7 +82,8 @@ export default async function handler(req, res) {
               body: JSON.stringify({ credits: currentCredits + creditsToAdd })
             }
           );
-          console.log(`${creditsToAdd} crédits ajoutés - Supabase status:`, r.status);
+          const responseText = await r.text();
+          console.log(`${creditsToAdd} crédits ajoutés - Supabase status:`, r.status, '| Response:', responseText);
         }
       }
     }
@@ -86,4 +93,4 @@ export default async function handler(req, res) {
     console.error('Webhook error:', e.message);
     res.status(500).json({ error: e.message });
   }
-}
+        }
