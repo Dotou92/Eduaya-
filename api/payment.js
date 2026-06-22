@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    const { amount, description, customer } = req.body;
+    const { amount, description, customer, premiumClasse } = req.body;
     const response = await fetch('https://api.fedapay.com/v1/transactions', {
       method: 'POST',
       headers: {
@@ -16,7 +16,11 @@ export default async function handler(req, res) {
         description,
         amount,
         currency: { iso: 'XOF' },
-        customer
+        customer,
+        custom_metadata: {
+          premium_classe: premiumClasse || null,
+          email: customer && customer.email ? customer.email : null
+        }
       })
     });
     const data = await response.json();
