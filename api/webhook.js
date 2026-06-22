@@ -61,6 +61,18 @@ export default async function handler(req, res) {
         const responseText = await r.text();
         console.log('Premium activé - Supabase status:', r.status, '| Classe:', premiumClasse, '| Response:', responseText);
 
+        // Enregistrer la transaction
+        await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            email: customerEmail,
+            type: 'premium',
+            montant: amount,
+            credits_ajoutes: 0
+          })
+        });
+
       } else {
         let creditsToAdd = 0;
         if (amount >= 200) creditsToAdd = 12;
@@ -84,6 +96,18 @@ export default async function handler(req, res) {
           );
           const responseText = await r.text();
           console.log(`${creditsToAdd} crédits ajoutés - Supabase status:`, r.status, '| Response:', responseText);
+
+          // Enregistrer la transaction
+          await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+              email: customerEmail,
+              type: 'credits',
+              montant: amount,
+              credits_ajoutes: creditsToAdd
+            })
+          });
         }
       }
     }
@@ -93,4 +117,4 @@ export default async function handler(req, res) {
     console.error('Webhook error:', e.message);
     res.status(500).json({ error: e.message });
   }
-        }
+}
