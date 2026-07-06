@@ -128,7 +128,7 @@ export default async function handler(req, res) {
       const responseText = await r.text();
       console.log('Premium activé - Supabase status:', r.status, '| Classe:', premiumClasse, '| Response:', responseText);
 
-      await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
+      const txInsert = await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
         method: 'POST',
         headers: supaHeaders,
         body: JSON.stringify({
@@ -138,6 +138,8 @@ export default async function handler(req, res) {
           credits_ajoutes: 0
         })
       });
+      const txInsertText = await txInsert.text();
+      console.log('Enregistrement transaction (premium) - Supabase status:', txInsert.status, '| Response:', txInsertText);
 
     } else {
       let creditsToAdd = 0;
@@ -163,7 +165,7 @@ export default async function handler(req, res) {
         const responseText = await r.text();
         console.log(`${creditsToAdd} crédits ajoutés - Supabase status:`, r.status, '| Response:', responseText);
 
-        await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
+        const txInsert = await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
           method: 'POST',
           headers: supaHeaders,
           body: JSON.stringify({
@@ -173,6 +175,8 @@ export default async function handler(req, res) {
             credits_ajoutes: creditsToAdd
           })
         });
+        const txInsertText = await txInsert.text();
+        console.log('Enregistrement transaction (crédits) - Supabase status:', txInsert.status, '| Response:', txInsertText);
       }
     }
 
@@ -181,5 +185,5 @@ export default async function handler(req, res) {
     console.error('Webhook error:', e.message);
     res.status(500).json({ error: e.message });
   }
-      }
-  
+              }
+          
