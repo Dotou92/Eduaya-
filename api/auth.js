@@ -1,8 +1,7 @@
-// api/payment/_auth.js
+// api/_auth.js
 // Vérifie le token Supabase envoyé par le client et retourne l'utilisateur authentifié.
-// Ne JAMAIS faire confiance à un email ou userId envoyé directement dans le corps de la requête.
 
-async function getAuthenticatedUser(req) {
+export async function getAuthenticatedUser(req) {
   const authHeader = req.headers['authorization'] || '';
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
   if (!token) return null;
@@ -11,7 +10,6 @@ async function getAuthenticatedUser(req) {
   const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
   try {
-    // On demande à Supabase Auth de valider le token lui-même (source de vérité).
     const resp = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
       headers: {
         'apikey': SUPABASE_ANON_KEY,
@@ -26,6 +24,5 @@ async function getAuthenticatedUser(req) {
     console.error('Auth verification error:', e.message);
     return null;
   }
-}
-
-module.exports = { getAuthenticatedUser };
+        }
+                  
