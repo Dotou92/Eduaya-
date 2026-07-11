@@ -1,16 +1,11 @@
-// api/payment/webhook.js
-// Webhook FedaPay sécurisé :
-// - vérifie la signature (X-FEDAPAY-SIGNATURE) avant tout traitement
-// - ne fait JAMAIS confiance au contenu brut : reconfirme via l'API FedaPay
-// - traitement idempotent, partagé avec verify.js (processApprovedOrder)
-//
-// IMPORTANT (Vercel) : le body-parser JSON automatique doit être désactivé,
-// car la vérification de signature a besoin du corps BRUT exact.
+// api/webhook.js
+// Webhook FedaPay sécurisé : vérifie la signature avant tout traitement,
+// reconfirme via l'API FedaPay, traitement idempotent (voir payment-verify.js).
 
-const crypto = require('crypto');
-const { processApprovedOrder } = require('./payment-verify');
+import crypto from 'crypto';
+import { processApprovedOrder } from './payment-verify.js';
 
-module.exports.config = { api: { bodyParser: false } };
+export const config = { api: { bodyParser: false } };
 
 function getRawBody(req) {
   return new Promise((resolve, reject) => {
@@ -21,9 +16,6 @@ function getRawBody(req) {
   });
 }
 
-// Vérification manuelle si le paquet officiel `fedapay` n'est pas installé.
-// Format documenté par FedaPay : en-tête "X-FEDAPAY-SIGNATURE" contenant
-// t=<timestamp>,s=<hmac_sha256(timestamp.rawBody)>
 function verifySignatureManual(rawBody, signatureHeader, secret) {
   if (!signatureHeader) return false;
   const parts = {};
@@ -33,7 +25,6 @@ function verifySignatureManual(rawBody, signatureHeader, secret) {
   });
   if (!parts.t || !parts.s) return false;
 
-  // Rejette les webhooks trop anciens (anti-rejeu), tolérance 5 minutes
   const age = Math.abs(Date.now() / 1000 - Number(parts.t));
   if (age > 5 * 60) return false;
 
@@ -49,7 +40,7 @@ function verifySignatureManual(rawBody, signatureHeader, secret) {
   }
 }
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -72,7 +63,6 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ received: false });
   }
 
-  // ─── 1) VÉRIFICATION DE SIGNATURE — obligatoire, sans exception ───
   const sigHeader = req.headers['x-fedapay-signature'];
   if (!FEDAPAY_WEBHOOK_SECRET) {
     console.error('FEDAPAY_WEBHOOK_SECRET manquant côté serveur — webhook rejeté par sécurité.');
@@ -99,7 +89,6 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ received: true });
     }
 
-    // ─── 2) NE JAMAIS SE FIER AU CONTENU BRUT : reconfirmer via l'API FedaPay ───
     if (entity.id && FEDAPAY_SECRET_KEY) {
       try {
         const txResp = await fetch(`https://api.fedapay.com/v1/transactions/${entity.id}`, {
@@ -125,7 +114,6 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ received: true });
     }
 
-    // ─── 3) Retrouver la commande locale correspondante ───
     const orderResp = await fetch(
       `${SUPABASE_URL}/rest/v1/orders?reference=eq.${encodeURIComponent(orderReference)}&select=*`,
       { headers: supaHeaders }
@@ -138,7 +126,6 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ received: true });
     }
 
-    // ─── 4) Comparaison stricte montant/devise/référence avant tout crédit ───
     const amountMatches = Number(entity.amount) === Number(order.amount);
     const refMatches = String(entity.id) === String(order.gateway_reference);
 
@@ -150,11 +137,9 @@ module.exports = async function handler(req, res) {
     }
 
     if (order.status === 'paid') {
-      // Déjà traité (idempotence) — on ne fait rien de plus.
       return res.status(200).json({ received: true });
     }
 
-    // ─── 5) Traitement atomique et idempotent (partagé avec /api/payment/verify) ───
     await processApprovedOrder(order, supaHeaders, SUPABASE_URL);
 
     return res.status(200).json({ received: true });
@@ -162,5 +147,4 @@ module.exports = async function handler(req, res) {
     console.error('Webhook error:', e.message);
     return res.status(500).json({ received: false });
   }
-};
-                                                  
+      }
