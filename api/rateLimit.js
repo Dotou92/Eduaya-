@@ -1,12 +1,7 @@
-// api/payment/_rateLimit.js
+// api/_rateLimit.js
 // Limitation de fréquence simple, basée sur Supabase (pas de Redis dans cette stack).
-// Nécessite la table `rate_limits` (voir migration.sql).
-//
-// ATTENTION : cette approche lecture-puis-écriture n'est pas parfaitement atomique
-// sous très forte concurrence. Pour le volume actuel d'EduAya, c'est largement
-// suffisant. Si le trafic grossit beaucoup, migrer vers Upstash Redis (compatible Vercel).
 
-async function checkRateLimit(key, maxCount, windowSeconds) {
+export async function checkRateLimit(key, maxCount, windowSeconds) {
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
   const headers = {
@@ -57,9 +52,6 @@ async function checkRateLimit(key, maxCount, windowSeconds) {
     return { allowed: true };
   } catch (e) {
     console.error('Rate limit check failed, on laisse passer par précaution:', e.message);
-    // En cas d'erreur technique du limiteur, on ne bloque pas un paiement légitime.
     return { allowed: true };
   }
-}
-
-module.exports = { checkRateLimit };
+      }
