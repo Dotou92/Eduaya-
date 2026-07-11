@@ -1,25 +1,97 @@
-export default async function handler(req, res) {
+// api/payment/webhook.js
+// Webhook FedaPay sécurisé :
+// - vérifie la signature (X-FEDAPAY-SIGNATURE) avant tout traitement
+// - ne fait JAMAIS confiance au contenu brut : reconfirme via l'API FedaPay
+// - traitement idempotent, partagé avec verify.js (processApprovedOrder)
+//
+// IMPORTANT (Vercel) : le body-parser JSON automatique doit être désactivé,
+// car la vérification de signature a besoin du corps BRUT exact.
+
+const crypto = require('crypto');
+const { processApprovedOrder } = require('./payment-verify');
+
+module.exports.config = { api: { bodyParser: false } };
+
+function getRawBody(req) {
+  return new Promise((resolve, reject) => {
+    let data = '';
+    req.on('data', chunk => { data += chunk; });
+    req.on('end', () => resolve(data));
+    req.on('error', reject);
+  });
+}
+
+// Vérification manuelle si le paquet officiel `fedapay` n'est pas installé.
+// Format documenté par FedaPay : en-tête "X-FEDAPAY-SIGNATURE" contenant
+// t=<timestamp>,s=<hmac_sha256(timestamp.rawBody)>
+function verifySignatureManual(rawBody, signatureHeader, secret) {
+  if (!signatureHeader) return false;
+  const parts = {};
+  signatureHeader.split(',').forEach(p => {
+    const [k, v] = p.split('=');
+    if (k && v) parts[k.trim()] = v.trim();
+  });
+  if (!parts.t || !parts.s) return false;
+
+  // Rejette les webhooks trop anciens (anti-rejeu), tolérance 5 minutes
+  const age = Math.abs(Date.now() / 1000 - Number(parts.t));
+  if (age > 5 * 60) return false;
+
+  const expected = crypto
+    .createHmac('sha256', secret)
+    .update(`${parts.t}.${rawBody}`)
+    .digest('hex');
+
+  try {
+    return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(parts.s));
+  } catch (e) {
+    return false;
+  }
+}
+
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const FEDAPAY_SECRET_KEY = process.env.FEDAPAY_SECRET_KEY;
+  const FEDAPAY_WEBHOOK_SECRET = process.env.FEDAPAY_WEBHOOK_SECRET;
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
+  const FEDAPAY_SECRET_KEY = process.env.FEDAPAY_SECRET_KEY;
   const supaHeaders = {
     'Content-Type': 'application/json',
     'apikey': SUPABASE_KEY,
     'Authorization': `Bearer ${SUPABASE_KEY}`
   };
 
+  let rawBody;
   try {
-    let event = req.body;
-    if (typeof event === 'string') event = JSON.parse(event);
+    rawBody = await getRawBody(req);
+  } catch (e) {
+    return res.status(400).json({ received: false });
+  }
 
-    console.log('Webhook FedaPay reçu:', event.name);
-    console.log('Entity reçue (webhook):', JSON.stringify(event.entity || {}));
+  // ─── 1) VÉRIFICATION DE SIGNATURE — obligatoire, sans exception ───
+  const sigHeader = req.headers['x-fedapay-signature'];
+  if (!FEDAPAY_WEBHOOK_SECRET) {
+    console.error('FEDAPAY_WEBHOOK_SECRET manquant côté serveur — webhook rejeté par sécurité.');
+    return res.status(500).json({ received: false });
+  }
+  const signatureValid = verifySignatureManual(rawBody, sigHeader, FEDAPAY_WEBHOOK_SECRET);
+  if (!signatureValid) {
+    console.error('❌ Signature webhook invalide ou manquante — requête rejetée.');
+    return res.status(401).json({ received: false });
+  }
 
+  let event;
+  try {
+    event = JSON.parse(rawBody);
+  } catch (e) {
+    return res.status(400).json({ received: false });
+  }
+
+  try {
     const eventName = event.name || '';
     let entity = event.entity || {};
 
@@ -27,15 +99,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ received: true });
     }
 
-    // ─────────────────────────────────────────────────────────────
-    // IMPORTANT : on ne se fie JAMAIS uniquement au contenu envoyé par
-    // le webhook (FedaPay le déconseille explicitement dans sa doc).
-    // Le webhook peut ne contenir qu'un résumé de la transaction (sans
-    // l'email du client par exemple). On va donc TOUJOURS re-demander
-    // la transaction complète directement à l'API FedaPay avec son ID.
-    // C'est très probablement la cause du bug "Aucun paiement trouvé" :
-    // l'email du client n'était pas présent dans le webhook reçu.
-    // ─────────────────────────────────────────────────────────────
+    // ─── 2) NE JAMAIS SE FIER AU CONTENU BRUT : reconfirmer via l'API FedaPay ───
     if (entity.id && FEDAPAY_SECRET_KEY) {
       try {
         const txResp = await fetch(`https://api.fedapay.com/v1/transactions/${entity.id}`, {
@@ -44,146 +108,59 @@ export default async function handler(req, res) {
         if (txResp.ok) {
           const txData = await txResp.json();
           const fullTx = txData['v1/transaction'] || txData.transaction || txData;
-          if (fullTx) {
-            console.log('Transaction complète récupérée via API FedaPay:', JSON.stringify(fullTx));
-            entity = { ...entity, ...fullTx };
-          }
-        } else {
-          console.log('⚠️ Impossible de récupérer la transaction complète via API (status ' + txResp.status + ')');
+          if (fullTx) entity = { ...entity, ...fullTx };
         }
       } catch (fetchErr) {
-        console.log('⚠️ Erreur réseau en récupérant la transaction via API:', fetchErr.message);
+        console.log('⚠️ Erreur en récupérant la transaction via API:', fetchErr.message);
       }
     }
 
-    const description = entity.description || '';
-    const amount = entity.amount || 0;
-
-    let customerEmail = entity.customer?.email
-      || entity.custom_metadata?.email
-      || entity.metadata?.paid_customer?.email
-      || entity.metadata?.email;
-
-    // Filet de sécurité supplémentaire : si on a un customer_id mais toujours
-    // pas d'email, on va chercher directement la fiche client via l'API.
-    if (!customerEmail && entity.customer_id && FEDAPAY_SECRET_KEY) {
-      try {
-        const custResp = await fetch(`https://api.fedapay.com/v1/customers/${entity.customer_id}`, {
-          headers: { 'Authorization': `Bearer ${FEDAPAY_SECRET_KEY}` }
-        });
-        if (custResp.ok) {
-          const custData = await custResp.json();
-          const cust = custData['v1/customer'] || custData.customer || custData;
-          customerEmail = cust?.email || customerEmail;
-          console.log('Email récupéré via fiche client API:', customerEmail);
-        }
-      } catch (custErr) {
-        console.log('⚠️ Erreur en récupérant le client via API:', custErr.message);
-      }
-    }
-
-    const premiumClasse = entity.custom_metadata?.premium_classe
-      || entity.metadata?.premium_classe
-      || null;
-
-    console.log('Email:', customerEmail, '| Desc:', description, '| Amount:', amount, '| Classe:', premiumClasse);
-
-    if (!customerEmail) {
-      // On ne perd jamais la trace d'un paiement : on l'enregistre comme
-      // "orpheline" pour que tu puisses créditer l'élève manuellement si besoin.
-      console.log('❌ Email introuvable après toutes les tentatives. Transaction ID:', entity.id);
-      try {
-        await fetch(`${SUPABASE_URL}/rest/v1/transactions_orphelines`, {
-          method: 'POST',
-          headers: supaHeaders,
-          body: JSON.stringify({
-            fedapay_transaction_id: entity.id || null,
-            montant: amount,
-            description,
-            raw_entity: entity
-          })
-        });
-      } catch (logErr) {
-        console.log('⚠️ Impossible d\'enregistrer la transaction orpheline:', logErr.message);
-      }
+    if (entity.status !== 'approved') {
       return res.status(200).json({ received: true });
     }
 
-    if (description.toLowerCase().includes('premium')) {
-      const expireAt = new Date();
-      expireAt.setMonth(expireAt.getMonth() + 1);
-
-      const r = await fetch(
-        `${SUPABASE_URL}/rest/v1/profils?email=eq.${encodeURIComponent(customerEmail)}`,
-        {
-          method: 'PATCH',
-          headers: supaHeaders,
-          body: JSON.stringify({
-            plan: 'premium',
-            premium_expire_at: expireAt.toISOString(),
-            premium_classe: premiumClasse
-          })
-        }
-      );
-      const responseText = await r.text();
-      console.log('Premium activé - Supabase status:', r.status, '| Classe:', premiumClasse, '| Response:', responseText);
-
-      const txInsert = await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
-        method: 'POST',
-        headers: supaHeaders,
-        body: JSON.stringify({
-          email: customerEmail,
-          type: 'premium',
-          montant: amount,
-          credits_ajoutes: 0
-        })
-      });
-      const txInsertText = await txInsert.text();
-      console.log('Enregistrement transaction (premium) - Supabase status:', txInsert.status, '| Response:', txInsertText);
-
-    } else {
-      let creditsToAdd = 0;
-      if (amount >= 200) creditsToAdd = 12;
-      else if (amount >= 100) creditsToAdd = 5;
-
-      if (creditsToAdd > 0) {
-        const getResp = await fetch(
-          `${SUPABASE_URL}/rest/v1/profils?email=eq.${encodeURIComponent(customerEmail)}&select=credits`,
-          { headers: supaHeaders }
-        );
-        const profiles = await getResp.json();
-        const currentCredits = profiles[0]?.credits || 0;
-
-        const r = await fetch(
-          `${SUPABASE_URL}/rest/v1/profils?email=eq.${encodeURIComponent(customerEmail)}`,
-          {
-            method: 'PATCH',
-            headers: supaHeaders,
-            body: JSON.stringify({ credits: currentCredits + creditsToAdd })
-          }
-        );
-        const responseText = await r.text();
-        console.log(`${creditsToAdd} crédits ajoutés - Supabase status:`, r.status, '| Response:', responseText);
-
-        const txInsert = await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
-          method: 'POST',
-          headers: supaHeaders,
-          body: JSON.stringify({
-            email: customerEmail,
-            type: 'credits',
-            montant: amount,
-            credits_ajoutes: creditsToAdd
-          })
-        });
-        const txInsertText = await txInsert.text();
-        console.log('Enregistrement transaction (crédits) - Supabase status:', txInsert.status, '| Response:', txInsertText);
-      }
+    const orderReference = entity.custom_metadata && entity.custom_metadata.order_reference;
+    if (!orderReference) {
+      console.log('⚠️ Webhook sans order_reference — transaction ID:', entity.id);
+      return res.status(200).json({ received: true });
     }
 
-    res.status(200).json({ received: true });
-  } catch(e) {
+    // ─── 3) Retrouver la commande locale correspondante ───
+    const orderResp = await fetch(
+      `${SUPABASE_URL}/rest/v1/orders?reference=eq.${encodeURIComponent(orderReference)}&select=*`,
+      { headers: supaHeaders }
+    );
+    const orders = await orderResp.json();
+    const order = orders && orders[0];
+
+    if (!order) {
+      console.log('⚠️ Commande introuvable pour la référence:', orderReference);
+      return res.status(200).json({ received: true });
+    }
+
+    // ─── 4) Comparaison stricte montant/devise/référence avant tout crédit ───
+    const amountMatches = Number(entity.amount) === Number(order.amount);
+    const refMatches = String(entity.id) === String(order.gateway_reference);
+
+    if (!amountMatches || !refMatches) {
+      console.error('❌ Incohérence montant/référence — commande NON créditée.', {
+        orderReference, entityAmount: entity.amount, orderAmount: order.amount
+      });
+      return res.status(200).json({ received: true });
+    }
+
+    if (order.status === 'paid') {
+      // Déjà traité (idempotence) — on ne fait rien de plus.
+      return res.status(200).json({ received: true });
+    }
+
+    // ─── 5) Traitement atomique et idempotent (partagé avec /api/payment/verify) ───
+    await processApprovedOrder(order, supaHeaders, SUPABASE_URL);
+
+    return res.status(200).json({ received: true });
+  } catch (e) {
     console.error('Webhook error:', e.message);
-    res.status(500).json({ error: e.message });
+    return res.status(500).json({ received: false });
   }
-              }
-          
+};
+                                                  
