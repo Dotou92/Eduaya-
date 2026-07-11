@@ -1,9 +1,8 @@
-// api/payment/offers.js
+// api/_offers.js
 // Catalogue des offres — SEULE source de vérité pour les prix.
 // Le navigateur n'envoie jamais amount/credits/duration : uniquement un offerId.
-// Toute modification de prix se fait UNIQUEMENT ici, jamais côté client.
 
-const OFFERS = Object.freeze({
+export const OFFERS = Object.freeze({
   credits_5: {
     type: 'credits',
     amount: 100,
@@ -30,10 +29,8 @@ const OFFERS = Object.freeze({
   }
 });
 
-function getOffer(offerId) {
+export function getOffer(offerId) {
   const offer = OFFERS[offerId];
   if (!offer || !offer.active) return null;
   return offer;
-}
-
-module.exports = { OFFERS, getOffer };
+      }
