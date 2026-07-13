@@ -2192,7 +2192,7 @@ window.addEventListener('load',function(){
 <!-- ========== CLASSES SCREEN (NOUVEAU) ========== -->
 <div class="screen" id="screen-classes" style="display:none;flex-direction:column;">
   <div class="topbar">
-    <button class="topbar-back" onclick="goBack()">←</button>
+    <button class="topbar-back" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
     <div class="topbar-title" id="classes-topbar-title">Choisir une classe</div>
     <div style="width:36px;"></div>
   </div>
@@ -2211,7 +2211,7 @@ window.addEventListener('load',function(){
 <!-- ========== SUBJECT SCREEN ========== -->
 <div class="screen" id="screen-subject" style="display:none;flex-direction:column;">
   <div class="topbar">
-    <button class="topbar-back" onclick="goBack()">←</button>
+    <button class="topbar-back" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
     <div class="topbar-title" id="subj-topbar-title">Matière</div>
     <div style="width:36px;"></div>
   </div>
@@ -2274,7 +2274,7 @@ window.addEventListener('load',function(){
 <!-- ========== ÉVALUATION, CHOIX SA ========== -->
 <div class="screen" id="screen-eval" style="display:none;flex-direction:column;">
   <div class="topbar">
-    <button class="topbar-back" onclick="goBack()">←</button>
+    <button class="topbar-back" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
     <div class="topbar-title">Évaluation diagnostique</div>
     <div style="width:36px;"></div>
   </div>
@@ -2322,7 +2322,7 @@ window.addEventListener('load',function(){
 <!-- ========== CHAT ========== -->
 <div class="screen" id="screen-chat" style="display:none;flex-direction:column;height:100vh;">
   <div class="topbar">
-    <button class="topbar-back" onclick="goBack()">←</button>
+    <button class="topbar-back" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
     <div><div class="topbar-title" id="chat-title">Tuteur IA</div><div style="font-size:11px;color:var(--text-soft);" id="chat-conv-status">Nouvelle conversation</div></div>
     <button onclick="openHistoryScreen()" style="background:none;border:none;font-size:22px;cursor:pointer;" title="Historique">📜</button>
   </div>
@@ -2605,7 +2605,7 @@ window.addEventListener('load',function(){
 <!-- ========== COACH AYO ========== -->
 <div class="screen" id="screen-coach" style="display:none;flex-direction:column;">
   <div class="topbar">
-    <button class="topbar-back" onclick="goBack()">←</button>
+    <button class="topbar-back" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
     <div class="topbar-title">🧠 Coach Aya</div>
     <button onclick="partagerLien('coach')" style="background:none;border:1.5px solid rgba(255,255,255,0.4);border-radius:20px;padding:5px 10px;font-size:11px;font-weight:700;color:white;cursor:pointer;font-family:'Nunito',sans-serif;"><i class="fa-solid fa-share-nodes"></i> Partager</button>
     <div style="width:36px;"></div>
@@ -2847,7 +2847,7 @@ window.addEventListener('load',function(){
     <!-- VUE CARTES -->
     <div id="affirm-cards-view" style="display:none;flex-direction:column;height:100%;min-height:500px;">
       <div id="affirm-cat-header" style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.2);">
-        <button onclick="closeAffirmCat()" style="background:rgba(255,255,255,0.25);border:none;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;color:white;display:flex;align-items:center;justify-content:center;">←</button>
+        <button onclick="closeAffirmCat()" style="background:rgba(255,255,255,0.25);border:none;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;color:white;display:flex;align-items:center;justify-content:center;"><i class="fa-solid fa-arrow-left"></i></button>
         <div>
           <span id="affirm-cat-emoji" style="font-size:18px;"></span>
           <span id="affirm-cat-title" style="font-size:15px;font-weight:900;color:white;margin-left:6px;"></span>
@@ -2915,7 +2915,7 @@ window.addEventListener('load',function(){
 
 <div class="screen" id="screen-veille" style="display:none;flex-direction:column;">
   <div class="topbar">
-    <button class="topbar-back" onclick="goBack()">←</button>
+    <button class="topbar-back" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
     <div class="topbar-title">🌙 Veille d'examen</div>
     <div style="width:36px;"></div>
   </div>
@@ -2927,7 +2927,7 @@ window.addEventListener('load',function(){
 <!-- ========== À PROPOS ========== -->
 <div class="screen" id="screen-about" style="display:none;flex-direction:column;">
   <div class="topbar">
-    <button class="topbar-back" onclick="goBack()">←</button>
+    <button class="topbar-back" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
     <div class="topbar-title">À propos d'EduAya</div>
     <div style="width:36px;"></div>
   </div>
@@ -3037,7 +3037,7 @@ window.addEventListener('load',function(){
 <!-- ========== HISTORIQUE DES CONVERSATIONS ========== -->
 <div class="screen" id="screen-history" style="display:none;flex-direction:column;">
   <div class="topbar">
-    <button class="topbar-back" onclick="goBack()">←</button>
+    <button class="topbar-back" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
     <div class="topbar-title">Mes conversations</div>
     <button onclick="confirmClearHistory()" style="background:none;border:none;font-size:13px;color:#e53935;cursor:pointer;font-weight:700;">Tout effacer</button>
   </div>
@@ -24792,11 +24792,11 @@ function ouvrirDetailDefi(defiId) {
   const result = getDefiResult(defiId);
   if (!result) {
     content.innerHTML = '<div style="text-align:center;padding:24px;color:#888;font-size:13px;">Aucun détail disponible pour ce défi.</div>'
-      + '<button onclick="renderDefis()" style="display:block;margin:12px auto 0;padding:10px 18px;background:#1565C0;color:white;border:none;border-radius:10px;cursor:pointer;">← Retour</button>';
+      + '<button onclick="renderDefis()" style="display:block;margin:12px auto 0;padding:10px 18px;background:#1565C0;color:white;border:none;border-radius:10px;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i> Retour</button>';
     return;
   }
 
-  let html = '<button onclick="renderDefis()" style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 14px;">← Retour aux défis</button>'
+  let html = '<button onclick="renderDefis()" style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 14px;"><i class="fa-solid fa-arrow-left"></i> Retour aux défis</button>'
     + '<div style="font-size:14px;font-weight:800;color:#0D47A1;margin-bottom:10px;">📜 Mon défi : ' + (result.matiere || 'Défi') + '</div>'
     + '<div style="font-size:12px;color:#666;margin-bottom:12px;">Score final : <strong>' + result.scorePercent + '%</strong> · ' + result.score + '/' + result.totalQuestions + ' bonnes réponses</div>';
 
@@ -25018,7 +25018,7 @@ async function ouvrirFormulaireDefi(codeClasse) {
     ? matieresDispo.map(function(m) { return '<option value="' + m + '">' + m + '</option>'; }).join('')
     : '<option value="Mathématiques">Mathématiques</option><option value="SVT">SVT</option><option value="PCT">PCT</option>';
 
-  content.innerHTML = '<button onclick="renderDefis()" style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 14px;">← Retour aux défis</button>'
+  content.innerHTML = '<button onclick="renderDefis()" style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 14px;"><i class="fa-solid fa-arrow-left"></i> Retour aux défis</button>'
     + '<div style="font-size:14px;font-weight:800;color:#C62828;margin-bottom:16px;">⚔️ Lancer un défi</div>'
 
     + '<div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:700;">Choisir l\'adversaire</div>'
@@ -25148,7 +25148,7 @@ async function jouerDefi(defiId) {
       await supabaseClient.from('defis').update({ questions: questions }).eq('id', defiId);
     } catch(e) {
       content.innerHTML = '<div style="text-align:center;padding:20px;color:#C62828;">⚠️ Erreur de génération. Réessaie.</div>'
-        + '<button onclick="renderDefis()" style="display:block;margin:10px auto;padding:10px 20px;background:#1565C0;color:white;border:none;border-radius:10px;cursor:pointer;">← Retour</button>';
+        + '<button onclick="renderDefis()" style="display:block;margin:10px auto;padding:10px 20px;background:#1565C0;color:white;border:none;border-radius:10px;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i> Retour</button>';
       return;
     }
   }
@@ -25241,7 +25241,7 @@ async function finirDefi(defiId, defi, score, answers) {
         + (scorePercent > scoreAdv ? '🏆 Tu as gagné !' : scorePercent < scoreAdv ? '😔 Tu as perdu...' : '🤝 Égalité !') + '</div>'
       : '<div style="font-size:12px;color:#888;margin-bottom:20px;">✅ Score enregistré !<br>En attente que ton adversaire joue.</div>')
     + '<button onclick="ouvrirDetailDefi(\'' + defiId + '\')" style="padding:12px 18px;background:#1565C0;color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Voir mes réponses</button><br>'
-    + '<button onclick="renderDefis()" style="padding:12px 32px;background:#f0f0f0;color:#333;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">← Retour aux défis</button>'
+    + '<button onclick="renderDefis()" style="padding:12px 32px;background:#f0f0f0;color:#333;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;"><i class="fa-solid fa-arrow-left"></i> Retour aux défis</button>'
     + '</div>';
 }
 
@@ -26676,7 +26676,7 @@ function afficherFormulaireClasse() {
     + '✓ Créer la classe</button>'
     + '<button onclick="afficherMenuEnseignant()" '
     + 'style="width:100%;padding:11px;background:none;border:2px solid #e0e0e0;border-radius:12px;font-size:13px;font-weight:700;color:#888;cursor:pointer;font-family:\'Nunito\',sans-serif;">'
-    + '← Retour</button>';
+    + '<i class="fa-solid fa-arrow-left"></i> Retour</button>';
 }
 
 async function creerClasse() {
@@ -26761,7 +26761,7 @@ async function ouvrirDetailEleve(email, codeClasse) {
     const points = profil ? (profil.points || 0) : 0;
     const streak = profil ? (profil.streak || 0) : 0;
 
-    let html = '<button onclick="ouvrirDetailClasse(\'' + codeClasse + '\')" style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 10px;">← Retour à la classe</button>'
+    let html = '<button onclick="ouvrirDetailClasse(\'' + codeClasse + '\')" style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 10px;"><i class="fa-solid fa-arrow-left"></i> Retour à la classe</button>'
       + '<div style="font-size:14px;font-weight:800;color:#0D47A1;margin-bottom:2px;">' + nom + '</div>'
       + '<div style="font-size:11px;color:#888;margin-bottom:10px;">⭐ ' + points + ' pts · 🔥 ' + streak + ' jours de suite</div>'
 
@@ -26898,7 +26898,7 @@ async function ouvrirMessagerie(emailEleve, nomEleve, codeClasse) {
   }
 
   body.innerHTML = '<button onclick="ouvrirDetailEleve(\'' + emailEleve.replace(/'/g, "\\'") + '\', \'' + codeClasse + '\')" '
-    + 'style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 10px;">← Retour à ' + nomEleve + '</button>'
+    + 'style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 10px;"><i class="fa-solid fa-arrow-left"></i> Retour à ' + nomEleve + '</button>'
     + '<div style="font-size:13px;font-weight:800;color:#0D47A1;margin-bottom:12px;">💬 Message à ' + nomEleve + '</div>'
 
     // Zone de messages
@@ -26982,7 +26982,7 @@ async function ouvrirMessagerieEleve(emailEnseignant, codeClasse) {
       }).join('');
 
   body.innerHTML = '<button onclick="afficherMenuEnseignant()" '
-    + 'style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 10px;">← Retour</button>'
+    + 'style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 10px;"><i class="fa-solid fa-arrow-left"></i> Retour</button>'
     + '<div style="font-size:13px;font-weight:800;color:#0D47A1;margin-bottom:12px;">💬 Message de ton enseignant</div>'
     + '<div id="msgs-zone-eleve" style="background:#f9f9f9;border-radius:14px;padding:14px;min-height:200px;max-height:340px;overflow-y:auto;margin-bottom:12px;">'
     + msgsHtml + '</div>'
@@ -27071,7 +27071,7 @@ async function ouvrirChatClasse(codeClasse, estEnseignant) {
   const retourFn = estEnseignant ? 'ouvrirDetailClasse(\'' + codeClasse + '\')' : 'afficherMenuEnseignant()';
 
   body.innerHTML = '<button onclick="' + retourFn + '" '
-    + 'style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 10px;">← Retour</button>'
+    + 'style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 10px;"><i class="fa-solid fa-arrow-left"></i> Retour</button>'
     + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
     + '<div style="font-size:13px;font-weight:800;color:#0D47A1;">💬 Chat de classe</div>'
     + '<div style="font-size:11px;padding:4px 10px;border-radius:20px;background:' + (chatOuvert ? '#E8F5E9' : '#FFEBEE') + ';color:' + (chatOuvert ? '#2E7D32' : '#C62828') + ';font-weight:700;">'
@@ -27121,7 +27121,7 @@ function ouvrirFormulaireDevoir(codeClasse) {
   if (!body) return;
 
   body.innerHTML = '<button onclick="ouvrirDetailClasse(\'' + codeClasse + '\')" '
-    + 'style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 12px;">← Retour à la classe</button>'
+    + 'style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 12px;"><i class="fa-solid fa-arrow-left"></i> Retour à la classe</button>'
     + '<div style="font-size:13px;font-weight:800;color:#5B21B6;margin-bottom:14px;">📝 Publier un devoir / une consigne</div>'
     + '<input id="devoir-titre" type="text" placeholder="Titre (ex: Exercice sur les dérivées)" '
     + 'style="width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:10px;font-size:13px;margin-bottom:10px;box-sizing:border-box;font-family:\'Nunito\',sans-serif;">'
@@ -27183,7 +27183,7 @@ async function ouvrirDetailClasse(code) {
     const { data: classeInfo } = await supabaseClient.from('classes_enseignant').select('*').eq('code', code).single();
     const { data: eleves } = await supabaseClient.from('eleves_classe').select('*').eq('code_classe', code);
 
-    let html = '<button onclick="afficherMenuEnseignant()" style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 10px;">← Retour</button>'
+    let html = '<button onclick="afficherMenuEnseignant()" style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 10px;"><i class="fa-solid fa-arrow-left"></i> Retour</button>'
       + '<div style="font-size:14px;font-weight:800;color:#0D47A1;margin-bottom:2px;">' + classeInfo.nom_classe + '</div>'
       + '<div style="font-size:11px;color:#888;margin-bottom:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
       + '<span>Code : <strong>' + classeInfo.code + '</strong> · ' + (eleves ? eleves.length : 0) + ' élève(s)</span>'
@@ -27634,7 +27634,7 @@ async function genererRapportEleve(idx) {
 
   } catch(e) {
     liste.innerHTML = '<div style="padding:16px;text-align:center;color:#DC2626;">⚠️ Erreur lors de la génération. Réessaie.</div>'
-      + '<button onclick="ouvrirRapportParental()" style="margin-top:10px;padding:10px 20px;background:#7C3AED;color:white;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;">← Retour</button>';
+      + '<button onclick="ouvrirRapportParental()" style="margin-top:10px;padding:10px 20px;background:#7C3AED;color:white;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;"><i class="fa-solid fa-arrow-left"></i> Retour</button>';
   }
 }
 
@@ -27685,7 +27685,7 @@ function afficherRapportGenere(eleve, rapport) {
   };
 
   liste.innerHTML = '<div style="margin-bottom:12px;">'
-    + '<button onclick="ouvrirRapportParental()" style="background:#f0f0f0;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:12px;font-weight:700;">← Retour</button>'
+    + '<button onclick="ouvrirRapportParental()" style="background:#f0f0f0;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:12px;font-weight:700;"><i class="fa-solid fa-arrow-left"></i> Retour</button>'
     + '</div>'
     + '<div style="background:#F9F5FF;border-radius:12px;padding:14px;margin-bottom:12px;">'
     + '<div style="font-size:12px;font-weight:800;color:#7C3AED;margin-bottom:8px;">📋 Rapport de ' + (eleve.nom || 'l\'élève') + '</div>'
@@ -28126,7 +28126,7 @@ function showForgotPassword() {
       </button>
       <span onclick="location.reload()"
         style="color:rgba(255,255,255,0.85);font-size:14px;text-decoration:underline;cursor:pointer;font-family:'Nunito',sans-serif;">
-        ← Retour à la connexion
+        <i class="fa-solid fa-arrow-left"></i> Retour à la connexion
       </span>
     </div>
   `;
@@ -30355,7 +30355,7 @@ Réponds UNIQUEMENT en JSON valide, sans markdown, sans backticks, sans commenta
       <div style="font-size:12px;color:var(--text-soft);margin-bottom:20px;">Si le problème persiste, essaie de choisir une séquence précise plutôt que toute la SA/LS.</div>
       <div style="display:flex;flex-direction:column;gap:8px;">
         <button class="eval-next-btn" onclick="startEvalSession('${sk}',${sn})">🔄 Réessayer</button>
-        <button class="eval-next-btn" style="background:#78909C;" onclick="goBack()">← Retour</button>
+        <button class="eval-next-btn" style="background:#78909C;" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Retour</button>
       </div>
     </div>`;
     console.error('EvalSession error:', e);
@@ -30560,7 +30560,7 @@ function showEvalBilan() {
       ${incorrect + partial > 0 ? `<button class="eval-next-btn" onclick="startRemediation()" style="background:linear-gradient(135deg,#E65100,#F57F17);font-size:15px;font-weight:800;">🔧 Corriger mes lacunes (${incorrect + partial} items)</button>` : ''}
       <button class="eval-next-btn" onclick="partagerScoreWhatsApp(${pct}, '${(evalState.subject?.name || '').replace(/'/g, "\\'")}', '${label}')" style="background:linear-gradient(135deg,#25D366,#128C7E);font-size:14px;font-weight:800;">📲 Partager mon score sur WhatsApp</button>
       <button class="eval-next-btn" onclick="openEvalScreen()" style="background:linear-gradient(135deg,#1B5E20,#2E7D32);">🔁 Recommencer une session</button>
-      <button class="eval-next-btn" onclick="goToScreen('subject')" style="background:var(--blue);">← Retour à la matière</button>
+      <button class="eval-next-btn" onclick="goToScreen('subject')" style="background:var(--blue);"><i class="fa-solid fa-arrow-left"></i> Retour à la matière</button>
     </div>`;
   body.appendChild(card);
   body.scrollTo({ top: 0, behavior: 'smooth' });
@@ -30647,7 +30647,7 @@ function afficherChoixSequenceRevision(saKey, sa) {
   const label = sa.titre.split('-')[0].trim();
 
   body.innerHTML = '<div style="padding:4px 0 16px;">'
-    + '<button onclick="ouvrirRevisionRapide()" style="background:none;border:none;font-size:12px;font-weight:700;color:#7C3AED;cursor:pointer;padding:0 0 8px;">← Retour aux SA</button>'
+    + '<button onclick="ouvrirRevisionRapide()" style="background:none;border:none;font-size:12px;font-weight:700;color:#7C3AED;cursor:pointer;padding:0 0 8px;"><i class="fa-solid fa-arrow-left"></i> Retour aux SA</button>'
     + '<div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:2px;">' + label + ', ' + titre + '</div>'
     + '<div style="font-size:12px;color:var(--text-soft);">Choisis la séquence à réviser</div>'
     + '</div>'
@@ -30916,7 +30916,7 @@ function terminerRevisionRapide(timeout) {
     + '⚡ Nouvelle révision rapide</button>'
     + '<button onclick="quitterRevisionRapide()" '
     + 'style="padding:12px;background:none;border:2px solid var(--border);border-radius:12px;font-size:13px;font-weight:700;color:var(--text-soft);cursor:pointer;font-family:\'Nunito\',sans-serif;">'
-    + '← Retour à la matière</button>'
+    + '<i class="fa-solid fa-arrow-left"></i> Retour à la matière</button>'
     + '</div></div>';
 }
 
@@ -31303,7 +31303,7 @@ function showRemBilan() {
     <div style="background:#FFF3E0;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:14px;font-weight:800;color:#E65100;">+${bonus} points bonus gagnés 🎉</div>
     <div style="display:flex;flex-direction:column;gap:10px;">
       <button class="eval-next-btn" onclick="openEvalScreen()" style="background:linear-gradient(135deg,#1B5E20,#2E7D32);">🔁 Nouvelle évaluation</button>
-      <button class="eval-next-btn" onclick="goToScreen('subject')" style="background:var(--blue);">← Retour à la matière</button>
+      <button class="eval-next-btn" onclick="goToScreen('subject')" style="background:var(--blue);"><i class="fa-solid fa-arrow-left"></i> Retour à la matière</button>
     </div>`;
   body.appendChild(card);
   body.scrollTo({ top: 0, behavior: 'smooth' });
@@ -31747,7 +31747,7 @@ async function getSupabaseSession() {
 <!-- ========== ÉCRAN ÉPREUVES ========== -->
 <div class="screen" id="screen-epreuves" style="display:none;flex-direction:column;">
   <div class="topbar">
-    <button class="back-btn" onclick="goToScreen('home')">←</button>
+    <button class="back-btn" onclick="goToScreen('home')"><i class="fa-solid fa-arrow-left"></i></button>
     <div class="topbar-title">📝 Générateur d'épreuves</div>
     <div style="width:36px;"></div>
   </div>
@@ -32773,7 +32773,7 @@ function renderVeilleSetup(container, overlay = false) {
       <button onclick="ajouterExamen()" class="btn-auto-desktop" style="width:100%;padding:15px;background:linear-gradient(135deg,#7C3AED,#A855F7);color:white;border:none;border-radius:14px;font-size:15px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;margin-top:4px;">
         ✅ Enregistrer cet examen
       </button>
-      ${overlay ? `<button onclick="renderVeille()" style="width:100%;padding:12px;background:none;border:none;color:var(--text-soft);font-size:14px;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:8px;">← Retour</button>` : ''}
+      ${overlay ? `<button onclick="renderVeille()" style="width:100%;padding:12px;background:none;border:none;color:var(--text-soft);font-size:14px;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:8px;"><i class="fa-solid fa-arrow-left"></i> Retour</button>` : ''}
     </div>`;
   container.innerHTML = setupHtml;
 }
@@ -32978,7 +32978,7 @@ function ouvrirCorrection(idx) {
 
   container.innerHTML = `
     <div style="padding:16px;">
-      <button onclick="renderVeille()" style="background:none;border:none;font-size:14px;color:var(--blue);font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:16px;">← Retour à la fiche</button>
+      <button onclick="renderVeille()" style="background:none;border:none;font-size:14px;color:var(--blue);font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;margin-bottom:16px;"><i class="fa-solid fa-arrow-left"></i> Retour à la fiche</button>
       <div style="font-size:18px;font-weight:900;color:var(--text);margin-bottom:4px;">✏️ Soumettre mes réponses</div>
       <div style="font-size:13px;color:var(--text-soft);margin-bottom:20px;line-height:1.5;">Réponds aux questions ci-dessous. Tu peux répondre question par question ou tout d'un coup. Tu peux aussi joindre une image ou un PDF de ta copie.</div>
 
