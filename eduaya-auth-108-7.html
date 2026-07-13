@@ -438,6 +438,23 @@
     .chat-messages { max-width: 900px; margin: 0 auto; width: 100%; }
     .topbar > div, .topbar-title { max-width: 900px; margin: 0 auto; }
   }
+  .defis-historique-grid { display: flex; flex-direction: column; }
+  .defis-historique-card { transition: transform 0.15s, box-shadow 0.15s; }
+  @media (min-width: 768px) {
+    .defis-historique-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .defis-historique-card { margin-bottom: 0 !important; }
+    .defis-historique-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+  }
+  @media (min-width: 1100px) {
+    .defis-historique-grid { grid-template-columns: repeat(3, 1fr); }
+  }
   .nav-item {
     flex: 1; display: flex; flex-direction: column; align-items: center;
     gap: 4px; cursor: pointer; padding: 4px 0; transition: all 0.2s;
@@ -24822,8 +24839,12 @@ async function renderDefis() {
         + 'style="width:100%;padding:14px;background:linear-gradient(135deg,#C62828,#E53935);color:white;border:none;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:16px;font-family:\'Nunito\',sans-serif;">'
         + '⚔️ Lancer un défi</button>';
     } else {
-      html += '<div style="background:#f9f9f9;border-radius:14px;padding:14px;margin-bottom:16px;text-align:center;font-size:12px;color:#888;">'
-        + 'Rejoins une classe pour pouvoir défier tes camarades !</div>';
+      html += '<div style="background:#f9f9f9;border-radius:14px;padding:14px;margin-bottom:16px;text-align:center;">'
+        + '<div style="font-size:12px;color:#888;margin-bottom:10px;">Rejoins une classe pour pouvoir défier tes camarades !</div>'
+        + '<button onclick="ouvrirRejoindreClasse()" '
+        + 'style="padding:10px 20px;background:linear-gradient(135deg,#1565C0,#0D47A1);color:white;border:none;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;font-family:\'Nunito\',sans-serif;">'
+        + '🔑 Rejoindre une classe</button>'
+        + '</div>';
     }
 
     // ── Défis en cours ──
@@ -24849,6 +24870,7 @@ async function renderDefis() {
     // ── Défis terminés / historique ──
     if (defisTermines.length > 0) {
       html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:8px;">📜 HISTORIQUE DES DÉFIS</div>';
+      html += '<div class="defis-historique-grid">';
       defisTermines.slice(0, 8).forEach(function(d) {
         const estChallenger = d.challenger_email === appState.userEmail;
         const monScore = estChallenger ? d.score_challenger : d.score_adversaire;
@@ -24856,8 +24878,9 @@ async function renderDefis() {
         const adversaire = estChallenger ? d.adversaire_email : d.challenger_nom;
         const gagne = monScore > scoreAdv;
         const nul = monScore === scoreAdv;
+        const couleur = gagne ? '#2E7D32' : nul ? '#888' : '#C62828';
 
-        html += '<div style="background:#f9f9f9;border-radius:12px;padding:12px;margin-bottom:8px;border-left:3px solid ' + (gagne ? '#2E7D32' : nul ? '#888' : '#C62828') + ';">'
+        html += '<div class="defis-historique-card" style="background:white;border-radius:14px;padding:14px;margin-bottom:8px;border-left:3px solid ' + couleur + ';box-shadow:0 2px 8px rgba(0,0,0,0.04);display:flex;flex-direction:column;">'
           + '<div style="display:flex;justify-content:space-between;align-items:center;">'
           + '<div>'
           + '<div style="font-size:12px;font-weight:700;color:#333;">vs ' + adversaire + '</div>'
@@ -24865,11 +24888,12 @@ async function renderDefis() {
           + '</div>'
           + '<div style="text-align:right;">'
           + '<div style="font-size:16px;">' + (gagne ? '🏆' : nul ? '🤝' : '😔') + '</div>'
-          + '<div style="font-size:11px;font-weight:700;color:#555;">' + monScore + '% vs ' + scoreAdv + '%</div>'
+          + '<div style="font-size:11px;font-weight:700;color:' + couleur + ';">' + monScore + '% vs ' + scoreAdv + '%</div>'
           + '</div></div>'
-          + '<button onclick="ouvrirDetailDefi(\'' + d.id + '\')" style="margin-top:8px;width:100%;padding:8px 10px;background:#1565C0;color:white;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;">Voir mes réponses & corrections</button>'
+          + '<button onclick="ouvrirDetailDefi(\'' + d.id + '\')" style="margin-top:10px;width:100%;padding:8px 10px;background:#1565C0;color:white;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;">Voir mes réponses & corrections</button>'
           + '</div>';
       });
+      html += '</div>';
     }
 
     if (defis.length === 0 && !defisRecus.length) {
