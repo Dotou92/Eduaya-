@@ -31296,13 +31296,20 @@ async function syncLimiteFromSupabase() {
       } else {
         appState.requetesAujourdhui = data.requetes_aujourd_hui || 0;
       }
-      // Sync quota Coach
-      if (data.derniere_requete_coach !== todayISO) {
-        appState.coachQuotaAujourdhui = 0;
-        appState.derniereRequeteCoach = todayISO;
+      // Sync quota Coach : garder la fenêtre locale de 24h comme source de vérité
+      const localCoachState = getCoachQuotaState();
+      const lastCoachReset = localCoachState.resetAt || data.derniere_requete_coach;
+      const coachWindowValid = lastCoachReset && (Date.now() - new Date(lastCoachReset).getTime()) < 24 * 60 * 60 * 1000;
+      if (!coachWindowValid) {
+        const resetAt = new Date().toISOString();
+        await supabaseClient.from('profils').update({
+          coach_quota_aujourd_hui: 0,
+          derniere_requete_coach: resetAt
+        }).eq('email', appState.userEmail);
+        saveCoachQuotaState({ count: 0, resetAt });
       } else {
-        appState.coachQuotaAujourdhui = data.coach_quota_aujourd_hui || 0;
-        appState.derniereRequeteCoach = data.derniere_requete_coach || todayISO;
+        const persistedCount = Number(localCoachState.count || data.coach_quota_aujourd_hui || 0);
+        saveCoachQuotaState({ count: persistedCount, resetAt: lastCoachReset });
       }
       appState.plan = isAdmin() ? 'premium' : (data.plan || 'gratuit');
       appState.premiumClasse = data.premium_classe || null;
@@ -32059,28 +32066,66 @@ function initCoach() {
 }
 
 // ─── QUOTA COACH ──────────────────────────────────────────────
+const COACH_QUOTA_STORAGE_KEY = 'eduayo_coach_quota_state';
+
+function getCoachQuotaState() {
+  try {
+    const raw = localStorage.getItem(COACH_QUOTA_STORAGE_KEY);
+    if (!raw) return { count: 0, resetAt: null };
+    const parsed = JSON.parse(raw);
+    return {
+      count: Number(parsed.count) || 0,
+      resetAt: parsed.resetAt || null
+    };
+  } catch (e) {
+    return { count: 0, resetAt: null };
+  }
+}
+
+function saveCoachQuotaState(state) {
+  try {
+    localStorage.setItem(COACH_QUOTA_STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {}
+  appState.coachQuotaAujourdhui = state.count || 0;
+  appState.derniereRequeteCoach = state.resetAt || null;
+  saveState();
+}
+
+function ensureCoachQuotaState() {
+  if (isPremiumActif()) return;
+  const now = Date.now();
+  let state = getCoachQuotaState();
+  const resetAt = state.resetAt ? new Date(state.resetAt).getTime() : null;
+  const hasValidWindow = resetAt && (now - resetAt) < 24 * 60 * 60 * 1000;
+
+  if (!hasValidWindow) {
+    state = { count: 0, resetAt: new Date().toISOString() };
+    saveCoachQuotaState(state);
+    return;
+  }
+
+  appState.coachQuotaAujourdhui = state.count || 0;
+  appState.derniereRequeteCoach = state.resetAt;
+}
+
 function getCoachQuotaToday() {
   if (isPremiumActif()) return 0;
-  const today = new Date().toISOString().split('T')[0];
-  if (appState.derniereRequeteCoach !== today) return 0;
+  ensureCoachQuotaState();
   return appState.coachQuotaAujourdhui || 0;
 }
 
 function incrementCoachQuota() {
   if (isPremiumActif()) return;
-  const today = new Date().toISOString().split('T')[0];
-  if (appState.derniereRequeteCoach !== today) {
-    appState.coachQuotaAujourdhui = 1;
-  } else {
-    appState.coachQuotaAujourdhui = (appState.coachQuotaAujourdhui || 0) + 1;
-  }
-  appState.derniereRequeteCoach = today;
-  saveState();
+  ensureCoachQuotaState();
+  const state = getCoachQuotaState();
+  state.count = (state.count || 0) + 1;
+  if (!state.resetAt) state.resetAt = new Date().toISOString();
+  saveCoachQuotaState(state);
   // Persister dans Supabase
   if (appState.userEmail) {
     supabaseClient.from('profils').update({
-      coach_quota_aujourd_hui: appState.coachQuotaAujourdhui,
-      derniere_requete_coach: today
+      coach_quota_aujourd_hui: state.count,
+      derniere_requete_coach: state.resetAt
     }).eq('email', appState.userEmail).then(() => {});
   }
 }
