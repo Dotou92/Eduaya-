@@ -28085,6 +28085,16 @@ async function handleAuth() {
         authBtn.disabled = false;
         return;
       }
+      const { data: profilCheck } = await supabaseClient.from('profils').select('suspendu').eq('email', email).single();
+      if (profilCheck && profilCheck.suspendu) {
+        errorDiv.style.color = '#ffcccc';
+        errorDiv.textContent = '⛔ Ce compte a été suspendu. Contacte l\'administration EduAya pour plus d\'informations.';
+        errorDiv.style.display = 'block';
+        await supabaseClient.auth.signOut();
+        authBtn.textContent = 'Se connecter →';
+        authBtn.disabled = false;
+        return;
+      }
     }
     appState.userEmail = email;
     // Sync limits and eval history from Supabase on login
