@@ -27592,11 +27592,11 @@ async function deconnexion() {
   try {
     await supabaseClient.auth.signOut();
   } catch(e) {}
-  // Supprimer uniquement les clés EduAya
+  // Supprimer uniquement les clés EduAya sauf le quota Coach Aya
   var keysToRemove = [];
   for (var i = 0; i < localStorage.length; i++) {
     var k = localStorage.key(i);
-    if (k && (k.startsWith('eduayo_') || k.startsWith('ayo_') || k === 'appState')) {
+    if (k && k !== 'eduayo_coach_quota_state' && (k.startsWith('eduayo_') || k.startsWith('ayo_') || k === 'appState')) {
       keysToRemove.push(k);
     }
   }
