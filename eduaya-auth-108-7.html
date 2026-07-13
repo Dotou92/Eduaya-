@@ -24692,6 +24692,59 @@ function showEvalDetails(idx) {
 // SYSTÈME DE DÉFIS
 // ══════════════════════════════════════════════════════════
 
+function getDefiHistoryStore() {
+  const key = 'eduaya_defi_history_' + (appState.userEmail || 'guest');
+  try {
+    return JSON.parse(localStorage.getItem(key) || '{}');
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveDefiHistoryStore(store) {
+  const key = 'eduaya_defi_history_' + (appState.userEmail || 'guest');
+  localStorage.setItem(key, JSON.stringify(store));
+}
+
+function saveDefiResult(defiId, payload) {
+  const store = getDefiHistoryStore();
+  store[defiId] = payload;
+  saveDefiHistoryStore(store);
+}
+
+function getDefiResult(defiId) {
+  return getDefiHistoryStore()[defiId] || null;
+}
+
+function ouvrirDetailDefi(defiId) {
+  const content = document.getElementById('defis-content');
+  if (!content) return;
+
+  const result = getDefiResult(defiId);
+  if (!result) {
+    content.innerHTML = '<div style="text-align:center;padding:24px;color:#888;font-size:13px;">Aucun détail disponible pour ce défi.</div>'
+      + '<button onclick="renderDefis()" style="display:block;margin:12px auto 0;padding:10px 18px;background:#1565C0;color:white;border:none;border-radius:10px;cursor:pointer;">← Retour</button>';
+    return;
+  }
+
+  let html = '<button onclick="renderDefis()" style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 14px;">← Retour aux défis</button>'
+    + '<div style="font-size:14px;font-weight:800;color:#0D47A1;margin-bottom:10px;">📜 Mon défi : ' + (result.matiere || 'Défi') + '</div>'
+    + '<div style="font-size:12px;color:#666;margin-bottom:12px;">Score final : <strong>' + result.scorePercent + '%</strong> · ' + result.score + '/' + result.totalQuestions + ' bonnes réponses</div>';
+
+  (result.answers || []).forEach(function(item, index) {
+    const isCorrect = item.isCorrect;
+    html += '<div style="background:' + (isCorrect ? '#F0FDF4' : '#FFF7ED') + ';border:1px solid ' + (isCorrect ? '#86EFAC' : '#FED7AA') + ';border-radius:12px;padding:12px;margin-bottom:10px;">'
+      + '<div style="font-size:12px;font-weight:800;color:#333;margin-bottom:6px;">' + (index + 1) + '. ' + item.question + '</div>'
+      + '<div style="font-size:11px;color:#555;margin-bottom:4px;"><strong>Ta réponse :</strong> ' + item.selectedText + '</div>'
+      + '<div style="font-size:11px;font-weight:700;margin-bottom:4px;color:' + (isCorrect ? '#15803D' : '#C2410C') + ';">' + (isCorrect ? '✅ Bonne réponse' : '❌ Mauvaise réponse') + '</div>'
+      + (isCorrect ? '' : '<div style="font-size:11px;color:#C2410C;margin-bottom:4px;"><strong>Bonne réponse :</strong> ' + item.correctText + '</div>')
+      + '<div style="font-size:11px;color:#666;">Correction : ' + (isCorrect ? 'Tu as répondu correctement.' : 'La bonne réponse était ' + item.correctText + '.') + '</div>'
+      + '</div>';
+  });
+
+  content.innerHTML = html;
+}
+
 async function renderDefis() {
   const content = document.getElementById('defis-content');
   if (!content) return;
@@ -24728,10 +24781,24 @@ async function renderDefis() {
 
     const defis = defisData || [];
     const defisRecus = defis.filter(function(d) { return d.adversaire_email === appState.userEmail && d.statut === 'en_attente'; });
+    const defisEnvoyesEnAttente = defis.filter(function(d) { return d.challenger_email === appState.userEmail && d.statut === 'en_attente'; });
     const defisEnCours = defis.filter(function(d) { return d.statut === 'accepte' && (d.score_challenger === null || d.score_adversaire === null); });
     const defisTermines = defis.filter(function(d) { return d.statut === 'termine'; });
 
     let html = '';
+
+    // ── Défis envoyés en attente ──
+    if (defisEnvoyesEnAttente.length > 0) {
+      html += '<div style="background:#FFF8E1;border-radius:14px;padding:14px;margin-bottom:12px;border-left:3px solid #F59E0B;">'
+        + '<div style="font-size:12px;font-weight:800;color:#B45309;margin-bottom:8px;">⏳ EN ATTENTE DE RÉPONSE</div>';
+      defisEnvoyesEnAttente.forEach(function(d) {
+        html += '<div style="background:white;border-radius:12px;padding:10px;margin-bottom:8px;">'
+          + '<div style="font-size:12px;font-weight:700;color:#333;margin-bottom:4px;">Défi envoyé à ' + (d.adversaire_email || 'un camarade') + '</div>'
+          + '<div style="font-size:11px;color:#888;">📚 ' + d.matiere + (d.notion ? ' · ' + d.notion : '') + ' · ' + d.niveau + '</div>'
+          + '</div>';
+      });
+      html += '</div>';
+    }
 
     // ── Défis reçus (à accepter) ──
     if (defisRecus.length > 0) {
@@ -24779,10 +24846,10 @@ async function renderDefis() {
       html += '<div style="margin-bottom:16px;"></div>';
     }
 
-    // ── Défis terminés ──
+    // ── Défis terminés / historique ──
     if (defisTermines.length > 0) {
-      html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:8px;">🏁 TERMINÉS</div>';
-      defisTermines.slice(0, 5).forEach(function(d) {
+      html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:8px;">📜 HISTORIQUE DES DÉFIS</div>';
+      defisTermines.slice(0, 8).forEach(function(d) {
         const estChallenger = d.challenger_email === appState.userEmail;
         const monScore = estChallenger ? d.score_challenger : d.score_adversaire;
         const scoreAdv = estChallenger ? d.score_adversaire : d.score_challenger;
@@ -24799,7 +24866,9 @@ async function renderDefis() {
           + '<div style="text-align:right;">'
           + '<div style="font-size:16px;">' + (gagne ? '🏆' : nul ? '🤝' : '😔') + '</div>'
           + '<div style="font-size:11px;font-weight:700;color:#555;">' + monScore + '% vs ' + scoreAdv + '%</div>'
-          + '</div></div></div>';
+          + '</div></div>'
+          + '<button onclick="ouvrirDetailDefi(\'' + d.id + '\')" style="margin-top:8px;width:100%;padding:8px 10px;background:#1565C0;color:white;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;">Voir mes réponses & corrections</button>'
+          + '</div>';
       });
     }
 
@@ -24979,11 +25048,12 @@ async function jouerDefi(defiId) {
   // Afficher le quiz
   let current = 0;
   let scores = 0;
+  let answers = [];
 
   function afficherQuestion() {
     if (current >= questions.length) {
       // Fin du quiz
-      finirDefi(defiId, defi, scores);
+      finirDefi(defiId, defi, scores, answers);
       return;
     }
     const q = questions[current];
@@ -24993,14 +25063,23 @@ async function jouerDefi(defiId) {
       + '<div style="font-size:14px;font-weight:700;">' + q.q + '</div>'
       + '</div>'
       + q.options.map(function(opt, i) {
-          return '<button onclick="repondreDefi(' + i + ',' + q.correct + ')" '
+          return '<button onclick="repondreDefi(' + i + ')" '
             + 'style="width:100%;padding:12px 14px;background:white;border:2px solid #e0e0e0;border-radius:12px;text-align:left;font-size:13px;cursor:pointer;margin-bottom:8px;font-family:\'Nunito\',sans-serif;">'
             + ['A','B','C','D'][i] + '. ' + opt + '</button>';
         }).join('')
       + '</div>';
 
-    window.repondreDefi = function(choix, correct) {
-      if (choix === correct) scores++;
+    window.repondreDefi = function(choix) {
+      const isCorrect = choix === q.correct;
+      if (isCorrect) scores++;
+      answers.push({
+        question: q.q,
+        selectedIndex: choix,
+        selectedText: q.options[choix] || 'Pas de réponse',
+        correctIndex: q.correct,
+        correctText: q.options[q.correct] || 'Pas de réponse',
+        isCorrect: isCorrect
+      });
       current++;
       afficherQuestion();
     };
@@ -25009,7 +25088,7 @@ async function jouerDefi(defiId) {
   afficherQuestion();
 }
 
-async function finirDefi(defiId, defi, score) {
+async function finirDefi(defiId, defi, score, answers) {
   const content = document.getElementById('defis-content');
   const scorePercent = Math.round((score / (defi.questions ? defi.questions.length : 5)) * 100);
   const estChallenger = defi.challenger_email === appState.userEmail;
@@ -25030,15 +25109,31 @@ async function finirDefi(defiId, defi, score) {
 
   const couleur = scorePercent >= 70 ? '#2E7D32' : scorePercent >= 50 ? '#F57F17' : '#C62828';
 
+  const totalQuestions = defi.questions ? defi.questions.length : 5;
+  const resultPayload = {
+    id: defiId,
+    matiere: defi.matiere,
+    notion: defi.notion || '',
+    niveau: defi.niveau,
+    score: score,
+    totalQuestions: totalQuestions,
+    scorePercent: scorePercent,
+    answers: answers,
+    adversaire: defi.adversaire_email || '',
+    completedAt: new Date().toISOString()
+  };
+  saveDefiResult(defiId, resultPayload);
+
   content.innerHTML = '<div style="text-align:center;padding:30px 20px;">'
     + '<div style="font-size:56px;margin-bottom:12px;">' + (scorePercent >= 70 ? '🏆' : scorePercent >= 50 ? '👍' : '💪') + '</div>'
     + '<div style="font-size:32px;font-weight:900;color:' + couleur + ';margin-bottom:8px;">' + scorePercent + '%</div>'
-    + '<div style="font-size:14px;color:#555;margin-bottom:8px;">' + score + '/' + (defi.questions ? defi.questions.length : 5) + ' bonnes réponses</div>'
+    + '<div style="font-size:14px;color:#555;margin-bottom:8px;">' + score + '/' + totalQuestions + ' bonnes réponses</div>'
     + (scoreAdv !== null
       ? '<div style="font-size:12px;color:#888;margin-bottom:20px;">Score adversaire : ' + scoreAdv + '%<br>'
         + (scorePercent > scoreAdv ? '🏆 Tu as gagné !' : scorePercent < scoreAdv ? '😔 Tu as perdu...' : '🤝 Égalité !') + '</div>'
       : '<div style="font-size:12px;color:#888;margin-bottom:20px;">✅ Score enregistré !<br>En attente que ton adversaire joue.</div>')
-    + '<button onclick="renderDefis()" style="padding:12px 32px;background:#1565C0;color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">← Retour aux défis</button>'
+    + '<button onclick="ouvrirDetailDefi(\'' + defiId + '\')" style="padding:12px 18px;background:#1565C0;color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">Voir mes réponses</button><br>'
+    + '<button onclick="renderDefis()" style="padding:12px 32px;background:#f0f0f0;color:#333;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">← Retour aux défis</button>'
     + '</div>';
 }
 
