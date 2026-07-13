@@ -2035,6 +2035,7 @@ window.addEventListener('load',function(){
     <div class="home-hero">
       <div class="hero-greeting">Bonne journée 👋</div>
       <div class="hero-name" id="hero-name">Apprenant !</div>
+      <div id="home-premium-badge" style="display:none;margin:8px 0 0;align-items:center;gap:6px;justify-content:flex-start;"></div>
       <div class="hero-sub">Continue ta progression. Tu es sur la bonne voie !</div>
       <div class="hero-stats">
         <div class="hero-stat"><div class="hero-stat-val" id="home-streak">0</div><div class="hero-stat-lbl">Jours consécutifs</div></div>
@@ -28186,6 +28187,18 @@ function renderDesktopStats() {
 
 function setupHome() {
   document.getElementById('hero-name').textContent = appState.userName + ' !';
+  const premiumBadge = document.getElementById('home-premium-badge');
+  if (premiumBadge) {
+    if (appState.plan === 'premium' && isPremiumActif()) {
+      premiumBadge.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#FFF3CD,#FDE68A);color:#92400E;padding:7px 12px;border-radius:999px;font-size:12px;font-weight:800;border:1px solid #FCD34D;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><i class="fa-solid fa-crown"></i> Version Premium active</span>';
+      premiumBadge.style.display = 'flex';
+    } else if (appState.plan === 'premium' && !isPremiumActif()) {
+      premiumBadge.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;background:#FFF7ED;color:#C2410C;padding:7px 12px;border-radius:999px;font-size:12px;font-weight:800;border:1px solid #FDBA74;"><i class="fa-solid fa-pause"></i> Premium en pause</span>';
+      premiumBadge.style.display = 'flex';
+    } else {
+      premiumBadge.style.display = 'none';
+    }
+  }
   document.getElementById('home-pts').textContent = appState.points;
   const homeStreakEl = document.getElementById('home-streak');
   if (homeStreakEl) homeStreakEl.textContent = appState.streak || 0;
