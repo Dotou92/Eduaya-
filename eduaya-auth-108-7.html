@@ -28100,6 +28100,7 @@ async function handleAuth() {
     // Sync limits and eval history from Supabase on login
     await syncLimiteFromSupabase();
     syncEvalHistoryFromSupabase();
+    startAccountStatusWatcher();
     document.getElementById('step-2').style.display = 'none';
     document.getElementById('step-3').style.display = 'flex'; document.getElementById('step-3').scrollIntoView({behavior:'smooth', block:'start'});
   } catch(e) {
@@ -31385,6 +31386,65 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
+// ── Blocage immédiat des comptes suspendus / supprimés ─────────────────────
+var _accountStatusInterval = null;
+var _accountBlockedShown = false;
+
+function startAccountStatusWatcher() {
+  if (_accountStatusInterval) clearInterval(_accountStatusInterval);
+  _accountStatusInterval = setInterval(checkAccountStatus, 90 * 1000);
+}
+
+async function checkAccountStatus() {
+  if (!appState.userEmail || _accountBlockedShown) return;
+  try {
+    const { data, error } = await supabaseClient.from('profils').select('suspendu').eq('email', appState.userEmail).maybeSingle();
+    if (error) return;
+    if (!data) {
+      await forceLogoutBlocked('🚫 Ce compte a été supprimé par l\'administration. Contacte l\'équipe EduAya si tu penses qu\'il s\'agit d\'une erreur.');
+      return;
+    }
+    if (data.suspendu) {
+      await forceLogoutBlocked('⛔ Ton compte a été suspendu par l\'administration. Contacte l\'équipe EduAya pour plus d\'informations.');
+    }
+  } catch(e) { /* silencieux : ne pas bloquer sur une erreur réseau ponctuelle */ }
+}
+
+async function forceLogoutBlocked(message) {
+  if (_accountBlockedShown) return;
+  _accountBlockedShown = true;
+  if (_accountStatusInterval) clearInterval(_accountStatusInterval);
+  try { await supabaseClient.auth.signOut(); } catch(e) {}
+  var keysToRemove = [];
+  for (var i = 0; i < localStorage.length; i++) {
+    var k = localStorage.key(i);
+    if (k && k !== 'eduayo_coach_quota_state' && (k.startsWith('eduayo_') || k.startsWith('ayo_') || k === 'appState')) {
+      keysToRemove.push(k);
+    }
+  }
+  keysToRemove.forEach(function(k) { localStorage.removeItem(k); });
+  appState.userEmail = '';
+  appState.userName = 'Apprenant';
+  appState.userClass = '';
+  goTo('screen-landing');
+  showAccountBlockedOverlay(message);
+}
+
+function showAccountBlockedOverlay(message) {
+  var existing = document.getElementById('account-blocked-overlay');
+  if (existing) existing.remove();
+  var overlay = document.createElement('div');
+  overlay.id = 'account-blocked-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,20,40,0.78);z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;';
+  overlay.innerHTML = '<div style="background:white;border-radius:22px;max-width:360px;width:100%;padding:34px 26px;text-align:center;font-family:\'Nunito\',sans-serif;box-shadow:0 30px 70px rgba(0,0,0,0.35);">'
+    + '<div style="font-size:48px;margin-bottom:14px;">⛔</div>'
+    + '<div style="font-size:17px;font-weight:800;color:#C62828;margin-bottom:10px;font-family:\'Baloo 2\',cursive;">Accès bloqué</div>'
+    + '<div style="font-size:13.5px;color:#555;line-height:1.6;margin-bottom:22px;">' + message + '</div>'
+    + '<button onclick="document.getElementById(\'account-blocked-overlay\').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#1565C0,#0D47A1);color:white;border:none;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer;font-family:\'Nunito\',sans-serif;">Compris</button>'
+    + '</div>';
+  document.body.appendChild(overlay);
+}
+
 document.getElementById('diag-modal').addEventListener('click', function(e) {
   if (e.target === this) closeDiagnostic();
 });
@@ -31424,9 +31484,14 @@ window.addEventListener('load', async () => {
 
     // Vérifier si le profil existe déjà dans Supabase
     const { data: profil } = await supabaseClient.from('profils')
-      .select('nom, classe, plan, premium_classe, credits, points, streak, requetes_aujourd_hui, derniere_requete, coach_quota_aujourd_hui, derniere_requete_coach')
+      .select('nom, classe, plan, premium_classe, credits, points, streak, requetes_aujourd_hui, derniere_requete, coach_quota_aujourd_hui, derniere_requete_coach, suspendu')
       .eq('email', session.user.email)
       .single();
+
+    if (profil && profil.suspendu) {
+      await forceLogoutBlocked('⛔ Ton compte a été suspendu par l\'administration. Contacte l\'équipe EduAya pour plus d\'informations.');
+      return;
+    }
 
     if (profil && profil.classe) {
       // Profil existant, charger tout depuis Supabase
@@ -31445,6 +31510,7 @@ window.addEventListener('load', async () => {
       }
       saveState();
       syncEvalHistoryFromSupabase();
+      startAccountStatusWatcher();
       setupHome();
       setupHome();
       goToScreen('home');
@@ -31472,7 +31538,9 @@ window.addEventListener('load', async () => {
     // Utilisateur connecté ET profil en localStorage, aller directement à l'accueil
     appState.userEmail = session.user.email;
     await syncLimiteFromSupabase();
+    if (_accountBlockedShown) return;
     syncEvalHistoryFromSupabase();
+    startAccountStatusWatcher();
     setupHome();
     goToScreen('home');
     return;
@@ -31481,9 +31549,13 @@ window.addEventListener('load', async () => {
     appState.userEmail = session.user.email;
     appState.userName = session.user.user_metadata?.full_name?.split(' ')[0] || 'Apprenant';
     const { data: profil } = await supabaseClient.from('profils')
-      .select('nom, classe, plan, premium_classe, credits, points, streak, requetes_aujourd_hui, derniere_requete, coach_quota_aujourd_hui, derniere_requete_coach')
+      .select('nom, classe, plan, premium_classe, credits, points, streak, requetes_aujourd_hui, derniere_requete, coach_quota_aujourd_hui, derniere_requete_coach, suspendu')
       .eq('email', session.user.email)
       .single();
+    if (profil && profil.suspendu) {
+      await forceLogoutBlocked('⛔ Ton compte a été suspendu par l\'administration. Contacte l\'équipe EduAya pour plus d\'informations.');
+      return;
+    }
     if (profil && profil.classe) {
       appState.userName = profil.nom || appState.userName;
       appState.userClass = profil.classe;
@@ -31496,6 +31568,7 @@ window.addEventListener('load', async () => {
       appState.requetesAujourdhui = profil.derniere_requete !== todayISO ? 0 : (profil.requetes_aujourd_hui || 0);
       saveState();
       syncEvalHistoryFromSupabase();
+      startAccountStatusWatcher();
       setupHome();
       goToScreen('home');
       return;
@@ -31533,10 +31606,18 @@ async function syncLimiteFromSupabase() {
   // Sync the daily counter AND class from Supabase to prevent bypass
   if (!appState.userEmail) return;
   try {
-    const { data } = await supabaseClient.from('profils')
-      .select('requetes_aujourd_hui, derniere_requete, plan, premium_classe, classe, nom, credits, points, streak, badges, coach_quota_aujourd_hui, derniere_requete_coach')
+    const { data, error } = await supabaseClient.from('profils')
+      .select('requetes_aujourd_hui, derniere_requete, plan, premium_classe, classe, nom, credits, points, streak, badges, coach_quota_aujourd_hui, derniere_requete_coach, suspendu')
       .eq('email', appState.userEmail)
       .single();
+    if (error && error.code === 'PGRST116') {
+      await forceLogoutBlocked('🚫 Ce compte a été supprimé par l\'administration. Contacte l\'équipe EduAya si tu penses qu\'il s\'agit d\'une erreur.');
+      return;
+    }
+    if (data && data.suspendu) {
+      await forceLogoutBlocked('⛔ Ton compte a été suspendu par l\'administration. Contacte l\'équipe EduAya pour plus d\'informations.');
+      return;
+    }
     if (data) {
       const todayISO = new Date().toISOString().split('T')[0];
       // Reset counter if new day
