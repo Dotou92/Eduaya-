@@ -507,9 +507,6 @@
     display: flex; padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
     z-index: 200; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
   }
-  /* Espace enseignant : pas de barre de navigation apprenant (mobile) */
-  body.role-teacher .bottom-nav { display: none !important; }
-  body.role-teacher .role-learner-only { display: none !important; }
   @media (min-width: 768px) { .bottom-nav { max-width: 100%; } }
   @media (min-width: 1100px) { .bottom-nav { max-width: 100%; } }
   @media (min-width: 1100px) {
@@ -2626,12 +2623,12 @@ window.addEventListener('load',function(){
     <div class="profile-menu">
       <div class="menu-section-title">Mon compte</div>
       <div class="menu-item" onclick="toggleEditName()"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-pen"></i></span><span class="menu-text">Modifier mon prénom</span><span class="menu-arrow">›</span></div>
-      <div class="menu-item role-learner-only" onclick="toggleEditClasse()"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-school"></i></span><span class="menu-text">Modifier ma classe</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="toggleEditClasse()"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-school"></i></span><span class="menu-text">Modifier ma classe</span><span class="menu-arrow">›</span></div>
       <div class="menu-item" onclick="showToast('🔔 Notifications bientôt disponibles')"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-bell"></i></span><span class="menu-text">Notifications</span><span class="menu-arrow">›</span></div>
-      <div class="menu-section-title role-learner-only">Mes études</div>
-      <div class="menu-item role-learner-only" onclick="goToScreen('progress')"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-chart-line"></i></span><span class="menu-text">Voir mes progrès</span><span class="menu-arrow">›</span></div>
-      <div class="menu-item role-learner-only" onclick="goToScreen('coach')" style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;margin-bottom:6px;"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-brain"></i></span><span class="menu-text" style="color:#1565C0;font-weight:700;">Mon Coach Aya</span><span class="menu-arrow" style="color:#1565C0;">›</span></div>
-      <div class="menu-item role-learner-only" onclick="goToScreen('veille')" style="background:#FAF5FF;border:1px solid #E9D5FF;border-radius:12px;margin-bottom:6px;"><span class="menu-icon" style="background:#7C3AED;"><i class="fa-solid fa-moon"></i></span><span class="menu-text" style="color:#7C3AED;font-weight:700;">Veille d'examen</span><span class="menu-arrow" style="color:#7C3AED;">›</span></div>
+      <div class="menu-section-title">Mes études</div>
+      <div class="menu-item" onclick="goToScreen('progress')"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-chart-line"></i></span><span class="menu-text">Voir mes progrès</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item" onclick="goToScreen('coach')" style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;margin-bottom:6px;"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-brain"></i></span><span class="menu-text" style="color:#1565C0;font-weight:700;">Mon Coach Aya</span><span class="menu-arrow" style="color:#1565C0;">›</span></div>
+      <div class="menu-item" onclick="goToScreen('veille')" style="background:#FAF5FF;border:1px solid #E9D5FF;border-radius:12px;margin-bottom:6px;"><span class="menu-icon" style="background:#7C3AED;"><i class="fa-solid fa-moon"></i></span><span class="menu-text" style="color:#7C3AED;font-weight:700;">Veille d'examen</span><span class="menu-arrow" style="color:#7C3AED;">›</span></div>
       <div class="menu-item" onclick="showToast('📜 Bientôt disponible !')"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-scroll"></i></span><span class="menu-text">Mes certificats</span><span class="menu-arrow">›</span></div>
       <div class="menu-section-title">Abonnement</div>
       <div class="menu-item" id="abonnement-item" onclick="document.getElementById('premium-modal').style.display='flex'">
@@ -24640,10 +24637,11 @@ function goToScreen(name) {
     goTo('screen-landing');
     return;
   }
-  // Séparation des espaces apprenant / enseignant (les admins voient tout)
+  // Séparation des espaces apprenant / enseignant : seule la gestion des classes
+  // est cloisonnée (créer une classe = enseignant, rejoindre une classe = apprenant).
+  // Un enseignant garde par ailleurs l'accès à toutes les fonctionnalités apprenant.
   if (!isAdmin() && appState.userEmail) {
-    var ecransApprenantSeul = ['home', 'defis', 'orientation', 'coach', 'veille', 'progress', 'history', 'join-class'];
-    if (appState.userRole === 'teacher' && ecransApprenantSeul.indexOf(name) !== -1) {
+    if (appState.userRole === 'teacher' && name === 'join-class') {
       showToast('🔒 Fonctionnalité réservée aux apprenants');
       name = 'teacher-space';
     } else if (appState.userRole === 'learner' && name === 'teacher-space') {
@@ -24655,6 +24653,7 @@ function goToScreen(name) {
   goTo('screen-' + name);
   updateNav(name);
   updateHamburgerVisibility();
+  if (name === 'home') setupHome();
   if (name === 'progress') renderDashboard();
   if (name === 'profile') renderProfile();
   if (name === 'defis') renderDefis();
@@ -24779,14 +24778,15 @@ function updateSidebarForRole() {
 
   const navEl = document.querySelector('.desktop-sidebar-nav');
   if (!navEl) return;
-  navEl.innerHTML = isTeacher
-    ? '<button class="nav-item active" onclick="goToScreen(\'teacher-space\')"><span class="nav-icon"><i class="fa-solid fa-chalkboard-user"></i></span><span class="nav-label">Tableau de bord</span></button>'
-      + '<button class="nav-item" onclick="goToScreen(\'profile\')"><span class="nav-icon"><i class="fa-solid fa-circle-user"></i></span><span class="nav-label">Profil</span></button>'
-    : '<button class="nav-item active" onclick="goToScreen(\'home\')"><span class="nav-icon"><i class="fa-solid fa-house"></i></span><span class="nav-label">Accueil</span></button>'
-      + '<button class="nav-item" onclick="goToScreen(\'progress\')"><span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span><span class="nav-label">Progrès</span></button>'
-      + '<button class="nav-item" onclick="goToScreen(\'defis\')"><span class="nav-icon"><i class="fa-solid fa-bolt"></i></span><span class="nav-label">Défis</span></button>'
-      + '<button class="nav-item" onclick="goToScreen(\'orientation\')"><span class="nav-icon"><i class="fa-solid fa-compass"></i></span><span class="nav-label">Orientation</span></button>'
-      + '<button class="nav-item" onclick="goToScreen(\'profile\')"><span class="nav-icon"><i class="fa-solid fa-circle-user"></i></span><span class="nav-label">Profil</span></button>';
+  // L'enseignant garde tout le menu apprenant, avec en plus son propre espace.
+  navEl.innerHTML = (isTeacher
+    ? '<button class="nav-item active" onclick="goToScreen(\'teacher-space\')"><span class="nav-icon"><i class="fa-solid fa-chalkboard-user"></i></span><span class="nav-label">Espace enseignant</span></button>'
+      + '<button class="nav-item" onclick="goToScreen(\'home\')"><span class="nav-icon"><i class="fa-solid fa-house"></i></span><span class="nav-label">Accueil</span></button>'
+    : '<button class="nav-item active" onclick="goToScreen(\'home\')"><span class="nav-icon"><i class="fa-solid fa-house"></i></span><span class="nav-label">Accueil</span></button>')
+    + '<button class="nav-item" onclick="goToScreen(\'progress\')"><span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span><span class="nav-label">Progrès</span></button>'
+    + '<button class="nav-item" onclick="goToScreen(\'defis\')"><span class="nav-icon"><i class="fa-solid fa-bolt"></i></span><span class="nav-label">Défis</span></button>'
+    + '<button class="nav-item" onclick="goToScreen(\'orientation\')"><span class="nav-icon"><i class="fa-solid fa-compass"></i></span><span class="nav-label">Orientation</span></button>'
+    + '<button class="nav-item" onclick="goToScreen(\'profile\')"><span class="nav-icon"><i class="fa-solid fa-circle-user"></i></span><span class="nav-label">Profil</span></button>';
 }
 
 function goToHome() {
@@ -26655,19 +26655,6 @@ async function afficherEcranRejoindre() {
 
   let html = '';
 
-  if (mesClasses.length > 0) {
-    html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:10px;">TES CLASSES (' + mesClasses.length + ')</div>'
-      + '<div class="join-classes-grid">';
-    mesClasses.forEach(function(c) {
-      html += '<div class="join-classe-card">'
-        + '<div style="font-size:13px;font-weight:800;color:#0D47A1;">' + c.nom_classe + '</div>'
-        + '<div style="font-size:11px;color:#888;margin-top:2px;">' + (c.matiere || '') + (c.niveau ? ' · ' + c.niveau : '') + '</div>'
-        + '<div style="font-size:11px;color:#666;margin-top:6px;"><i class="fa-solid fa-chalkboard-user"></i> ' + (c.enseignant_nom || '-') + '</div>'
-        + '</div>';
-    });
-    html += '</div><div style="height:20px;"></div>';
-  }
-
   html += '<div style="background:white;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);max-width:420px;margin:0 auto;">'
     + '<div style="font-size:13px;font-weight:800;color:#0D47A1;margin-bottom:6px;"><i class="fa-solid fa-key"></i> Rejoindre une nouvelle classe</div>'
     + '<div style="font-size:12px;color:#666;margin-bottom:14px;">Entre le code donné par ton enseignant :</div>'
@@ -26678,7 +26665,84 @@ async function afficherEcranRejoindre() {
     + '✓ Rejoindre</button>'
     + '</div>';
 
+  html += '<div style="height:24px;"></div>';
+
+  if (mesClasses.length > 0) {
+    html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:10px;">MES CLASSES (' + mesClasses.length + ')</div>'
+      + '<div class="join-classes-grid">';
+    mesClasses.forEach(function(c) {
+      html += '<div class="join-classe-card" onclick="ouvrirDetailClasseEleve(\'' + c.code + '\')" style="cursor:pointer;">'
+        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;">'
+        + '<div>'
+        + '<div style="font-size:13px;font-weight:800;color:#0D47A1;">' + c.nom_classe + '</div>'
+        + '<div style="font-size:11px;color:#888;margin-top:2px;">' + (c.matiere || '') + (c.niveau ? ' · ' + c.niveau : '') + '</div>'
+        + '<div style="font-size:11px;color:#666;margin-top:6px;"><i class="fa-solid fa-chalkboard-user"></i> ' + (c.enseignant_nom || '-') + '</div>'
+        + '</div>'
+        + '<div style="font-size:16px;color:#bbb;">›</div>'
+        + '</div>'
+        + '</div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<div style="text-align:center;padding:20px;color:#aaa;font-size:12px;">Tu n\'as encore rejoint aucune classe.</div>';
+  }
+
   body.innerHTML = html;
+}
+
+// Vue d'une classe rejointe pour un apprenant : devoirs, chat, messagerie avec l'enseignant.
+// Accessible sans jamais passer par l'espace enseignant.
+async function ouvrirDetailClasseEleve(codeClasse) {
+  const body = document.getElementById('rejoindre-classe-body');
+  if (!body) return;
+  body.innerHTML = '<div class="loading" style="text-align:center;padding:30px;color:#888;">⏳ Chargement...</div>';
+
+  try {
+    const { data: classeInfo } = await supabaseClient.from('classes_enseignant').select('*').eq('code', codeClasse).single();
+    if (!classeInfo) { showToast('⚠️ Classe introuvable'); afficherEcranRejoindre(); return; }
+
+    const { data: devoirsData } = await supabaseClient.from('devoirs')
+      .select('*').eq('code_classe', codeClasse)
+      .order('created_at', { ascending: false });
+    const devoirs = devoirsData || [];
+
+    let html = '<button onclick="afficherEcranRejoindre()" style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 10px;"><i class="fa-solid fa-arrow-left"></i> Retour à mes classes</button>'
+      + '<div style="font-size:14px;font-weight:800;color:#0D47A1;margin-bottom:2px;">' + classeInfo.nom_classe + '</div>'
+      + '<div style="font-size:11px;color:#888;margin-bottom:14px;">' + (classeInfo.matiere || '') + (classeInfo.niveau ? ' · ' + classeInfo.niveau : '') + ' · Enseignant : ' + (classeInfo.enseignant_nom || '-') + '</div>';
+
+    html += '<button onclick="ouvrirMessagerieEleve(\'' + (classeInfo.enseignant_email || '').replace(/'/g, "\\'") + '\', \'' + codeClasse + '\')" '
+      + 'style="width:100%;padding:11px;background:#1565C0;color:white;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:\'Nunito\',sans-serif;margin-bottom:8px;">'
+      + '💬 Contacter mon enseignant</button>';
+
+    if (classeInfo.chat_ouvert) {
+      html += '<button onclick="ouvrirChatClasse(\'' + codeClasse + '\', false)" '
+        + 'style="width:100%;padding:11px;background:#2E7D32;color:white;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:\'Nunito\',sans-serif;margin-bottom:14px;">'
+        + '📨 Voir le chat de classe</button>';
+    } else {
+      html += '<div style="background:#f9f9f9;border-radius:10px;padding:10px;margin-bottom:14px;text-align:center;font-size:11px;color:#888;">Le chat de classe n\'est pas encore ouvert par l\'enseignant.</div>';
+    }
+
+    html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:8px;">📋 DEVOIRS & CONSIGNES</div>';
+    if (devoirs.length > 0) {
+      html += '<div class="teacher-card-grid">';
+      devoirs.forEach(function(d) {
+        const date = new Date(d.created_at).toLocaleDateString('fr-FR');
+        html += '<div style="background:#F3F0FF;border-radius:12px;padding:12px;margin-bottom:8px;border-left:3px solid #7C3AED;">'
+          + '<div style="font-size:12px;font-weight:800;color:#5B21B6;margin-bottom:4px;">📝 ' + d.titre + '</div>'
+          + '<div style="font-size:11px;color:#555;margin-bottom:4px;">' + d.contenu + '</div>'
+          + (d.date_limite ? '<div style="font-size:10px;color:#7C3AED;font-weight:700;">⏰ À rendre avant le : ' + d.date_limite + '</div>' : '')
+          + '<div style="font-size:10px;color:#aaa;margin-top:4px;">Publié le ' + date + '</div>'
+          + '</div>';
+      });
+      html += '</div>';
+    } else {
+      html += '<div style="text-align:center;padding:16px;color:#888;font-size:12px;">Aucun devoir publié pour le moment.</div>';
+    }
+
+    body.innerHTML = html;
+  } catch(e) {
+    body.innerHTML = '<div style="text-align:center;padding:20px;color:#C62828;font-size:12px;">⚠️ Erreur de chargement</div>';
+  }
 }
 
 async function rejoindreClasseAvecCode() {
@@ -27213,8 +27277,18 @@ async function envoyerMessageEnseignant(emailEleve, nomEleve, codeClasse) {
   ouvrirMessagerie(emailEleve, nomEleve, codeClasse);
 }
 
+// Retourne le conteneur d'affichage actif (espace enseignant ou espace apprenant),
+// pour que les fonctions de messagerie/chat partagées fonctionnent dans les deux espaces.
+function getClasseBodyContainer() {
+  const teacherScreen = document.getElementById('screen-teacher-space');
+  if (teacherScreen && teacherScreen.style.display !== 'none') {
+    return document.getElementById('espace-enseignant-body');
+  }
+  return document.getElementById('rejoindre-classe-body');
+}
+
 async function ouvrirMessagerieEleve(emailEnseignant, codeClasse) {
-  const body = document.getElementById('espace-enseignant-body');
+  const body = getClasseBodyContainer();
   if (!body) return;
   body.innerHTML = '<div class="loading" style="text-align:center;padding:20px;color:#888;">Chargement...</div>';
 
@@ -27247,7 +27321,13 @@ async function ouvrirMessagerieEleve(emailEnseignant, codeClasse) {
           + '</div></div>';
       }).join('');
 
-  body.innerHTML = '<button onclick="afficherMenuEnseignant()" '
+  const teacherScreenActive = document.getElementById('screen-teacher-space');
+  const estContexteEnseignant = teacherScreenActive && teacherScreenActive.style.display !== 'none';
+  const retourMsgFn = estContexteEnseignant
+    ? 'afficherMenuEnseignant()'
+    : (codeClasse ? 'ouvrirDetailClasseEleve(\'' + codeClasse + '\')' : 'afficherEcranRejoindre()');
+
+  body.innerHTML = '<button onclick="' + retourMsgFn + '" '
     + 'style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 10px;"><i class="fa-solid fa-arrow-left"></i> Retour</button>'
     + '<div style="font-size:13px;font-weight:800;color:#0D47A1;margin-bottom:12px;">💬 Message de ton enseignant</div>'
     + '<div id="msgs-zone-eleve" style="background:#f9f9f9;border-radius:14px;padding:14px;min-height:200px;max-height:340px;overflow-y:auto;margin-bottom:12px;">'
@@ -27297,7 +27377,7 @@ async function toggleChatClasse(codeClasse, ouvrir) {
 }
 
 async function ouvrirChatClasse(codeClasse, estEnseignant) {
-  const body = document.getElementById('espace-enseignant-body');
+  const body = getClasseBodyContainer();
   if (!body) return;
   body.innerHTML = '<div style="text-align:center;padding:20px;color:#888;font-size:12px;">⏳ Chargement...</div>';
 
@@ -27334,7 +27414,7 @@ async function ouvrirChatClasse(codeClasse, estEnseignant) {
     });
   }
 
-  const retourFn = estEnseignant ? 'ouvrirDetailClasse(\'' + codeClasse + '\')' : 'afficherMenuEnseignant()';
+  const retourFn = estEnseignant ? 'ouvrirDetailClasse(\'' + codeClasse + '\')' : 'ouvrirDetailClasseEleve(\'' + codeClasse + '\')';
 
   body.innerHTML = '<button onclick="' + retourFn + '" '
     + 'style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 10px;"><i class="fa-solid fa-arrow-left"></i> Retour</button>'
@@ -28777,7 +28857,11 @@ function setupHome() {
   const sbStatus = document.getElementById('sidebar-user-status');
   const sbAvatar = document.getElementById('sidebar-avatar');
   if (sbName) sbName.textContent = appState.userName || 'Apprenant';
-  if (sbStatus) sbStatus.textContent = appState.userClass ? appState.userClass + ' · Espace étudiant' : 'Espace étudiant';
+  if (sbStatus) {
+    sbStatus.textContent = appState.userRole === 'teacher'
+      ? 'Espace enseignant'
+      : (appState.userClass ? appState.userClass + ' · Espace étudiant' : 'Espace étudiant');
+  }
   if (sbAvatar) sbAvatar.textContent = (appState.userName || 'A').charAt(0).toUpperCase();
   renderDesktopStats();
   const av = appState.userName.charAt(0).toUpperCase();
