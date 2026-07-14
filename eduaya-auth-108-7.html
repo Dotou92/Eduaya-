@@ -24779,10 +24779,8 @@ function updateSidebarForRole() {
   const navEl = document.querySelector('.desktop-sidebar-nav');
   if (!navEl) return;
   // L'enseignant garde tout le menu apprenant, avec en plus son propre espace.
-  navEl.innerHTML = (isTeacher
-    ? '<button class="nav-item active" onclick="goToScreen(\'teacher-space\')"><span class="nav-icon"><i class="fa-solid fa-chalkboard-user"></i></span><span class="nav-label">Espace enseignant</span></button>'
-      + '<button class="nav-item" onclick="goToScreen(\'home\')"><span class="nav-icon"><i class="fa-solid fa-house"></i></span><span class="nav-label">Accueil</span></button>'
-    : '<button class="nav-item active" onclick="goToScreen(\'home\')"><span class="nav-icon"><i class="fa-solid fa-house"></i></span><span class="nav-label">Accueil</span></button>')
+  navEl.innerHTML = '<button class="nav-item active" onclick="goToScreen(\'home\')"><span class="nav-icon"><i class="fa-solid fa-house"></i></span><span class="nav-label">Accueil</span></button>'
+    + (isTeacher ? '<button class="nav-item" onclick="goToScreen(\'teacher-space\')"><span class="nav-icon"><i class="fa-solid fa-chalkboard-user"></i></span><span class="nav-label">Espace enseignant</span></button>' : '')
     + '<button class="nav-item" onclick="goToScreen(\'progress\')"><span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span><span class="nav-label">Progrès</span></button>'
     + '<button class="nav-item" onclick="goToScreen(\'defis\')"><span class="nav-icon"><i class="fa-solid fa-bolt"></i></span><span class="nav-label">Défis</span></button>'
     + '<button class="nav-item" onclick="goToScreen(\'orientation\')"><span class="nav-icon"><i class="fa-solid fa-compass"></i></span><span class="nav-label">Orientation</span></button>'
@@ -28455,16 +28453,15 @@ async function handleAuth() {
       if (!role) {
         // Compte sans rôle défini, choix obligatoire
         showOnboardingStep('step-role');
-      } else if (role === 'teacher') {
-        updateSidebarForRole();
-        goToScreen('teacher-space');
-      } else if (role === 'learner' && profilCheck.classe) {
+      } else if (profilCheck.classe) {
+        // Rôle ET classe connus (apprenant ou enseignant) : même tableau de bord pour les deux
         appState.userClass = profilCheck.classe;
         saveState();
         updateSidebarForRole();
         setupHome();
         goToScreen('home');
       } else {
+        // Rôle connu, il manque la classe
         showOnboardingStep('step-3');
       }
       return;
@@ -28737,25 +28734,17 @@ async function choisirRole(role) {
     } catch(e) { console.warn('Erreur enregistrement rôle:', e); }
   }
 
-  if (role === 'teacher') {
-    finishTeacherOnboarding();
-  } else {
-    showOnboardingStep('step-3');
-  }
-}
-
-function finishTeacherOnboarding() {
-  updateSidebarForRole();
-  showToast('🏫 Bienvenue dans ton espace enseignant !');
-  goToScreen('teacher-space');
-  setTimeout(function() { gererDeepLink(); }, 400);
+  // Enseignant comme apprenant : mêmes étapes, même interface ensuite.
+  // Seuls « Espace enseignant » et « Rejoindre une classe » resteront réservés selon le rôle.
+  showOnboardingStep('step-3');
 }
 
 function finishOnboarding() {
   if (!selectedObjectif) { showToast('🎯 Choisis ton objectif !'); return; }
   appState.userClass    = selectedClasse;
   appState.userObjectif = selectedObjectif;
-  appState.userRole      = 'learner';
+  const role = appState.userRole || 'learner';
+  appState.userRole = role;
   saveState();
 
   // Save class to Supabase, ne jamais écraser les compteurs existants
@@ -28771,7 +28760,7 @@ function finishOnboarding() {
           supabaseClient.from('profils').update({
             nom: appState.userName,
             classe: appState.userClass,
-            role: 'learner'
+            role: role
           }).eq('email', appState.userEmail).then(() => {});
           // Restaurer les compteurs depuis Supabase dans appState
           appState.requetesAujourdhui = existingProfil.requetes_aujourd_hui || 0;
@@ -28783,7 +28772,7 @@ function finishOnboarding() {
             email: appState.userEmail,
             nom: appState.userName,
             classe: appState.userClass,
-            role: 'learner',
+            role: role,
             plan: 'gratuit',
             credits: 0,
             requetes_aujourd_hui: 0,
@@ -31915,21 +31904,11 @@ window.addEventListener('load', async () => {
       return;
     }
 
-    if (profil && profil.role === 'teacher') {
-      appState.userRole = 'teacher';
-      appState.userName = profil.nom || appState.userName;
-      saveState();
-      updateSidebarForRole();
-      goToScreen('teacher-space');
-      setTimeout(function() { restaurerDeepLink(); }, 400);
-      return;
-    }
-
-    if (profil && profil.role === 'learner' && profil.classe) {
-      // Profil existant, charger tout depuis Supabase
+    if (profil && profil.role && profil.classe) {
+      // Rôle ET classe connus (apprenant ou enseignant) : même tableau de bord pour les deux
       appState.userName = profil.nom || appState.userName;
       appState.userClass = profil.classe;
-      appState.userRole = 'learner';
+      appState.userRole = profil.role;
       appState.plan = isAdmin() ? 'premium' : (profil.plan || 'gratuit');
       appState.premiumClasse = profil.premium_classe || null;
       appState.credits = profil.credits || 0;
@@ -31964,8 +31943,9 @@ window.addEventListener('load', async () => {
       }
       saveState();
       goTo('screen-onboarding');
-      if (profil && profil.role === 'learner') {
+      if (profil && profil.role) {
         // Rôle déjà connu, il manque juste la classe
+        appState.userRole = profil.role;
         showOnboardingStep('step-3');
       } else {
         showOnboardingStep('step-role');
@@ -31974,16 +31954,7 @@ window.addEventListener('load', async () => {
     }
   }
 
-  if (session && session.user && appState.userRole === 'teacher') {
-    // Enseignant avec session mise en cache, aller directement à son espace
-    appState.userEmail = session.user.email;
-    await syncLimiteFromSupabase();
-    if (_accountBlockedShown) return;
-    startAccountStatusWatcher();
-    updateSidebarForRole();
-    goToScreen('teacher-space');
-    return;
-  } else if (session && session.user && appState.userName !== 'Apprenant' && appState.userClass) {
+  if (session && session.user && appState.userName !== 'Apprenant' && appState.userClass) {
     // Utilisateur connecté ET profil en localStorage, aller directement à l'accueil
     appState.userEmail = session.user.email;
     await syncLimiteFromSupabase();
@@ -32006,19 +31977,11 @@ window.addEventListener('load', async () => {
       await forceLogoutBlocked('⛔ Ton compte a été suspendu par l\'administration. Contacte l\'équipe EduAya pour plus d\'informations.');
       return;
     }
-    if (profil && profil.role === 'teacher') {
-      appState.userRole = 'teacher';
-      appState.userName = profil.nom || appState.userName;
-      saveState();
-      startAccountStatusWatcher();
-      updateSidebarForRole();
-      goToScreen('teacher-space');
-      return;
-    }
-    if (profil && profil.role === 'learner' && profil.classe) {
+    if (profil && profil.role && profil.classe) {
+      // Rôle ET classe connus (apprenant ou enseignant) : même tableau de bord pour les deux
       appState.userName = profil.nom || appState.userName;
       appState.userClass = profil.classe;
-      appState.userRole = 'learner';
+      appState.userRole = profil.role;
       appState.plan = isAdmin() ? 'premium' : (profil.plan || 'gratuit');
       appState.premiumClasse = profil.premium_classe || null;
       appState.credits = profil.credits || 0;
@@ -32037,8 +32000,9 @@ window.addEventListener('load', async () => {
       // Profil incomplet : rôle et/ou classe manquants
       goTo('screen-onboarding');
       if (profil.nom && profil.nom !== 'Apprenant') appState.userName = profil.nom;
-      if (profil.role === 'learner') {
+      if (profil.role) {
         // Rôle déjà connu, il manque juste la classe
+        appState.userRole = profil.role;
         showOnboardingStep('step-3');
       } else {
         showOnboardingStep('step-role');
