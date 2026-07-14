@@ -26686,6 +26686,7 @@ async function afficherEcranRejoindre() {
   }
 
   body.innerHTML = html;
+  resetClasseScroll();
 }
 
 // Vue d'une classe rejointe pour un apprenant : devoirs, chat, messagerie avec l'enseignant.
@@ -26712,13 +26713,9 @@ async function ouvrirDetailClasseEleve(codeClasse) {
       + 'style="width:100%;padding:11px;background:#1565C0;color:white;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:\'Nunito\',sans-serif;margin-bottom:8px;">'
       + '💬 Contacter mon enseignant</button>';
 
-    if (classeInfo.chat_ouvert) {
-      html += '<button onclick="ouvrirChatClasse(\'' + codeClasse + '\', false)" '
-        + 'style="width:100%;padding:11px;background:#2E7D32;color:white;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:\'Nunito\',sans-serif;margin-bottom:14px;">'
-        + '📨 Voir le chat de classe</button>';
-    } else {
-      html += '<div style="background:#f9f9f9;border-radius:10px;padding:10px;margin-bottom:14px;text-align:center;font-size:11px;color:#888;">Le chat de classe n\'est pas encore ouvert par l\'enseignant.</div>';
-    }
+    html += '<button onclick="ouvrirChatClasse(\'' + codeClasse + '\', false)" '
+      + 'style="width:100%;padding:11px;background:' + (classeInfo.chat_ouvert ? '#2E7D32' : '#78909C') + ';color:white;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:\'Nunito\',sans-serif;margin-bottom:14px;">'
+      + (classeInfo.chat_ouvert ? '📨 Voir le chat de classe' : '👀 Voir le chat de classe (lecture seule)') + '</button>';
 
     html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:8px;">📋 DEVOIRS & CONSIGNES</div>';
     if (devoirs.length > 0) {
@@ -26738,6 +26735,7 @@ async function ouvrirDetailClasseEleve(codeClasse) {
     }
 
     body.innerHTML = html;
+    resetClasseScroll();
   } catch(e) {
     body.innerHTML = '<div style="text-align:center;padding:20px;color:#C62828;font-size:12px;">⚠️ Erreur de chargement</div>';
   }
@@ -26980,6 +26978,7 @@ async function afficherMenuEnseignant() {
     + '➕ Créer une nouvelle classe</button>';
 
   body.innerHTML = html;
+  resetClasseScroll();
 }
 
 function afficherFormulaireClasse() {
@@ -27285,6 +27284,13 @@ function getClasseBodyContainer() {
   return document.getElementById('rejoindre-classe-body');
 }
 
+// Remonte en haut de l'écran quand on change de vue (devoirs, chat, messagerie...)
+// pour que le bouton Retour et l'en-tête soient toujours visibles immédiatement.
+function resetClasseScroll() {
+  const body = getClasseBodyContainer();
+  if (body && body.parentElement) body.parentElement.scrollTop = 0;
+}
+
 async function ouvrirMessagerieEleve(emailEnseignant, codeClasse) {
   const body = getClasseBodyContainer();
   if (!body) return;
@@ -27336,6 +27342,7 @@ async function ouvrirMessagerieEleve(emailEnseignant, codeClasse) {
     + 'style="width:100%;padding:12px;background:#1565C0;color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:\'Nunito\',sans-serif;">'
     + '📤 Répondre</button>';
 
+  resetClasseScroll();
   setTimeout(function() {
     const z = document.getElementById('msgs-zone-eleve');
     if (z) z.scrollTop = z.scrollHeight;
@@ -27432,9 +27439,10 @@ async function ouvrirChatClasse(codeClasse, estEnseignant) {
         + '<button onclick="envoyerMessageClasse(\'' + codeClasse + '\', ' + estEnseignant + ')" '
         + 'style="padding:12px 16px;background:#1565C0;color:white;border:none;border-radius:12px;font-size:18px;cursor:pointer;"><i class="fa-solid fa-paper-plane"></i></button>'
         + '</div>'
-      : '<div style="text-align:center;padding:12px;background:#FFEBEE;border-radius:12px;font-size:12px;color:#C62828;font-weight:700;">🔒 Chat fermé par l\'enseignant</div>');
+      : '<div style="text-align:center;padding:12px;background:#FFEBEE;border-radius:12px;font-size:12px;color:#C62828;font-weight:700;">🔒 Chat fermé par l\'enseignant, lecture seule</div>');
 
-  // Scroll vers le bas
+  resetClasseScroll();
+  // Scroll vers le bas (uniquement la zone de messages, pas la page)
   setTimeout(function() {
     const z = document.getElementById('chat-classe-msgs');
     if (z) z.scrollTop = z.scrollHeight;
@@ -27792,6 +27800,7 @@ async function ouvrirDetailClasse(code) {
     html += '</div>';
 
     body.innerHTML = html;
+    resetClasseScroll();
   } catch(e) {
     body.innerHTML = '<div style="text-align:center;padding:20px;color:#C62828;font-size:12px;">⚠️ Erreur de chargement</div>';
   }
