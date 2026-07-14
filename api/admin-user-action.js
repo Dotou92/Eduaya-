@@ -10,7 +10,10 @@ export default async function handler(req, res) {
 
   const { adminPassword, action, userId } = req.body || {};
 
-  if (!process.env.ADMIN_PWD || adminPassword !== process.env.ADMIN_PWD) {
+  // Repli sur la valeur codée en dur côté client (admin-7.html) si ADMIN_PWD
+  // n'est pas encore configurée comme variable d'environnement sur Vercel.
+  const ADMIN_PWD = process.env.ADMIN_PWD || 'sidosais1992@';
+  if (adminPassword !== ADMIN_PWD) {
     return res.status(401).json({ success: false, message: 'Non autorisé.' });
   }
   if (!userId || !['suspend', 'unsuspend', 'delete'].includes(action)) {
