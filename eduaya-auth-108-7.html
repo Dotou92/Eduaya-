@@ -240,6 +240,9 @@
     .teacher-stat-card { padding: 16px; }
     .teacher-classes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
     .join-classes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+    .teacher-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; align-items: start; }
+    .teacher-btn-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .teacher-btn-row button { margin-bottom: 0 !important; }
 
     body.app-shell .bottom-nav { display: none !important; }
 
@@ -26729,7 +26732,8 @@ async function afficherMenuEnseignant() {
   if (classesEleve.length > 0) {
     const classesAvecChat = classesEleve.filter(function(c) { return c.chat_ouvert; });
     if (classesAvecChat.length > 0) {
-      html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:8px;">💬 CHAT DE CLASSE</div>';
+      html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:8px;">💬 CHAT DE CLASSE</div>'
+        + '<div class="teacher-card-grid">';
       classesAvecChat.forEach(function(c) {
         html += '<div onclick="ouvrirChatClasse(\'' + c.code + '\', false)" '
           + 'style="background:#E8F5E9;border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;border-left:3px solid #2E7D32;display:flex;justify-content:space-between;align-items:center;">'
@@ -26740,7 +26744,7 @@ async function afficherMenuEnseignant() {
           + '<div style="font-size:16px;color:#2E7D32;">›</div>'
           + '</div>';
       });
-      html += '<div style="margin-bottom:14px;"></div>';
+      html += '</div><div style="margin-bottom:14px;"></div>';
     }
   }
   let devoirsEleve = [];
@@ -26759,7 +26763,8 @@ async function afficherMenuEnseignant() {
 
   // ── Devoirs reçus ──
   if (devoirsEleve.length > 0) {
-    html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:8px;">📋 DEVOIRS & CONSIGNES</div>';
+    html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:8px;">📋 DEVOIRS & CONSIGNES</div>'
+      + '<div class="teacher-card-grid">';
     devoirsEleve.forEach(function(d) {
       const date = new Date(d.created_at).toLocaleDateString('fr-FR');
       html += '<div style="background:#F3F0FF;border-radius:12px;padding:12px;margin-bottom:8px;border-left:3px solid #7C3AED;">'
@@ -26769,7 +26774,7 @@ async function afficherMenuEnseignant() {
         + '<div style="font-size:10px;color:#aaa;margin-top:4px;">Publié le ' + date + '</div>'
         + '</div>';
     });
-    html += '<div style="margin-bottom:14px;"></div>';
+    html += '</div><div style="margin-bottom:14px;"></div>';
   }
 
   // ── Conversations avec les enseignants ──
@@ -26782,7 +26787,8 @@ async function afficherMenuEnseignant() {
       if (!m.lu) parExpediteur[m.expediteur_email].nonLus++;
     });
 
-    html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:8px;">💬 MES ENSEIGNANTS</div>';
+    html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:8px;">💬 MES ENSEIGNANTS</div>'
+      + '<div class="teacher-card-grid">';
     Object.keys(parExpediteur).forEach(function(exp) {
       const info = parExpediteur[exp];
       const hasNonLu = info.nonLus > 0;
@@ -26799,7 +26805,7 @@ async function afficherMenuEnseignant() {
         + (hasNonLu ? '<div style="background:#FF9800;color:white;font-size:10px;font-weight:800;border-radius:10px;padding:2px 7px;">' + info.nonLus + '</div>' : '<div style="font-size:16px;color:#bbb;">›</div>')
         + '</div>';
     });
-    html += '<div style="margin-bottom:14px;"></div>';
+    html += '</div><div style="margin-bottom:14px;"></div>';
   }
 
   if (mesClasses.length > 0) {
@@ -27386,24 +27392,24 @@ async function ouvrirDetailClasse(code) {
       .order('created_at', { ascending: false });
     const devoirs = devoirsData || [];
 
-    // ── Bouton publier devoir ──
-    html += '<button onclick="ouvrirFormulaireDevoir(\'' + code + '\')" '
-      + 'style="width:100%;padding:11px;background:#7C3AED;color:white;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:\'Nunito\',sans-serif;margin-bottom:8px;">'
-      + '📝 Publier un devoir / une consigne</button>';
-
-    // ── Bouton chat de classe ──
+    // ── Boutons d'action ──
     const chatOuvert = classeInfo.chat_ouvert;
-    html += '<button onclick="toggleChatClasse(\'' + code + '\', ' + (chatOuvert ? 'false' : 'true') + ')" '
+    html += '<div class="teacher-btn-row">'
+      + '<button onclick="ouvrirFormulaireDevoir(\'' + code + '\')" '
+      + 'style="width:100%;padding:11px;background:#7C3AED;color:white;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:\'Nunito\',sans-serif;margin-bottom:8px;">'
+      + '📝 Publier un devoir / une consigne</button>'
+      + '<button onclick="toggleChatClasse(\'' + code + '\', ' + (chatOuvert ? 'false' : 'true') + ')" '
       + 'style="width:100%;padding:11px;background:' + (chatOuvert ? '#C62828' : '#2E7D32') + ';color:white;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:\'Nunito\',sans-serif;margin-bottom:8px;">'
-      + (chatOuvert ? '🔒 Fermer le chat de classe' : '💬 Ouvrir le chat de classe') + '</button>';
-
-    html += '<button onclick="ouvrirChatClasse(\'' + code + '\', true)" '
+      + (chatOuvert ? '🔒 Fermer le chat de classe' : '💬 Ouvrir le chat de classe') + '</button>'
+      + '<button onclick="ouvrirChatClasse(\'' + code + '\', true)" '
       + 'style="width:100%;padding:11px;background:#1565C0;color:white;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:\'Nunito\',sans-serif;margin-bottom:14px;">'
-      + '📨 Voir le chat de classe</button>';
+      + '📨 Voir le chat de classe</button>'
+      + '</div>';
 
     // ── Devoirs publiés ──
     if (devoirs.length > 0) {
-      html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:8px;">📋 DEVOIRS & CONSIGNES</div>';
+      html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:8px;">📋 DEVOIRS & CONSIGNES</div>'
+        + '<div class="teacher-card-grid">';
       devoirs.forEach(function(d) {
         const date = new Date(d.created_at).toLocaleDateString('fr-FR');
         html += '<div style="background:#F3F0FF;border-radius:12px;padding:12px;margin-bottom:8px;border-left:3px solid #7C3AED;">'
@@ -27418,7 +27424,7 @@ async function ouvrirDetailClasse(code) {
           + 'style="background:none;border:none;color:#aaa;font-size:16px;cursor:pointer;padding:0 0 0 8px;">🗑</button>'
           + '</div></div>';
       });
-      html += '<div style="margin-bottom:14px;"></div>';
+      html += '</div><div style="margin-bottom:14px;"></div>';
     }
 
     // Récupérer toutes les évaluations des élèves de cette classe
@@ -27576,6 +27582,7 @@ async function ouvrirDetailClasse(code) {
       + '</div>'
       + '</div>'
       + '</div>';
+    html += '<div class="teacher-card-grid">';
     eleves.forEach(function(el) {
       const profil = (profils || []).find(function(p) { return p.email === el.eleve_email; });
       const points = profil ? (profil.points || 0) : 0;
@@ -27617,6 +27624,7 @@ async function ouvrirDetailClasse(code) {
         + '<div style="font-size:16px;color:#bbb;">›</div>'
         + '</div>';
     });
+    html += '</div>';
 
     body.innerHTML = html;
   } catch(e) {
