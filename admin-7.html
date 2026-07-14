@@ -194,6 +194,31 @@ button { font-family: inherit; }
 .kpi-value { font-size: 24px; font-weight: 800; line-height: 1.1; }
 .kpi-label { font-size: 12px; color: var(--text-soft); margin-top: 3px; font-weight: 600; }
 
+/* ---- Podium (classement) ---- */
+.podium-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; align-items: end; }
+.podium-card {
+  border-radius: var(--radius); padding: 20px 14px; text-align: center; color: white;
+  box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+}
+.podium-card.rank-1 { background: linear-gradient(160deg,#F59E0B,#D97706); padding-top: 30px; order: 2; }
+.podium-card.rank-2 { background: linear-gradient(160deg,#94A3B8,#64748B); order: 1; }
+.podium-card.rank-3 { background: linear-gradient(160deg,#C2723A,#9A5228); order: 3; }
+.podium-medal { font-size: 26px; margin-bottom: 6px; }
+.podium-avatar {
+  width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 10px; background: rgba(255,255,255,0.22);
+  display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800;
+  border: 2px solid rgba(255,255,255,0.5);
+}
+.podium-name { font-size: 13.5px; font-weight: 800; margin-bottom: 2px; word-break: break-word; }
+.podium-class { font-size: 11px; opacity: .85; margin-bottom: 10px; }
+.podium-score { font-size: 20px; font-weight: 800; }
+.podium-score-lbl { font-size: 10px; opacity: .85; text-transform: uppercase; letter-spacing: .3px; }
+.rank-pill {
+  display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%;
+  font-size: 12px; font-weight: 800; background: var(--bg); color: var(--text-soft);
+}
+.rank-pill.top3 { background: linear-gradient(135deg,var(--amber),#F59E0B); color: white; }
+
 /* ---- Section / card ---- */
 .card { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 20px; }
 .card-title { font-size: 14.5px; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
@@ -357,6 +382,8 @@ table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; min-
   .kpi-card { padding: 14px; flex-direction: column; align-items: flex-start; gap: 10px; }
   .kpi-value { font-size: 20px; }
   .detail-grid { grid-template-columns: 1fr; }
+  .podium-grid { grid-template-columns: 1fr; }
+  .podium-card.rank-1, .podium-card.rank-2, .podium-card.rank-3 { order: 0; padding-top: 20px; }
 }
 </style>
 </head>
@@ -396,6 +423,7 @@ table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; min-
         <div class="nav-section-lbl">Pilotage</div>
         <button class="nav-item active" data-page="overview" onclick="goToPage('overview')"><i class="fa-solid fa-gauge-high"></i> Vue d'ensemble</button>
         <button class="nav-item" data-page="users" onclick="goToPage('users')"><i class="fa-solid fa-users"></i> Utilisateurs<span class="nav-badge" id="nav-users-count">—</span></button>
+        <button class="nav-item" data-page="leaderboard" onclick="goToPage('leaderboard')"><i class="fa-solid fa-trophy"></i> Classement</button>
         <button class="nav-item" data-page="revenue" onclick="goToPage('revenue')"><i class="fa-solid fa-sack-dollar"></i> Revenus</button>
 
         <div class="nav-section-lbl">Analyse</div>
@@ -489,6 +517,23 @@ table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; min-
               <span class="page-info" id="users-page-info">Page 1 / 1</span>
               <button class="page-btn" id="users-next" onclick="changeUsersPage(1)">Suivant <i class="fa-solid fa-chevron-right"></i></button>
             </div>
+          </div>
+        </div>
+
+        <!-- ============ CLASSEMENT ============ -->
+        <div class="page" id="page-leaderboard">
+          <div class="card">
+            <div class="card-title"><i class="fa-solid fa-medal" style="color:var(--amber);"></i> Podium</div>
+            <div class="card-sub">Les 3 élèves les plus actifs, tous critères confondus</div>
+            <div class="podium-grid" id="leaderboard-podium"><div class="loading">Chargement...</div></div>
+          </div>
+          <div class="card">
+            <div class="toolbar">
+              <div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="leaderboard-search" placeholder="Rechercher un nom ou un email..."></div>
+              <span class="result-count" id="leaderboard-result-count"></span>
+            </div>
+            <div class="card-sub" style="margin-top:-6px;">Score = points + évaluations complétées + défis joués/gagnés + conversations IA (30j) + régularité (streak). Classement des 50 meilleurs élèves.</div>
+            <div class="table-wrap"><div id="leaderboard-list"><div class="loading">Chargement...</div></div></div>
           </div>
         </div>
 
@@ -621,6 +666,7 @@ var USERS_PER_PAGE = 15;
 var PAGE_TITLES = {
   overview:   { title: "Vue d'ensemble", sub: 'Chiffres clés de la plateforme EduAya' },
   users:      { title: 'Utilisateurs', sub: 'Gérer les comptes élèves : suspendre, réactiver ou supprimer' },
+  leaderboard:{ title: 'Classement', sub: 'Les élèves les plus actifs : points, évaluations, défis, révisions' },
   revenue:    { title: 'Revenus', sub: 'Détail des revenus et transactions' },
   engagement: { title: 'Engagement', sub: 'Activité, usage de l\'IA et fidélisation' },
   content:    { title: 'Contenu', sub: 'Matières et notions les plus consultées' },
@@ -746,6 +792,7 @@ async function loadData() {
     renderEngagementStats(allProfiles);
     renderIAStats(allProfiles);
     renderEvenementsStats();
+    renderLeaderboard(allProfiles);
     var cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
     var recent = allProfiles.filter(function(p) { return p.created_at >= cutoff; });
     renderRecent(recent);
@@ -1058,6 +1105,134 @@ async function renderEvenementsStats() {
     console.error('Erreur evenements:', e);
   }
 }
+
+/* ===================== CLASSEMENT DES MEILLEURS ÉLÈVES ===================== */
+var leaderboardData = [];
+
+async function renderLeaderboard(profiles) {
+  var podiumEl = document.getElementById('leaderboard-podium');
+  var listEl = document.getElementById('leaderboard-list');
+  try {
+    var cutoff30j = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+    var [evalResult, defisResult, convResult] = await Promise.all([
+      db.from('evaluations').select('user_email, score'),
+      db.from('defis').select('challenger_email, adversaire_email, score_challenger, score_adversaire').eq('statut', 'termine'),
+      db.from('evenements').select('email').eq('type', 'conversation').gte('created_at', cutoff30j)
+    ]);
+
+    var evaluations = evalResult.data || [];
+    var defis = defisResult.data || [];
+    var conversations = convResult.data || [];
+
+    var evalParEmail = {};
+    evaluations.forEach(function(e) {
+      if (!e.user_email) return;
+      if (!evalParEmail[e.user_email]) evalParEmail[e.user_email] = { count: 0, totalScore: 0 };
+      evalParEmail[e.user_email].count++;
+      evalParEmail[e.user_email].totalScore += (e.score || 0);
+    });
+
+    var defisParEmail = {};
+    function ajouterDefi(email, gagne) {
+      if (!email) return;
+      if (!defisParEmail[email]) defisParEmail[email] = { joues: 0, victoires: 0 };
+      defisParEmail[email].joues++;
+      if (gagne) defisParEmail[email].victoires++;
+    }
+    defis.forEach(function(d) {
+      var scoreC = d.score_challenger, scoreA = d.score_adversaire;
+      ajouterDefi(d.challenger_email, scoreC > scoreA);
+      ajouterDefi(d.adversaire_email, scoreA > scoreC);
+    });
+
+    var convParEmail = {};
+    conversations.forEach(function(e) {
+      if (!e.email) return;
+      convParEmail[e.email] = (convParEmail[e.email] || 0) + 1;
+    });
+
+    leaderboardData = profiles.map(function(p) {
+      var evalInfo = evalParEmail[p.email] || { count: 0, totalScore: 0 };
+      var defiInfo = defisParEmail[p.email] || { joues: 0, victoires: 0 };
+      var convCount = convParEmail[p.email] || 0;
+      var points = p.points || 0;
+      var streak = p.streak || 0;
+      var score = points + (evalInfo.count * 10) + (defiInfo.joues * 10) + (defiInfo.victoires * 15) + (convCount * 2) + (streak * 3);
+      return {
+        id: p.id, nom: p.nom || '—', email: p.email || '—', classe: p.classe || '—', plan: p.plan,
+        points: points, streak: streak, evalCount: evalInfo.count, defiJoues: defiInfo.joues,
+        defiVictoires: defiInfo.victoires, convCount: convCount, score: score
+      };
+    }).filter(function(u) { return u.score > 0; })
+      .sort(function(a, b) { return b.score - a.score; });
+
+    renderPodium();
+    renderLeaderboardTable();
+  } catch(e) {
+    podiumEl.innerHTML = '<div class="loading">⚠️ Erreur : ' + e.message + '</div>';
+    listEl.innerHTML = '';
+    console.error('Erreur classement:', e);
+  }
+}
+
+function renderPodium() {
+  var podiumEl = document.getElementById('leaderboard-podium');
+  var top3 = leaderboardData.slice(0, 3);
+  if (!top3.length) { podiumEl.innerHTML = '<div class="loading">Pas encore assez de données d\'activité.</div>'; return; }
+  var medals = ['🥇', '🥈', '🥉'];
+  var html = '';
+  top3.forEach(function(u, i) {
+    var initial = u.nom.trim().charAt(0).toUpperCase();
+    html += '<div class="podium-card rank-' + (i + 1) + '">'
+      + '<div class="podium-medal">' + medals[i] + '</div>'
+      + '<div class="podium-avatar">' + initial + '</div>'
+      + '<div class="podium-name">' + u.nom + '</div>'
+      + '<div class="podium-class">' + u.classe + '</div>'
+      + '<div class="podium-score">' + u.score.toLocaleString('fr-FR') + '</div>'
+      + '<div class="podium-score-lbl">points d\'activité</div>'
+      + '</div>';
+  });
+  podiumEl.innerHTML = html;
+}
+
+function renderLeaderboardTable() {
+  var listEl = document.getElementById('leaderboard-list');
+  var search = (document.getElementById('leaderboard-search').value || '').toLowerCase().trim();
+  var filtered = leaderboardData.filter(function(u) {
+    if (!search) return true;
+    return (u.nom + ' ' + u.email).toLowerCase().indexOf(search) !== -1;
+  }).slice(0, 50);
+
+  document.getElementById('leaderboard-result-count').textContent = filtered.length + ' élève(s) classé(s)';
+
+  if (!filtered.length) { listEl.innerHTML = '<div class="loading">Aucun élève ne correspond à cette recherche.</div>'; return; }
+
+  var html = '<table class="data-table"><thead><tr><th>#</th><th>Élève</th><th>Classe</th><th>Plan</th>'
+    + '<th>Points</th><th>Évaluations</th><th>Défis (joués/gagnés)</th><th>Conversations (30j)</th><th>Streak</th><th>Score</th></tr></thead><tbody>';
+  filtered.forEach(function(u, i) {
+    var rank = i + 1;
+    var initial = u.nom.trim().charAt(0).toUpperCase();
+    var planBadge = u.plan === 'premium' ? '<span class="badge badge-premium"><i class="fa-solid fa-star"></i> Premium</span>' : '<span class="badge badge-gratuit">Gratuit</span>';
+    html += '<tr>'
+      + '<td><span class="rank-pill' + (rank <= 3 ? ' top3' : '') + '">' + rank + '</span></td>'
+      + '<td><div class="cell-user"><div class="avatar-circle" style="background:' + (u.plan === 'premium' ? 'linear-gradient(135deg,#F59E0B,#D97706)' : 'linear-gradient(135deg,#1565C0,#42A5F5)') + ';">' + initial + '</div>'
+      + '<div><div class="cell-user-name">' + u.nom + '</div><div class="cell-user-email">' + u.email + '</div></div></div></td>'
+      + '<td>' + u.classe + '</td>'
+      + '<td>' + planBadge + '</td>'
+      + '<td style="font-weight:700;">' + u.points + '</td>'
+      + '<td>' + u.evalCount + '</td>'
+      + '<td>' + u.defiJoues + ' / ' + u.defiVictoires + '</td>'
+      + '<td>' + u.convCount + '</td>'
+      + '<td>' + u.streak + 'j</td>'
+      + '<td style="font-weight:800;color:var(--blue);">' + u.score.toLocaleString('fr-FR') + '</td>'
+      + '</tr>';
+  });
+  html += '</tbody></table>';
+  listEl.innerHTML = html;
+}
+
+document.getElementById('leaderboard-search').addEventListener('input', renderLeaderboardTable);
 
 /* ===================== RAPPORTS PARENTS ===================== */
 function renderRapports(profiles) {
