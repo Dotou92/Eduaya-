@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin-7.html
+Disallow: /api/
+
+Sitemap: https://eduaya.com/sitemap.xml

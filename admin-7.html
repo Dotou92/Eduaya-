@@ -1260,7 +1260,7 @@ async function envoyerRapport(userEmail, nom, classe, parentEmail, btn) {
   btn.disabled = true;
   btn.textContent = '⏳...';
   try {
-    var response = await fetch('https://eduayo.vercel.app/api/proxy', {
+    var response = await fetch('https://eduaya.com/api/proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1268,14 +1268,14 @@ async function envoyerRapport(userEmail, nom, classe, parentEmail, btn) {
         max_tokens: 600,
         messages: [{
           role: 'user',
-          content: 'Tu es EduAyo, plateforme éducative béninoise du Cabinet La Lumière.\n' +
+          content: 'Tu es EduAya, plateforme éducative béninoise du Cabinet La Lumière.\n' +
             'Génère un rapport hebdomadaire bienveillant pour les parents de ' + nom + ', élève en ' + (classe || 'secondaire') + ' au Bénin.\n' +
             'Rédige un message structuré en 3 parties :\n' +
             '1. Encouragement général pour l\'élève\n' +
             '2. Importance de la régularité dans les révisions\n' +
             '3. Conseil aux parents pour soutenir leur enfant cette semaine\n' +
             'Ton : chaleureux, professionnel. 8-10 phrases max.\n' +
-            'Signe : "L\'équipe EduAyo — Cabinet La Lumière | eduayo.vercel.app"'
+            'Signe : "L\'équipe EduAya — Cabinet La Lumière | eduaya.com"'
         }]
       })
     });

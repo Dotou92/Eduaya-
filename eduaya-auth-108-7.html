@@ -11,7 +11,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>EduAya, Cabinet La Lumière v7.24</title>
+
+<!-- ============ SEO : balises principales ============ -->
+<title>EduAya — Cours, Révisions et Tuteur IA pour Élèves au Bénin (6e à Terminale)</title>
+<meta name="description" content="EduAya est le tuteur IA béninois conforme au programme officiel MESTFP : cours, évaluations diagnostiques, révisions et coaching pour élèves de la 6e à la Terminale. Essai gratuit.">
+<meta name="keywords" content="EduAya, cours en ligne Bénin, soutien scolaire Bénin, révision Bac Bénin, tuteur IA, programme MESTFP, aide aux devoirs Bénin, évaluation diagnostique, coaching scolaire, élèves 6e à Terminale, Cabinet La Lumière">
+<meta name="author" content="Cabinet La Lumière">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#0D47A1">
+<meta name="google-site-verification" content="tr2CgF55r2gCsbxuicDRs7Wn-NtNpiE7Lo71xAT1Ew8" />
+<link rel="canonical" href="https://eduaya.com/">
+
+<!-- ============ SEO : favicon ============ -->
+<link rel="icon" type="image/png" sizes="192x192" href="/app/web/icons/Icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/app/web/icons/Icon-512.png">
+<link rel="apple-touch-icon" href="/app/web/icons/Icon-192.png">
+
+<!-- ============ SEO : Open Graph (Facebook, WhatsApp, LinkedIn) ============ -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EduAya">
+<meta property="og:title" content="EduAya — Cours, Révisions et Tuteur IA pour Élèves au Bénin">
+<meta property="og:description" content="Le tuteur IA béninois conforme au programme MESTFP : cours, évaluations, révisions et coaching pour élèves de la 6e à la Terminale. Essai gratuit.">
+<meta property="og:url" content="https://eduaya.com/">
+<meta property="og:image" content="https://eduaya.com/app/web/icons/Icon-512.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:locale" content="fr_FR">
+
+<!-- ============ SEO : Twitter / X Card ============ -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="EduAya — Cours, Révisions et Tuteur IA pour Élèves au Bénin">
+<meta name="twitter:description" content="Le tuteur IA béninois conforme au programme MESTFP : cours, évaluations, révisions et coaching pour élèves de la 6e à la Terminale.">
+<meta name="twitter:image" content="https://eduaya.com/app/web/icons/Icon-512.png">
+
+<!-- ============ SEO : données structurées (Google) ============ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  "name": "EduAya",
+  "alternateName": "EduAya - Cabinet La Lumière",
+  "url": "https://eduaya.com/",
+  "logo": "https://eduaya.com/app/web/icons/Icon-512.png",
+  "description": "Plateforme éducative béninoise propulsée par l'IA, conforme au programme officiel MESTFP, pour les élèves de la 6e à la Terminale.",
+  "areaServed": { "@type": "Country", "name": "Bénin" },
+  "email": "cabinetlalumiere2024@gmail.com",
+  "telephone": "+22940334026"
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -27833,7 +27883,7 @@ function partagerScoreWhatsApp(pct, matiere, label) {
     + (classe ? ' (' + classe + ')' : '') + ' sur EduAya !\n\n'
     + etoiles + ' ' + label + '\n\n'
     + '📚 EduAya est le tuteur IA qui connaît le programme officiel béninois (MESTFP).\n\n'
-    + '👉 Essaie gratuitement : https://eduayo.vercel.app'
+    + '👉 Essaie gratuitement : https://eduaya.com'
   );
   window.open('https://wa.me/?text=' + message, '_blank');
 }
@@ -27843,14 +27893,14 @@ function partagerWhatsApp() {
   const message = encodeURIComponent(
     '🎓 Salut ! Je viens de découvrir *EduAya*, un tuteur IA gratuit pour les élèves béninois.\n\n' +
     'Il connaît le programme officiel MESTFP et peut t\'aider dans toutes tes matières ! 💡\n\n' +
-    '👉 Essaie maintenant : https://eduayo.vercel.app\n\n' +
+    '👉 Essaie maintenant : https://eduaya.com\n\n' +
     'C\'est gratuit pour commencer ! 🆓'
   );
   window.open('https://wa.me/?text=' + message, '_blank');
 }
 
 function copierLien() {
-  const lien = 'https://eduayo.vercel.app';
+  const lien = 'https://eduaya.com';
   if (navigator.clipboard) {
     navigator.clipboard.writeText(lien).then(() => {
       showToast('✅ Lien copié ! Partage-le avec tes amis.');
@@ -28041,7 +28091,7 @@ async function connexionGoogle() {
     const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://eduaya.vercel.app'
+        redirectTo: 'https://eduaya.com'
       }
     });
     if (error) throw error;
@@ -28214,7 +28264,7 @@ async function sendResetLink() {
 
   try {
     const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-      redirectTo: 'https://eduayo.vercel.app'
+      redirectTo: 'https://eduaya.com'
     });
     if (error) throw error;
 
@@ -33406,7 +33456,7 @@ Données de la semaine :
 - Bilan du weekend : ${bilan ? ('Objectif atteint : ' + bilan.q1 + ' / Ressenti : ' + (bilan.q3||'?')) : 'non renseigné'}
 Rédige un message structuré en 3 parties : 1) Bilan positif 2) Points d'attention si nécessaire 3) Conseil aux parents.
 Ton : chaleureux, professionnel. 8-10 phrases max.
-Signe : "L'équipe EduAya, Cabinet La Lumière | eduayo.vercel.app"`;
+Signe : "L'équipe EduAya, Cabinet La Lumière | eduaya.com"`;
     const response = await fetch('/api/proxy', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 600, messages: [{ role: 'user', content: prompt }] })
