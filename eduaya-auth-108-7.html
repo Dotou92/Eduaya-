@@ -382,6 +382,8 @@
   .opt-card.selected .opt-label { color: var(--green-dark); }
   .opt-icon { font-size: 28px; margin-bottom: 6px; }
   .opt-label { font-size: 13px; font-weight: 700; color: white; }
+  .role-card:hover { background: rgba(255,255,255,0.2) !important; border-color: white !important; transform: translateY(-2px); }
+  .role-card:active { transform: scale(0.98); }
   .onboarding-progress { display: flex; gap: 6px; justify-content: center; margin-bottom: 28px; }
   .prog-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: all 0.3s; }
 
@@ -505,6 +507,9 @@
     display: flex; padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
     z-index: 200; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
   }
+  /* Espace enseignant : pas de barre de navigation apprenant (mobile) */
+  body.role-teacher .bottom-nav { display: none !important; }
+  body.role-teacher .role-learner-only { display: none !important; }
   @media (min-width: 768px) { .bottom-nav { max-width: 100%; } }
   @media (min-width: 1100px) { .bottom-nav { max-width: 100%; } }
   @media (min-width: 1100px) {
@@ -2047,7 +2052,7 @@ window.addEventListener('load',function(){
     <!-- ÉTAPE 1, Prénom (cachée, nom collecté dans le formulaire) -->
     <div class="onboarding-step" id="step-1" style="background:linear-gradient(160deg,#007A4D,#00A86B 60%,#00C97F);display:none;">
       <div class="onboarding-progress">
-        <div class="prog-dot active"></div><div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot"></div>
+        <div class="prog-dot active"></div><div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot"></div>
       </div>
       <div class="onboarding-emoji">👋</div>
       <div class="onboarding-title">Bienvenue !</div>
@@ -2061,7 +2066,7 @@ window.addEventListener('load',function(){
     <!-- ÉTAPE 2, Connexion / Inscription -->
     <div class="onboarding-step active" id="step-2" style="background:linear-gradient(160deg,#007A4D,#00A86B 60%,#00C97F);">
       <div class="onboarding-progress">
-        <div class="prog-dot"></div><div class="prog-dot active"></div><div class="prog-dot"></div><div class="prog-dot"></div>
+        <div class="prog-dot"></div><div class="prog-dot active"></div><div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot"></div>
       </div>
       <div class="onboarding-emoji">🔐</div>
       <div class="onboarding-title" id="auth-title">Crée ton compte</div>
@@ -2128,10 +2133,36 @@ window.addEventListener('load',function(){
       <div id="auth-security-note" style="font-size:11px;color:rgba(255,255,255,0.65);margin-top:12px;text-align:center;">🔒 Tes données sont sécurisées</div>
     </div>
 
-    <!-- ÉTAPE 3, Classe -->
+    <!-- ÉTAPE RÔLE, Apprenant ou Enseignant -->
+    <div class="onboarding-step" id="step-role" style="background:linear-gradient(160deg,#007A4D,#00A86B 60%,#00C97F);display:none;">
+      <div class="onboarding-progress">
+        <div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot active"></div><div class="prog-dot"></div><div class="prog-dot"></div>
+      </div>
+      <div class="onboarding-emoji">🎓</div>
+      <div class="onboarding-title">Comment souhaitez-vous utiliser la plateforme ?</div>
+      <div class="onboarding-desc">Choisis ton profil, tu pourras toujours le confirmer avec ton enseignant ou tes apprenants ensuite.</div>
+      <div style="width:100%;max-width:420px;margin:0 auto;display:flex;flex-direction:column;gap:14px;">
+        <div class="role-card" onclick="choisirRole('learner')"
+          style="background:rgba(255,255,255,0.12);border:2px solid rgba(255,255,255,0.35);border-radius:18px;padding:22px 20px;text-align:left;cursor:pointer;transition:all .2s;">
+          <div style="font-size:34px;margin-bottom:8px;">🎒</div>
+          <div style="font-size:17px;font-weight:800;color:white;margin-bottom:6px;font-family:'Baloo 2',cursive;">Je suis apprenant</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.85);line-height:1.5;margin-bottom:16px;">Rejoignez vos classes, consultez vos devoirs, échangez avec vos enseignants et suivez votre progression.</div>
+          <div style="background:white;color:#007A4D;padding:13px;border-radius:12px;text-align:center;font-weight:800;font-size:14px;">Continuer comme apprenant</div>
+        </div>
+        <div class="role-card" onclick="choisirRole('teacher')"
+          style="background:rgba(255,255,255,0.12);border:2px solid rgba(255,255,255,0.35);border-radius:18px;padding:22px 20px;text-align:left;cursor:pointer;transition:all .2s;">
+          <div style="font-size:34px;margin-bottom:8px;">🏫</div>
+          <div style="font-size:17px;font-weight:800;color:white;margin-bottom:6px;font-family:'Baloo 2',cursive;">Je suis enseignant</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.85);line-height:1.5;margin-bottom:16px;">Créez vos classes, publiez des devoirs, accompagnez vos apprenants et suivez leurs résultats.</div>
+          <div style="background:white;color:#0D47A1;padding:13px;border-radius:12px;text-align:center;font-weight:800;font-size:14px;">Continuer comme enseignant</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 3, Classe (apprenants uniquement) -->
     <div class="onboarding-step" id="step-3" style="background:linear-gradient(160deg,#007A4D,#00A86B 60%,#00C97F);display:none;">
       <div class="onboarding-progress">
-        <div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot active"></div><div class="prog-dot"></div>
+        <div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot active"></div><div class="prog-dot"></div>
       </div>
       <div class="onboarding-emoji">🏫</div>
       <div class="onboarding-title">Ta classe ?</div>
@@ -2178,7 +2209,7 @@ window.addEventListener('load',function(){
     <!-- ÉTAPE 4, Objectif -->
     <div class="onboarding-step" id="step-4" style="background:linear-gradient(160deg,#007A4D,#00A86B 60%,#00C97F);display:none;">
       <div class="onboarding-progress">
-        <div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot active"></div>
+        <div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot"></div><div class="prog-dot active"></div>
       </div>
       <div class="onboarding-emoji">🎯</div>
       <div class="onboarding-title">Ton objectif ?</div>
@@ -2292,7 +2323,7 @@ window.addEventListener('load',function(){
   <div class="topbar">
     <button class="topbar-back" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
     <div class="topbar-title"><i class="fa-solid fa-school"></i> Espace enseignant</div>
-    <div style="width:36px;"></div>
+    <button class="topbar-back" onclick="goToScreen('profile')" title="Mon profil"><i class="fa-solid fa-circle-user"></i></button>
   </div>
   <div style="overflow-y:auto;flex:1;">
     <div id="espace-enseignant-body" style="padding:16px;max-width:900px;margin:0 auto;width:100%;box-sizing:border-box;">
@@ -2595,12 +2626,12 @@ window.addEventListener('load',function(){
     <div class="profile-menu">
       <div class="menu-section-title">Mon compte</div>
       <div class="menu-item" onclick="toggleEditName()"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-pen"></i></span><span class="menu-text">Modifier mon prénom</span><span class="menu-arrow">›</span></div>
-      <div class="menu-item" onclick="toggleEditClasse()"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-school"></i></span><span class="menu-text">Modifier ma classe</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item role-learner-only" onclick="toggleEditClasse()"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-school"></i></span><span class="menu-text">Modifier ma classe</span><span class="menu-arrow">›</span></div>
       <div class="menu-item" onclick="showToast('🔔 Notifications bientôt disponibles')"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-bell"></i></span><span class="menu-text">Notifications</span><span class="menu-arrow">›</span></div>
-      <div class="menu-section-title">Mes études</div>
-      <div class="menu-item" onclick="goToScreen('progress')"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-chart-line"></i></span><span class="menu-text">Voir mes progrès</span><span class="menu-arrow">›</span></div>
-      <div class="menu-item" onclick="goToScreen('coach')" style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;margin-bottom:6px;"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-brain"></i></span><span class="menu-text" style="color:#1565C0;font-weight:700;">Mon Coach Aya</span><span class="menu-arrow" style="color:#1565C0;">›</span></div>
-      <div class="menu-item" onclick="goToScreen('veille')" style="background:#FAF5FF;border:1px solid #E9D5FF;border-radius:12px;margin-bottom:6px;"><span class="menu-icon" style="background:#7C3AED;"><i class="fa-solid fa-moon"></i></span><span class="menu-text" style="color:#7C3AED;font-weight:700;">Veille d'examen</span><span class="menu-arrow" style="color:#7C3AED;">›</span></div>
+      <div class="menu-section-title role-learner-only">Mes études</div>
+      <div class="menu-item role-learner-only" onclick="goToScreen('progress')"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-chart-line"></i></span><span class="menu-text">Voir mes progrès</span><span class="menu-arrow">›</span></div>
+      <div class="menu-item role-learner-only" onclick="goToScreen('coach')" style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;margin-bottom:6px;"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-brain"></i></span><span class="menu-text" style="color:#1565C0;font-weight:700;">Mon Coach Aya</span><span class="menu-arrow" style="color:#1565C0;">›</span></div>
+      <div class="menu-item role-learner-only" onclick="goToScreen('veille')" style="background:#FAF5FF;border:1px solid #E9D5FF;border-radius:12px;margin-bottom:6px;"><span class="menu-icon" style="background:#7C3AED;"><i class="fa-solid fa-moon"></i></span><span class="menu-text" style="color:#7C3AED;font-weight:700;">Veille d'examen</span><span class="menu-arrow" style="color:#7C3AED;">›</span></div>
       <div class="menu-item" onclick="showToast('📜 Bientôt disponible !')"><span class="menu-icon" style="background:#1565C0;"><i class="fa-solid fa-scroll"></i></span><span class="menu-text">Mes certificats</span><span class="menu-arrow">›</span></div>
       <div class="menu-section-title">Abonnement</div>
       <div class="menu-item" id="abonnement-item" onclick="document.getElementById('premium-modal').style.display='flex'">
@@ -24455,6 +24486,7 @@ function saveState() {
       userName: appState.userName,
       userClass: appState.userClass,
       userEmail: appState.userEmail,
+      userRole: appState.userRole,
       userObjectif: appState.userObjectif,
       currentLevel: appState.currentLevel,
       points: appState.points,
@@ -24481,6 +24513,7 @@ function loadState() {
     appState.userName     = saved.userName     || 'Apprenant';
     appState.userClass    = saved.userClass    || '';
     appState.userEmail    = saved.userEmail    || '';
+    appState.userRole     = saved.userRole     || '';
     appState.userObjectif = saved.userObjectif || '';
     appState.currentLevel = saved.currentLevel || 'Débutant';
     appState.points       = saved.points       || 0;
@@ -24564,6 +24597,7 @@ let appState = {
   userName: 'Apprenant',
   userClass: '',
   userEmail: '',
+  userRole: '', // 'learner' ou 'teacher'
   userObjectif: '',
   currentSubject: null,
   currentLevel: 'Débutant',
@@ -24605,6 +24639,17 @@ function goToScreen(name) {
     showToast('🔒 Connecte-toi d\'abord pour accéder à cette fonctionnalité');
     goTo('screen-landing');
     return;
+  }
+  // Séparation des espaces apprenant / enseignant (les admins voient tout)
+  if (!isAdmin() && appState.userEmail) {
+    var ecransApprenantSeul = ['home', 'defis', 'orientation', 'coach', 'veille', 'progress', 'history', 'join-class'];
+    if (appState.userRole === 'teacher' && ecransApprenantSeul.indexOf(name) !== -1) {
+      showToast('🔒 Fonctionnalité réservée aux apprenants');
+      name = 'teacher-space';
+    } else if (appState.userRole === 'learner' && name === 'teacher-space') {
+      showToast('🔒 Fonctionnalité réservée aux enseignants');
+      name = 'home';
+    }
   }
   appState.screenHistory.push(name);
   goTo('screen-' + name);
@@ -24721,6 +24766,27 @@ function updateNav(screen) {
       if (i === map[screen]) el.classList.add('active');
     });
   }
+}
+
+// Adapte la barre latérale desktop (et masque la barre du bas côté mobile)
+// selon que le compte connecté est apprenant ou enseignant.
+function updateSidebarForRole() {
+  const isTeacher = appState.userRole === 'teacher';
+  document.body.classList.toggle('role-teacher', isTeacher);
+
+  const statusEl = document.getElementById('sidebar-user-status');
+  if (statusEl) statusEl.textContent = isTeacher ? 'Espace enseignant' : 'Espace étudiant';
+
+  const navEl = document.querySelector('.desktop-sidebar-nav');
+  if (!navEl) return;
+  navEl.innerHTML = isTeacher
+    ? '<button class="nav-item active" onclick="goToScreen(\'teacher-space\')"><span class="nav-icon"><i class="fa-solid fa-chalkboard-user"></i></span><span class="nav-label">Tableau de bord</span></button>'
+      + '<button class="nav-item" onclick="goToScreen(\'profile\')"><span class="nav-icon"><i class="fa-solid fa-circle-user"></i></span><span class="nav-label">Profil</span></button>'
+    : '<button class="nav-item active" onclick="goToScreen(\'home\')"><span class="nav-icon"><i class="fa-solid fa-house"></i></span><span class="nav-label">Accueil</span></button>'
+      + '<button class="nav-item" onclick="goToScreen(\'progress\')"><span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span><span class="nav-label">Progrès</span></button>'
+      + '<button class="nav-item" onclick="goToScreen(\'defis\')"><span class="nav-icon"><i class="fa-solid fa-bolt"></i></span><span class="nav-label">Défis</span></button>'
+      + '<button class="nav-item" onclick="goToScreen(\'orientation\')"><span class="nav-icon"><i class="fa-solid fa-compass"></i></span><span class="nav-label">Orientation</span></button>'
+      + '<button class="nav-item" onclick="goToScreen(\'profile\')"><span class="nav-icon"><i class="fa-solid fa-circle-user"></i></span><span class="nav-label">Profil</span></button>';
 }
 
 function goToHome() {
@@ -26426,38 +26492,48 @@ function renderProfile() {
     rapportBtn.remove();
   }
 
-  // Bouton Espace enseignant, visible pour tous
-  if (!document.getElementById('prof-espace-btn')) {
-    var profileMenuProf = document.querySelector('.profile-menu') || document.getElementById('profile-menu-section');
-    if (profileMenuProf) {
-      var btnProf = document.createElement('div');
-      btnProf.id = 'prof-espace-btn';
-      btnProf.onclick = ouvrirEspaceEnseignant;
-      btnProf.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 16px;background:linear-gradient(135deg,#0D47A1,#1565C0);border-radius:14px;cursor:pointer;margin-top:12px;';
-      btnProf.innerHTML = '<span style="font-size:20px;"><i class="fa-solid fa-school" style="color:#1565C0;"></i></span>'
-        + '<div>'
-        + '<div style="font-size:13px;font-weight:800;color:white;">Espace enseignant</div>'
-        + '<div style="font-size:11px;color:rgba(255,255,255,0.8);">Créer une classe et suivre tes élèves</div>'
-        + '</div>';
-      profileMenuProf.appendChild(btnProf);
+  // Bouton Espace enseignant, réservé aux enseignants (et aux admins)
+  var profEspaceBtn = document.getElementById('prof-espace-btn');
+  if (isAdmin() || appState.userRole === 'teacher') {
+    if (!profEspaceBtn) {
+      var profileMenuProf = document.querySelector('.profile-menu') || document.getElementById('profile-menu-section');
+      if (profileMenuProf) {
+        var btnProf = document.createElement('div');
+        btnProf.id = 'prof-espace-btn';
+        btnProf.onclick = ouvrirEspaceEnseignant;
+        btnProf.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 16px;background:linear-gradient(135deg,#0D47A1,#1565C0);border-radius:14px;cursor:pointer;margin-top:12px;';
+        btnProf.innerHTML = '<span style="font-size:20px;"><i class="fa-solid fa-school" style="color:#1565C0;"></i></span>'
+          + '<div>'
+          + '<div style="font-size:13px;font-weight:800;color:white;">Espace enseignant</div>'
+          + '<div style="font-size:11px;color:rgba(255,255,255,0.8);">Créer une classe et suivre tes élèves</div>'
+          + '</div>';
+        profileMenuProf.appendChild(btnProf);
+      }
     }
+  } else if (profEspaceBtn) {
+    profEspaceBtn.remove();
   }
 
-  // Bouton Rejoindre une classe, visible pour tous (élèves)
-  if (!document.getElementById('rejoindre-classe-btn')) {
-    var profileMenuJoin = document.querySelector('.profile-menu') || document.getElementById('profile-menu-section');
-    if (profileMenuJoin) {
-      var btnJoin = document.createElement('div');
-      btnJoin.id = 'rejoindre-classe-btn';
-      btnJoin.onclick = ouvrirRejoindreClasse;
-      btnJoin.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 16px;background:#f0f7ff;border:1.5px solid #bbdefb;border-radius:14px;cursor:pointer;margin-top:12px;';
-      btnJoin.innerHTML = '<span style="font-size:20px;"><i class="fa-solid fa-key" style="color:#1565C0;"></i></span>'
-        + '<div>'
-        + '<div style="font-size:13px;font-weight:800;color:#0D47A1;">Rejoindre une classe</div>'
-        + '<div style="font-size:11px;color:#666;">Tu as un code de ton enseignant ? Entre-le ici</div>'
-        + '</div>';
-      profileMenuJoin.appendChild(btnJoin);
+  // Bouton Rejoindre une classe, réservé aux apprenants (et aux admins)
+  var rejoindreBtn = document.getElementById('rejoindre-classe-btn');
+  if (isAdmin() || appState.userRole === 'learner' || !appState.userRole) {
+    if (!rejoindreBtn) {
+      var profileMenuJoin = document.querySelector('.profile-menu') || document.getElementById('profile-menu-section');
+      if (profileMenuJoin) {
+        var btnJoin = document.createElement('div');
+        btnJoin.id = 'rejoindre-classe-btn';
+        btnJoin.onclick = ouvrirRejoindreClasse;
+        btnJoin.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 16px;background:#f0f7ff;border:1.5px solid #bbdefb;border-radius:14px;cursor:pointer;margin-top:12px;';
+        btnJoin.innerHTML = '<span style="font-size:20px;"><i class="fa-solid fa-key" style="color:#1565C0;"></i></span>'
+          + '<div>'
+          + '<div style="font-size:13px;font-weight:800;color:#0D47A1;">Rejoindre une classe</div>'
+          + '<div style="font-size:11px;color:#666;">Tu as un code de ton enseignant ? Entre-le ici</div>'
+          + '</div>';
+        profileMenuJoin.appendChild(btnJoin);
+      }
     }
+  } else if (rejoindreBtn) {
+    rejoindreBtn.remove();
   }
 }
 
@@ -26606,6 +26682,11 @@ async function afficherEcranRejoindre() {
 }
 
 async function rejoindreClasseAvecCode() {
+  // Réservé aux apprenants (la base de données applique aussi cette règle via RLS)
+  if (!isAdmin() && appState.userRole === 'teacher') {
+    showToast('🔒 Les enseignants ne peuvent pas rejoindre une classe avec un code');
+    return;
+  }
   // Vérifier Premium
   if (!isPremiumActif() && !isAdmin()) {
     document.getElementById('premium-modal').style.display = 'flex';
@@ -26859,6 +26940,12 @@ function afficherFormulaireClasse() {
 }
 
 async function creerClasse() {
+  // Réservé aux enseignants (la base de données applique aussi cette règle via RLS)
+  if (!isAdmin() && appState.userRole !== 'teacher') {
+    showToast('🔒 Seuls les enseignants peuvent créer une classe');
+    return;
+  }
+
   const nom = document.getElementById('form-nom-classe').value.trim();
   const matiere = document.getElementById('form-matiere-classe').value.trim();
   const niveau = document.getElementById('form-niveau-classe').value.trim();
@@ -28265,7 +28352,7 @@ async function handleAuth() {
         authBtn.disabled = false;
         return;
       }
-      const { data: profilCheck } = await supabaseClient.from('profils').select('suspendu').eq('email', email).single();
+      const { data: profilCheck } = await supabaseClient.from('profils').select('suspendu, role, classe').eq('email', email).single();
       if (profilCheck && profilCheck.suspendu) {
         errorDiv.style.color = '#ffcccc';
         errorDiv.textContent = '⛔ Ce compte a été suspendu. Contacte l\'administration EduAya pour plus d\'informations.';
@@ -28275,14 +28362,33 @@ async function handleAuth() {
         authBtn.disabled = false;
         return;
       }
+      appState.userEmail = email;
+      // Sync limits and eval history from Supabase on login
+      await syncLimiteFromSupabase();
+      syncEvalHistoryFromSupabase();
+      startAccountStatusWatcher();
+
+      const role = profilCheck && profilCheck.role;
+      appState.userRole = role || '';
+      saveState();
+
+      if (!role) {
+        // Compte sans rôle défini, choix obligatoire
+        showOnboardingStep('step-role');
+      } else if (role === 'teacher') {
+        updateSidebarForRole();
+        goToScreen('teacher-space');
+      } else if (role === 'learner' && profilCheck.classe) {
+        appState.userClass = profilCheck.classe;
+        saveState();
+        updateSidebarForRole();
+        setupHome();
+        goToScreen('home');
+      } else {
+        showOnboardingStep('step-3');
+      }
+      return;
     }
-    appState.userEmail = email;
-    // Sync limits and eval history from Supabase on login
-    await syncLimiteFromSupabase();
-    syncEvalHistoryFromSupabase();
-    startAccountStatusWatcher();
-    document.getElementById('step-2').style.display = 'none';
-    document.getElementById('step-3').style.display = 'flex'; document.getElementById('step-3').scrollIntoView({behavior:'smooth', block:'start'});
   } catch(e) {
     let msg = e.message;
     if (msg.includes('already registered')) msg = '⚠️ Cet email est déjà utilisé. Connecte-toi.';
@@ -28489,27 +28595,38 @@ async function applyNewPassword() {
   }
 }
 
+// Affiche une seule étape de l'onboarding à la fois (évite que plusieurs
+// étapes restent superposées quand on saute directement à une étape donnée).
+function showOnboardingStep(id) {
+  document.querySelectorAll('.onboarding-step').forEach(function(el) {
+    el.classList.remove('active');
+    el.style.display = 'none';
+  });
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.display = 'flex';
+    el.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
 function nextStep(step) {
   if (step === 1) {
     const nameVal = document.getElementById('user-name-input').value.trim();
     if (!nameVal) { showToast('✏️ Entre ton prénom pour continuer !'); return; }
     appState.userName = nameVal;
-    document.getElementById('step-1').style.display = 'none';
-    document.getElementById('step-2').style.display = 'flex';
+    showOnboardingStep('step-2');
     return;
   }
   if (step === 3) {
     if (!selectedClasse) { showToast('👆 Choisis ta classe !'); return; }
-    document.getElementById('step-3').style.display = 'none';
-    document.getElementById('step-4').style.display = 'flex';
+    showOnboardingStep('step-4');
     return;
   }
 }
 
 function skipEmail() {
   appState.userEmail = '';
-  document.getElementById('step-2').style.display = 'none';
-  document.getElementById('step-3').style.display = 'flex'; document.getElementById('step-3').scrollIntoView({behavior:'smooth', block:'start'});
+  showOnboardingStep('step-role');
 }
 
 function selectOpt(el, group) {
@@ -28525,10 +28642,40 @@ function selectOpt(el, group) {
   }
 }
 
+// ── Choix du rôle (apprenant / enseignant) ─────────────────────────────
+async function choisirRole(role) {
+  appState.userRole = role;
+  saveState();
+
+  if (appState.userEmail) {
+    try {
+      await supabaseClient.from('profils').upsert({
+        email: appState.userEmail,
+        nom: appState.userName,
+        role: role
+      }, { onConflict: 'email' });
+    } catch(e) { console.warn('Erreur enregistrement rôle:', e); }
+  }
+
+  if (role === 'teacher') {
+    finishTeacherOnboarding();
+  } else {
+    showOnboardingStep('step-3');
+  }
+}
+
+function finishTeacherOnboarding() {
+  updateSidebarForRole();
+  showToast('🏫 Bienvenue dans ton espace enseignant !');
+  goToScreen('teacher-space');
+  setTimeout(function() { gererDeepLink(); }, 400);
+}
+
 function finishOnboarding() {
   if (!selectedObjectif) { showToast('🎯 Choisis ton objectif !'); return; }
   appState.userClass    = selectedClasse;
   appState.userObjectif = selectedObjectif;
+  appState.userRole      = 'learner';
   saveState();
 
   // Save class to Supabase, ne jamais écraser les compteurs existants
@@ -28540,10 +28687,11 @@ function finishOnboarding() {
       .single()
       .then(({ data: existingProfil }) => {
         if (existingProfil) {
-          // Profil existant : mettre à jour seulement nom et classe, JAMAIS les compteurs
+          // Profil existant : mettre à jour seulement nom, classe et rôle, JAMAIS les compteurs
           supabaseClient.from('profils').update({
             nom: appState.userName,
-            classe: appState.userClass
+            classe: appState.userClass,
+            role: 'learner'
           }).eq('email', appState.userEmail).then(() => {});
           // Restaurer les compteurs depuis Supabase dans appState
           appState.requetesAujourdhui = existingProfil.requetes_aujourd_hui || 0;
@@ -28555,6 +28703,7 @@ function finishOnboarding() {
             email: appState.userEmail,
             nom: appState.userName,
             classe: appState.userClass,
+            role: 'learner',
             plan: 'gratuit',
             credits: 0,
             requetes_aujourd_hui: 0,
@@ -28566,6 +28715,7 @@ function finishOnboarding() {
 
   // Email de bienvenue désactivé (envoi répété à chaque connexion)
 
+  updateSidebarForRole();
   setupHome();
   setupHome();
   goToScreen('home');
@@ -31672,7 +31822,7 @@ window.addEventListener('load', async () => {
 
     // Vérifier si le profil existe déjà dans Supabase
     const { data: profil } = await supabaseClient.from('profils')
-      .select('nom, classe, plan, premium_classe, credits, points, streak, requetes_aujourd_hui, derniere_requete, coach_quota_aujourd_hui, derniere_requete_coach, suspendu')
+      .select('nom, classe, plan, premium_classe, credits, points, streak, requetes_aujourd_hui, derniere_requete, coach_quota_aujourd_hui, derniere_requete_coach, suspendu, role')
       .eq('email', session.user.email)
       .single();
 
@@ -31681,10 +31831,21 @@ window.addEventListener('load', async () => {
       return;
     }
 
-    if (profil && profil.classe) {
+    if (profil && profil.role === 'teacher') {
+      appState.userRole = 'teacher';
+      appState.userName = profil.nom || appState.userName;
+      saveState();
+      updateSidebarForRole();
+      goToScreen('teacher-space');
+      setTimeout(function() { restaurerDeepLink(); }, 400);
+      return;
+    }
+
+    if (profil && profil.role === 'learner' && profil.classe) {
       // Profil existant, charger tout depuis Supabase
       appState.userName = profil.nom || appState.userName;
       appState.userClass = profil.classe;
+      appState.userRole = 'learner';
       appState.plan = isAdmin() ? 'premium' : (profil.plan || 'gratuit');
       appState.premiumClasse = profil.premium_classe || null;
       appState.credits = profil.credits || 0;
@@ -31699,36 +31860,53 @@ window.addEventListener('load', async () => {
       saveState();
       syncEvalHistoryFromSupabase();
       startAccountStatusWatcher();
+      updateSidebarForRole();
       setupHome();
       setupHome();
       goToScreen('home');
       setTimeout(function() { restaurerDeepLink(); }, 400);
       return;
     } else {
-      // Nouveau compte Google, créer profil et aller à l'onboarding
-      await supabaseClient.from('profils').upsert({
-        email: session.user.email,
-        nom: appState.userName,
-        plan: 'gratuit',
-        credits: 0
-      }, { onConflict: 'email' });
+      // Nouveau compte Google, ou profil incomplet (rôle ou classe manquants)
+      if (!profil) {
+        await supabaseClient.from('profils').upsert({
+          email: session.user.email,
+          nom: appState.userName,
+          plan: 'gratuit',
+          credits: 0
+        }, { onConflict: 'email' });
+      } else {
+        appState.userName = profil.nom || appState.userName;
+      }
       saveState();
       goTo('screen-onboarding');
-      if (appState.userName && appState.userName !== 'Apprenant') {
-        document.getElementById('step-1').style.display = 'none';
-        document.getElementById('step-3').style.display = 'flex'; document.getElementById('step-3').scrollIntoView({behavior:'smooth', block:'start'});
+      if (profil && profil.role === 'learner') {
+        // Rôle déjà connu, il manque juste la classe
+        showOnboardingStep('step-3');
+      } else {
+        showOnboardingStep('step-role');
       }
       return;
     }
   }
 
-  if (session && session.user && appState.userName !== 'Apprenant' && appState.userClass) {
+  if (session && session.user && appState.userRole === 'teacher') {
+    // Enseignant avec session mise en cache, aller directement à son espace
+    appState.userEmail = session.user.email;
+    await syncLimiteFromSupabase();
+    if (_accountBlockedShown) return;
+    startAccountStatusWatcher();
+    updateSidebarForRole();
+    goToScreen('teacher-space');
+    return;
+  } else if (session && session.user && appState.userName !== 'Apprenant' && appState.userClass) {
     // Utilisateur connecté ET profil en localStorage, aller directement à l'accueil
     appState.userEmail = session.user.email;
     await syncLimiteFromSupabase();
     if (_accountBlockedShown) return;
     syncEvalHistoryFromSupabase();
     startAccountStatusWatcher();
+    updateSidebarForRole();
     setupHome();
     goToScreen('home');
     return;
@@ -31737,16 +31915,26 @@ window.addEventListener('load', async () => {
     appState.userEmail = session.user.email;
     appState.userName = session.user.user_metadata?.full_name?.split(' ')[0] || 'Apprenant';
     const { data: profil } = await supabaseClient.from('profils')
-      .select('nom, classe, plan, premium_classe, credits, points, streak, requetes_aujourd_hui, derniere_requete, coach_quota_aujourd_hui, derniere_requete_coach, suspendu')
+      .select('nom, classe, plan, premium_classe, credits, points, streak, requetes_aujourd_hui, derniere_requete, coach_quota_aujourd_hui, derniere_requete_coach, suspendu, role')
       .eq('email', session.user.email)
       .single();
     if (profil && profil.suspendu) {
       await forceLogoutBlocked('⛔ Ton compte a été suspendu par l\'administration. Contacte l\'équipe EduAya pour plus d\'informations.');
       return;
     }
-    if (profil && profil.classe) {
+    if (profil && profil.role === 'teacher') {
+      appState.userRole = 'teacher';
+      appState.userName = profil.nom || appState.userName;
+      saveState();
+      startAccountStatusWatcher();
+      updateSidebarForRole();
+      goToScreen('teacher-space');
+      return;
+    }
+    if (profil && profil.role === 'learner' && profil.classe) {
       appState.userName = profil.nom || appState.userName;
       appState.userClass = profil.classe;
+      appState.userRole = 'learner';
       appState.plan = isAdmin() ? 'premium' : (profil.plan || 'gratuit');
       appState.premiumClasse = profil.premium_classe || null;
       appState.credits = profil.credits || 0;
@@ -31757,21 +31945,23 @@ window.addEventListener('load', async () => {
       saveState();
       syncEvalHistoryFromSupabase();
       startAccountStatusWatcher();
+      updateSidebarForRole();
       setupHome();
       goToScreen('home');
       return;
     } else if (profil) {
-      // Profil sans classe, vérifier si on a déjà un nom
+      // Profil incomplet : rôle et/ou classe manquants
       goTo('screen-onboarding');
-      if (profil.nom && profil.nom !== 'Apprenant') {
-        // On a déjà le nom, aller directement à l'étape classe
-        appState.userName = profil.nom;
-        document.getElementById('step-1').style.display = 'none';
-        document.getElementById('step-3').style.display = 'flex'; document.getElementById('step-3').scrollIntoView({behavior:'smooth', block:'start'});
+      if (profil.nom && profil.nom !== 'Apprenant') appState.userName = profil.nom;
+      if (profil.role === 'learner') {
+        // Rôle déjà connu, il manque juste la classe
+        showOnboardingStep('step-3');
+      } else {
+        showOnboardingStep('step-role');
       }
-      // Sinon step-1 s'affiche normalement (active par défaut)
       return;
     }
+    // Aucun profil du tout : step-1 s'affiche normalement (active par défaut)
   } else if (!session) {
     // Pas de session, effacer le localStorage pour forcer la reconnexion
     localStorage.removeItem('eduayo_state_v1');
@@ -31795,7 +31985,7 @@ async function syncLimiteFromSupabase() {
   if (!appState.userEmail) return;
   try {
     const { data, error } = await supabaseClient.from('profils')
-      .select('requetes_aujourd_hui, derniere_requete, plan, premium_classe, classe, nom, credits, points, streak, badges, coach_quota_aujourd_hui, derniere_requete_coach, suspendu')
+      .select('requetes_aujourd_hui, derniere_requete, plan, premium_classe, classe, nom, credits, points, streak, badges, coach_quota_aujourd_hui, derniere_requete_coach, suspendu, role')
       .eq('email', appState.userEmail)
       .single();
     if (error && error.code === 'PGRST116') {
@@ -31846,6 +32036,7 @@ async function syncLimiteFromSupabase() {
       }
       appState.derniereRequete = todayISO;
       if (data.classe) appState.userClass = data.classe;
+      if (data.role) appState.userRole = data.role;
       saveState();
     }
   } catch(e) { console.warn('syncLimite error:', e); }
