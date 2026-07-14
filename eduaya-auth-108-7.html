@@ -126,6 +126,26 @@
   .stat-card-value { font-size: 19px; font-weight: 800; color: #1A2332; }
   .stat-card-label { font-size: 11px; color: #6B7A94; margin-top: 3px; line-height: 1.3; }
 
+  /* ===== ESPACE ENSEIGNANT / REJOINDRE UNE CLASSE — base mobile ===== */
+  .teacher-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
+  .teacher-stat-card {
+    background: white; border-radius: 14px; padding: 12px 8px; text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .teacher-stat-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .teacher-stat-value { font-size: 17px; font-weight: 800; color: #1A2332; }
+  .teacher-stat-label { font-size: 10px; color: #888; font-weight: 700; }
+
+  .teacher-classes-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .teacher-classe-card {
+    background: #f0f7ff; border-radius: 14px; padding: 14px; cursor: pointer; border-left: 3px solid #1565C0;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .teacher-classe-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(21,101,192,0.15); }
+
+  .join-classes-grid { display: flex; flex-direction: column; gap: 10px; }
+  .join-classe-card { background: white; border-radius: 14px; padding: 14px; border-left: 3px solid #00A86B; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
   @media (min-width: 768px) {
     body {
       max-width: 100%;
@@ -215,6 +235,11 @@
     .stat-card-icon { width: 36px; height: 36px; font-size: 15px; margin-bottom: 10px; }
     .stat-card-value { font-size: 22px; }
     .stat-card-label { font-size: 12px; }
+
+    .teacher-stats-row { grid-template-columns: repeat(3, minmax(150px, 220px)); gap: 16px; }
+    .teacher-stat-card { padding: 16px; }
+    .teacher-classes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+    .join-classes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
 
     body.app-shell .bottom-nav { display: none !important; }
 
@@ -572,7 +597,7 @@
   #screen-home, #screen-progress, #screen-profile {
     background: var(--bg); padding-bottom: 80px;
   }
-  #screen-classes, #screen-subject, #screen-chat, #screen-eval, #screen-eval-session, #screen-history, #screen-about, #screen-coach, #screen-veille, #screen-revision, #screen-defis, #screen-orientation {
+  #screen-classes, #screen-subject, #screen-chat, #screen-eval, #screen-eval-session, #screen-history, #screen-about, #screen-coach, #screen-veille, #screen-revision, #screen-defis, #screen-orientation, #screen-teacher-space, #screen-join-class {
     background: var(--bg); padding-bottom: 0;
   }
 
@@ -2256,6 +2281,34 @@ window.addEventListener('load',function(){
     <div class="section-header"><div class="section-title">🏫 Sélectionne ta classe</div></div>
     <div class="classes-list" id="classes-list"></div>
     <div style="height:16px;"></div>
+  </div>
+</div>
+
+<!-- ========== ESPACE ENSEIGNANT ========== -->
+<div class="screen" id="screen-teacher-space" style="display:none;flex-direction:column;">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
+    <div class="topbar-title"><i class="fa-solid fa-school"></i> Espace enseignant</div>
+    <div style="width:36px;"></div>
+  </div>
+  <div style="overflow-y:auto;flex:1;">
+    <div id="espace-enseignant-body" style="padding:16px;max-width:900px;margin:0 auto;width:100%;box-sizing:border-box;">
+      <div class="loading" style="text-align:center;padding:30px;color:#888;">⏳ Chargement...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== REJOINDRE UNE CLASSE ========== -->
+<div class="screen" id="screen-join-class" style="display:none;flex-direction:column;">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
+    <div class="topbar-title"><i class="fa-solid fa-key"></i> Rejoindre une classe</div>
+    <div style="width:36px;"></div>
+  </div>
+  <div style="overflow-y:auto;flex:1;">
+    <div id="rejoindre-classe-body" style="padding:16px;max-width:520px;margin:0 auto;width:100%;box-sizing:border-box;">
+      <div class="loading" style="text-align:center;padding:30px;color:#888;">⏳ Chargement...</div>
+    </div>
   </div>
 </div>
 
@@ -24544,7 +24597,7 @@ function goToScreen(name) {
   // Épreuves et Planning en dev, accès admin uniquement
   if (name === 'epreuves' && !isAdmin()) return;
   // Écrans nécessitant une connexion, bloque tout accès si personne n'est connecté
-  var ecransProteges = ['coach', 'veille', 'epreuves', 'progress', 'profile', 'history', 'defis', 'orientation'];
+  var ecransProteges = ['coach', 'veille', 'epreuves', 'progress', 'profile', 'history', 'defis', 'orientation', 'teacher-space', 'join-class'];
   if (ecransProteges.indexOf(name) !== -1 && !appState.userEmail) {
     showToast('🔒 Connecte-toi d\'abord pour accéder à cette fonctionnalité');
     goTo('screen-landing');
@@ -24561,6 +24614,8 @@ function goToScreen(name) {
   if (name === 'coach') { initCoach(); switchCoachTab('chat'); }
   if (name === 'veille') renderVeille();
   if (name === 'epreuves') renderEpreuves();
+  if (name === 'teacher-space') afficherMenuEnseignant();
+  if (name === 'join-class') afficherEcranRejoindre();
 }
 
 // ── Deep Links ────────────────────────────────────────────
@@ -26498,40 +26553,45 @@ async function selectNouvelleClasse(classe, btn) {
 // ============================================================
 // REJOINDRE UNE CLASSE (élève)
 // ============================================================
-async function ouvrirRejoindreClasse() {
-  const modal = document.createElement('div');
-  modal.id = 'modal-rejoindre-classe';
-  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;overflow-y:auto;padding:16px;box-sizing:border-box;';
+function ouvrirRejoindreClasse() {
+  goToScreen('join-class');
+}
 
-  // Vérifier si l'élève a déjà rejoint une classe
-  let classeActuelle = null;
+async function afficherEcranRejoindre() {
+  const body = document.getElementById('rejoindre-classe-body');
+  if (!body) return;
+  body.innerHTML = '<div class="loading" style="text-align:center;padding:30px;color:#888;">⏳ Chargement...</div>';
+
+  // Récupérer toutes les classes déjà rejointes par l'élève
+  let mesClasses = [];
   try {
     const { data } = await supabaseClient.from('eleves_classe')
-      .select('*')
-      .eq('eleve_email', appState.userEmail)
-      .order('joined_at', { ascending: false })
-      .limit(1);
-    if (data && data.length > 0) {
-      const { data: info } = await supabaseClient.from('classes_enseignant').select('*').eq('code', data[0].code_classe).single();
-      classeActuelle = info;
+      .select('code_classe').eq('eleve_email', appState.userEmail);
+    const codes = [...new Set((data || []).map(function(c) { return c.code_classe; }))];
+    if (codes.length > 0) {
+      const { data: infos } = await supabaseClient.from('classes_enseignant').select('*').in('code', codes);
+      mesClasses = infos || [];
     }
   } catch(e) {}
 
-  let html = '<div style="background:white;border-radius:16px;padding:20px;max-width:500px;margin:0 auto;">'
-    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">'
-    + '<div style="font-size:15px;font-weight:800;color:#0D47A1;">🔑 Rejoindre une classe</div>'
-    + '<button onclick="document.getElementById(\'modal-rejoindre-classe\').remove()" style="background:#f0f0f0;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:14px;"><i class="fa-solid fa-xmark"></i></button>'
-    + '</div>';
+  let html = '';
 
-  if (classeActuelle) {
-    html += '<div style="background:#f0f7ff;border-radius:12px;padding:14px;margin-bottom:16px;">'
-      + '<div style="font-size:11px;color:#666;margin-bottom:4px;">Tu es déjà dans la classe :</div>'
-      + '<div style="font-size:13px;font-weight:700;color:#0D47A1;">' + classeActuelle.nom_classe + '</div>'
-      + '<div style="font-size:11px;color:#888;margin-top:2px;">Enseignant : ' + (classeActuelle.enseignant_nom || '-') + '</div>'
-      + '</div>';
+  if (mesClasses.length > 0) {
+    html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:10px;">TES CLASSES (' + mesClasses.length + ')</div>'
+      + '<div class="join-classes-grid">';
+    mesClasses.forEach(function(c) {
+      html += '<div class="join-classe-card">'
+        + '<div style="font-size:13px;font-weight:800;color:#0D47A1;">' + c.nom_classe + '</div>'
+        + '<div style="font-size:11px;color:#888;margin-top:2px;">' + (c.matiere || '') + (c.niveau ? ' · ' + c.niveau : '') + '</div>'
+        + '<div style="font-size:11px;color:#666;margin-top:6px;"><i class="fa-solid fa-chalkboard-user"></i> ' + (c.enseignant_nom || '-') + '</div>'
+        + '</div>';
+    });
+    html += '</div><div style="height:20px;"></div>';
   }
 
-  html += '<div style="font-size:12px;color:#666;margin-bottom:10px;">Entre le code donné par ton enseignant :</div>'
+  html += '<div style="background:white;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05);max-width:420px;margin:0 auto;">'
+    + '<div style="font-size:13px;font-weight:800;color:#0D47A1;margin-bottom:6px;"><i class="fa-solid fa-key"></i> Rejoindre une nouvelle classe</div>'
+    + '<div style="font-size:12px;color:#666;margin-bottom:14px;">Entre le code donné par ton enseignant :</div>'
     + '<input id="input-code-classe" type="text" placeholder="EX: ABCD-1234" '
     + 'style="width:100%;padding:14px;border:2px solid #e0e0e0;border-radius:10px;font-size:16px;text-align:center;font-weight:800;letter-spacing:1px;margin-bottom:14px;box-sizing:border-box;font-family:\'Nunito\',sans-serif;text-transform:uppercase;">'
     + '<button onclick="rejoindreClasseAvecCode()" id="btn-rejoindre-classe" '
@@ -26539,14 +26599,12 @@ async function ouvrirRejoindreClasse() {
     + '✓ Rejoindre</button>'
     + '</div>';
 
-  modal.innerHTML = html;
-  document.body.appendChild(modal);
+  body.innerHTML = html;
 }
 
 async function rejoindreClasseAvecCode() {
   // Vérifier Premium
   if (!isPremiumActif() && !isAdmin()) {
-    document.getElementById('modal-rejoindre-classe')?.remove();
     document.getElementById('premium-modal').style.display = 'flex';
     showToast('🔒 Rejoindre une classe est réservé aux élèves Premium');
     return;
@@ -26577,7 +26635,7 @@ async function rejoindreClasseAvecCode() {
     if (errInsert) throw errInsert;
 
     showToast('🎉 Tu as rejoint ' + classeInfo.nom_classe + ' !');
-    document.getElementById('modal-rejoindre-classe').remove();
+    afficherEcranRejoindre();
   } catch(e) {
     showToast('⚠️ Erreur, réessaie');
     if (btn) { btn.textContent = '✓ Rejoindre'; btn.disabled = false; }
@@ -26597,21 +26655,8 @@ function genererCodeClasse() {
   return code;
 }
 
-async function ouvrirEspaceEnseignant() {
-  const modal = document.createElement('div');
-  modal.id = 'modal-espace-enseignant';
-  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;overflow-y:auto;padding:16px;box-sizing:border-box;';
-
-  modal.innerHTML = '<div style="background:white;border-radius:16px;padding:20px;max-width:500px;margin:0 auto;">'
-    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">'
-    + '<div style="font-size:15px;font-weight:800;color:#0D47A1;">🏫 Espace enseignant</div>'
-    + '<button onclick="document.getElementById(\'modal-espace-enseignant\').remove()" style="background:#f0f0f0;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:14px;"><i class="fa-solid fa-xmark"></i></button>'
-    + '</div>'
-    + '<div id="espace-enseignant-body"><div class="loading" style="text-align:center;padding:20px;color:#888;">Chargement...</div></div>'
-    + '</div>';
-  document.body.appendChild(modal);
-
-  await afficherMenuEnseignant();
+function ouvrirEspaceEnseignant() {
+  goToScreen('teacher-space');
 }
 
 async function afficherMenuEnseignant() {
@@ -26627,6 +26672,18 @@ async function afficherMenuEnseignant() {
       .order('created_at', { ascending: false });
     mesClasses = data || [];
   } catch(e) {}
+
+  // Compter les élèves inscrits par classe (pour le tableau de bord)
+  let elevesParClasse = {};
+  let totalElevesEnseignant = 0;
+  if (mesClasses.length > 0) {
+    try {
+      const codesEns = mesClasses.map(function(c) { return c.code; });
+      const { data: elevesAll } = await supabaseClient.from('eleves_classe').select('code_classe').in('code_classe', codesEns);
+      (elevesAll || []).forEach(function(e) { elevesParClasse[e.code_classe] = (elevesParClasse[e.code_classe] || 0) + 1; });
+      totalElevesEnseignant = (elevesAll || []).length;
+    } catch(e) {}
+  }
 
   // Charger tous les messages reçus (lus et non lus)
   let tousMessages = [];
@@ -26746,14 +26803,27 @@ async function afficherMenuEnseignant() {
   }
 
   if (mesClasses.length > 0) {
-    html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:8px;">MES CLASSES</div>';
+    // ── Tableau de bord ──
+    html += '<div class="teacher-stats-row">'
+      + '<div class="teacher-stat-card"><div class="teacher-stat-icon" style="background:#E3F2FD;color:#1565C0;"><i class="fa-solid fa-chalkboard"></i></div>'
+      + '<div><div class="teacher-stat-value">' + mesClasses.length + '</div><div class="teacher-stat-label">Classe' + (mesClasses.length > 1 ? 's' : '') + '</div></div></div>'
+      + '<div class="teacher-stat-card"><div class="teacher-stat-icon" style="background:#E8F5E9;color:#2E7D32;"><i class="fa-solid fa-users"></i></div>'
+      + '<div><div class="teacher-stat-value">' + totalElevesEnseignant + '</div><div class="teacher-stat-label">Élève' + (totalElevesEnseignant > 1 ? 's' : '') + '</div></div></div>'
+      + '<div class="teacher-stat-card"><div class="teacher-stat-icon" style="background:#FFF3E0;color:#E65100;"><i class="fa-solid fa-envelope"></i></div>'
+      + '<div><div class="teacher-stat-value">' + msgsNonLus.length + '</div><div class="teacher-stat-label">Non lu' + (msgsNonLus.length > 1 ? 's' : '') + '</div></div></div>'
+      + '</div>';
+
+    html += '<div style="font-size:12px;font-weight:800;color:#555;margin-bottom:8px;">MES CLASSES</div>'
+      + '<div class="teacher-classes-grid">';
     mesClasses.forEach(function(c) {
-      html += '<div onclick="ouvrirDetailClasse(\'' + c.code + '\')" '
-        + 'style="background:#f0f7ff;border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer;border-left:3px solid #1565C0;">'
+      const nbEleves = elevesParClasse[c.code] || 0;
+      html += '<div class="teacher-classe-card" onclick="ouvrirDetailClasse(\'' + c.code + '\')">'
         + '<div style="font-size:13px;font-weight:700;color:#0D47A1;">' + c.nom_classe + '</div>'
         + '<div style="font-size:11px;color:#666;margin-top:2px;">Code : <strong>' + c.code + '</strong> · ' + (c.matiere || '') + ' ' + (c.niveau || '') + '</div>'
+        + '<div style="font-size:11px;color:#2E7D32;margin-top:8px;font-weight:700;"><i class="fa-solid fa-users"></i> ' + nbEleves + ' élève' + (nbEleves > 1 ? 's' : '') + ' inscrit' + (nbEleves > 1 ? 's' : '') + '</div>'
         + '</div>';
     });
+    html += '</div>';
   }
 
   html += '<button onclick="afficherFormulaireClasse()" '
