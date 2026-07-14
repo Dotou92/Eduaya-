@@ -31414,6 +31414,7 @@ async function forceLogoutBlocked(message) {
   if (_accountBlockedShown) return;
   _accountBlockedShown = true;
   if (_accountStatusInterval) clearInterval(_accountStatusInterval);
+  var blockedEmail = appState.userEmail || '';
   try { await supabaseClient.auth.signOut(); } catch(e) {}
   var keysToRemove = [];
   for (var i = 0; i < localStorage.length; i++) {
@@ -31427,12 +31428,17 @@ async function forceLogoutBlocked(message) {
   appState.userName = 'Apprenant';
   appState.userClass = '';
   goTo('screen-landing');
-  showAccountBlockedOverlay(message);
+  showAccountBlockedOverlay(message, blockedEmail);
 }
 
-function showAccountBlockedOverlay(message) {
+function showAccountBlockedOverlay(message, blockedEmail) {
   var existing = document.getElementById('account-blocked-overlay');
   if (existing) existing.remove();
+
+  var contactMsg = 'Bonjour, mon compte EduAya (' + (blockedEmail || 'email non renseigné') + ') semble bloqué. Pouvez-vous m\'aider ?';
+  var waLink = 'https://wa.me/22940334026?text=' + encodeURIComponent(contactMsg);
+  var mailLink = 'mailto:cabinetlalumiere2024@gmail.com?subject=' + encodeURIComponent('Compte EduAya bloqué') + '&body=' + encodeURIComponent(contactMsg);
+
   var overlay = document.createElement('div');
   overlay.id = 'account-blocked-overlay';
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,20,40,0.78);z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;';
@@ -31440,7 +31446,9 @@ function showAccountBlockedOverlay(message) {
     + '<div style="font-size:48px;margin-bottom:14px;">⛔</div>'
     + '<div style="font-size:17px;font-weight:800;color:#C62828;margin-bottom:10px;font-family:\'Baloo 2\',cursive;">Accès bloqué</div>'
     + '<div style="font-size:13.5px;color:#555;line-height:1.6;margin-bottom:22px;">' + message + '</div>'
-    + '<button onclick="document.getElementById(\'account-blocked-overlay\').remove()" style="width:100%;padding:14px;background:linear-gradient(135deg,#1565C0,#0D47A1);color:white;border:none;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer;font-family:\'Nunito\',sans-serif;">Compris</button>'
+    + '<a href="' + waLink + '" target="_blank" rel="noopener" style="text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:#25D366;color:white;border-radius:14px;font-size:14px;font-weight:800;box-sizing:border-box;margin-bottom:10px;font-family:\'Nunito\',sans-serif;"><i class="fa-brands fa-whatsapp" style="font-size:17px;"></i> Contacter sur WhatsApp</a>'
+    + '<a href="' + mailLink + '" style="text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:#F0F4FF;color:#1565C0;border-radius:14px;font-size:14px;font-weight:800;box-sizing:border-box;margin-bottom:10px;font-family:\'Nunito\',sans-serif;"><i class="fa-solid fa-envelope"></i> Contacter par email</a>'
+    + '<button onclick="document.getElementById(\'account-blocked-overlay\').remove()" style="width:100%;padding:12px;background:none;border:none;color:#888;font-size:13px;font-weight:700;cursor:pointer;font-family:\'Nunito\',sans-serif;">Fermer</button>'
     + '</div>';
   document.body.appendChild(overlay);
 }
