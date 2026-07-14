@@ -24839,9 +24839,10 @@ async function renderDefis() {
   content.innerHTML = '<div style="text-align:center;padding:20px;color:#888;font-size:12px;">⏳ Chargement...</div>';
 
   try {
-    // Récupérer les camarades de classe
-    const { data: maClasse } = await supabaseClient.from('eleves_classe')
-      .select('code_classe').eq('eleve_email', appState.userEmail).limit(1).single();
+    // Récupérer toutes les classes de l'élève (il peut être dans plusieurs classes)
+    const { data: mesClassesData } = await supabaseClient.from('eleves_classe')
+      .select('code_classe').eq('eleve_email', appState.userEmail);
+    const mesClasses = mesClassesData || [];
 
     // Récupérer défis reçus et envoyés
     const { data: defisData } = await supabaseClient.from('defis')
@@ -24919,8 +24920,8 @@ async function renderDefis() {
     }
 
     // ── Bouton lancer un défi ──
-    if (maClasse) {
-      html += '<button onclick="ouvrirFormulaireDefi(\'' + maClasse.code_classe + '\')" '
+    if (mesClasses.length > 0) {
+      html += '<button onclick="ouvrirFormulaireDefi()" '
         + 'style="width:100%;padding:14px;background:linear-gradient(135deg,#C62828,#E53935);color:white;border:none;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:16px;font-family:\'Nunito\',sans-serif;">'
         + '⚔️ Lancer un défi</button>';
     } else {
@@ -24993,38 +24994,55 @@ async function renderDefis() {
   }
 }
 
-async function ouvrirFormulaireDefi(codeClasse) {
+async function ouvrirFormulaireDefi() {
   const content = document.getElementById('defis-content');
   if (!content) return;
 
-  // Charger les camarades
-  const { data: eleves } = await supabaseClient.from('eleves_classe')
-    .select('eleve_email, eleve_nom').eq('code_classe', codeClasse);
-  const camarades = (eleves || []).filter(function(e) { return e.eleve_email !== appState.userEmail; });
+  content.innerHTML = '<div style="text-align:center;padding:30px;color:#888;font-size:13px;">⏳ Chargement...</div>';
 
-  if (camarades.length === 0) {
-    showToast('⚠️ Aucun camarade dans ta classe pour le moment');
+  // Récupérer toutes les classes de l'élève (il peut être dans plusieurs classes)
+  const { data: mesClassesData } = await supabaseClient.from('eleves_classe')
+    .select('code_classe').eq('eleve_email', appState.userEmail);
+  const codes = [...new Set((mesClassesData || []).map(function(c) { return c.code_classe; }))];
+
+  if (codes.length === 0) {
+    showToast('⚠️ Rejoins une classe pour pouvoir défier tes camarades');
+    renderDefis();
     return;
   }
 
-  // Récupérer les matières et notions de la classe
+  const { data: classesInfo } = await supabaseClient.from('classes_enseignant').select('*').in('code', codes);
+  let classes = (classesInfo || []).map(function(c) {
+    return { code: c.code, label: (c.nom_classe || c.code) + (c.matiere ? ' · ' + c.matiere : '') };
+  });
+  if (classes.length === 0) { classes = codes.map(function(code) { return { code: code, label: code }; }); }
+
+  // Récupérer les matières et notions disponibles pour le niveau de l'élève
   const classeOfficielle = getClasseOfficielle(appState.userClass);
   const matieresDispo = classeOfficielle ? (CLASSES_OFFICIELLES[classeOfficielle] || []) : [];
-
-  const camaradesOptions = camarades
-    .map(function(c) { return '<option value="' + c.eleve_email + '">' + (c.eleve_nom || c.eleve_email) + '</option>'; }).join('');
-
-  // Construire les options de matières avec leurs notions
   const matiereOptions = matieresDispo.length > 0
     ? matieresDispo.map(function(m) { return '<option value="' + m + '">' + m + '</option>'; }).join('')
     : '<option value="Mathématiques">Mathématiques</option><option value="SVT">SVT</option><option value="PCT">PCT</option>';
 
+  const classeSelectHtml = classes.length > 1
+    ? '<div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:700;">Choisir la classe</div>'
+      + '<select id="defi-classe" onchange="chargerCamaradesDefi()" style="width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:10px;font-size:13px;margin-bottom:12px;box-sizing:border-box;">'
+      + classes.map(function(c) { return '<option value="' + c.code + '">' + c.label + '</option>'; }).join('')
+      + '</select>'
+    : '<input type="hidden" id="defi-classe" value="' + classes[0].code + '">';
+
   content.innerHTML = '<button onclick="renderDefis()" style="background:none;border:none;font-size:12px;font-weight:700;color:#1565C0;cursor:pointer;padding:0 0 14px;"><i class="fa-solid fa-arrow-left"></i> Retour aux défis</button>'
     + '<div style="font-size:14px;font-weight:800;color:#C62828;margin-bottom:16px;">⚔️ Lancer un défi</div>'
 
-    + '<div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:700;">Choisir l\'adversaire</div>'
-    + '<select id="defi-adversaire" style="width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:10px;font-size:13px;margin-bottom:12px;box-sizing:border-box;">'
-    + camaradesOptions + '</select>'
+    + classeSelectHtml
+
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
+    + '<div style="font-size:12px;color:#555;font-weight:700;">Choisir un ou plusieurs camarades</div>'
+    + '<div style="display:flex;gap:6px;">'
+    + '<button type="button" onclick="toggleTousLesCamarades(true)" style="background:none;border:none;color:#1565C0;font-size:11px;font-weight:700;cursor:pointer;">Tout sélect.</button>'
+    + '<button type="button" onclick="toggleTousLesCamarades(false)" style="background:none;border:none;color:#888;font-size:11px;font-weight:700;cursor:pointer;">Aucun</button>'
+    + '</div></div>'
+    + '<div id="defi-camarades-list" style="max-height:220px;overflow-y:auto;border:2px solid #e0e0e0;border-radius:10px;padding:4px 8px;margin-bottom:16px;">Chargement...</div>'
 
     + '<div style="font-size:12px;color:#555;margin-bottom:6px;font-weight:700;">Matière</div>'
     + '<select id="defi-matiere" onchange="chargerNotionsDefi(\'' + classeOfficielle + '\')" style="width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:10px;font-size:13px;margin-bottom:12px;box-sizing:border-box;">'
@@ -25035,11 +25053,39 @@ async function ouvrirFormulaireDefi(codeClasse) {
     + '<option value="">-- Choisir une notion --</option>'
     + '</select>'
 
-    + '<button onclick="envoyerDefi(\'' + codeClasse + '\')" style="width:100%;padding:14px;background:linear-gradient(135deg,#C62828,#E53935);color:white;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:\'Nunito\',sans-serif;">'
+    + '<button onclick="envoyerDefi()" style="width:100%;padding:14px;background:linear-gradient(135deg,#C62828,#E53935);color:white;border:none;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:\'Nunito\',sans-serif;">'
     + '⚔️ Envoyer le défi !</button>';
 
-  // Charger les notions de la première matière
+  chargerCamaradesDefi();
   chargerNotionsDefi(classeOfficielle);
+}
+
+async function chargerCamaradesDefi() {
+  const listEl = document.getElementById('defi-camarades-list');
+  const classeInput = document.getElementById('defi-classe');
+  if (!listEl || !classeInput) return;
+  const codeClasse = classeInput.value;
+
+  listEl.innerHTML = '<div style="text-align:center;color:#888;font-size:12px;padding:10px;">⏳ Chargement...</div>';
+
+  const { data: eleves } = await supabaseClient.from('eleves_classe')
+    .select('eleve_email, eleve_nom').eq('code_classe', codeClasse);
+  const camarades = (eleves || []).filter(function(e) { return e.eleve_email !== appState.userEmail; });
+
+  if (camarades.length === 0) {
+    listEl.innerHTML = '<div style="text-align:center;color:#888;font-size:12px;padding:10px;">Aucun camarade dans cette classe pour le moment.</div>';
+    return;
+  }
+
+  listEl.innerHTML = camarades.map(function(c) {
+    return '<label style="display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid #f0f0f0;font-size:13px;cursor:pointer;">'
+      + '<input type="checkbox" class="defi-camarade-checkbox" value="' + c.eleve_email + '" style="width:18px;height:18px;accent-color:#C62828;flex-shrink:0;">'
+      + '<span>' + (c.eleve_nom || c.eleve_email) + '</span></label>';
+  }).join('');
+}
+
+function toggleTousLesCamarades(state) {
+  document.querySelectorAll('.defi-camarade-checkbox').forEach(function(cb) { cb.checked = state; });
 }
 
 function chargerNotionsDefi(classeOfficielle) {
@@ -25072,30 +25118,36 @@ function chargerNotionsDefi(classeOfficielle) {
       }).join('');
 }
 
-async function envoyerDefi(codeClasse) {
-  const adversaireEmail = document.getElementById('defi-adversaire').value;
+async function envoyerDefi() {
+  const codeClasse = document.getElementById('defi-classe').value;
+  const adversaires = Array.from(document.querySelectorAll('.defi-camarade-checkbox:checked')).map(function(cb) { return cb.value; });
   const matiere = document.getElementById('defi-matiere').value;
   const notion = document.getElementById('defi-notion').value;
 
-  if (!adversaireEmail || !matiere) { showToast('⚠️ Choisis un adversaire et une matière'); return; }
+  if (adversaires.length === 0) { showToast('⚠️ Choisis au moins un camarade à défier'); return; }
+  if (!matiere) { showToast('⚠️ Choisis une matière'); return; }
   if (!notion) { showToast('⚠️ Choisis une notion sur laquelle vous défier'); return; }
 
   const btn = document.querySelector('button[onclick*="envoyerDefi"]');
   if (btn) { btn.textContent = '⏳ Envoi...'; btn.disabled = true; }
 
-  const { error } = await supabaseClient.from('defis').insert({
-    challenger_email: appState.userEmail,
-    challenger_nom: appState.userName,
-    adversaire_email: adversaireEmail,
-    code_classe: codeClasse,
-    matiere: matiere,
-    niveau: appState.userClass,
-    statut: 'en_attente',
-    notion: notion
+  const lignes = adversaires.map(function(email) {
+    return {
+      challenger_email: appState.userEmail,
+      challenger_nom: appState.userName,
+      adversaire_email: email,
+      code_classe: codeClasse,
+      matiere: matiere,
+      niveau: appState.userClass,
+      statut: 'en_attente',
+      notion: notion
+    };
   });
 
+  const { error } = await supabaseClient.from('defis').insert(lignes);
+
   if (error) { showToast('⚠️ Erreur lors de l\'envoi'); if (btn) { btn.textContent = '⚔️ Envoyer le défi !'; btn.disabled = false; } return; }
-  showToast('⚔️ Défi envoyé sur "' + notion + '" ! En attente de réponse...');
+  showToast('⚔️ ' + lignes.length + ' défi(s) envoyé(s) sur "' + notion + '" ! En attente de réponse...');
   renderDefis();
 }
 
