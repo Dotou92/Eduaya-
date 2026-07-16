@@ -2234,6 +2234,7 @@ window.addEventListener('load',function(){
     </div>
   </div>
   <div class="home-scroll">
+    <div id="bandeau-essai-gratuit" style="display:none;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;padding:10px 16px;color:white;font-size:12.5px;font-weight:700;text-align:center;font-family:'Nunito',sans-serif;"></div>
     <div class="home-hero">
       <div class="hero-greeting">Bonne journée 👋</div>
       <div class="hero-name" id="hero-name">Apprenant !</div>
@@ -24497,6 +24498,7 @@ function saveState() {
       derniereRequete: appState.derniereRequete,
       coachQuotaAujourdhui: appState.coachQuotaAujourdhui,
       derniereRequeteCoach: appState.derniereRequeteCoach,
+      createdAt: appState.createdAt,
     };
     localStorage.setItem(LS_KEY, JSON.stringify(toSave));
   } catch(e) {}
@@ -24524,6 +24526,7 @@ function loadState() {
     appState.derniereRequete         = saved.derniereRequete         || null;
     appState.coachQuotaAujourdhui    = saved.coachQuotaAujourdhui    || 0;
     appState.derniereRequeteCoach    = saved.derniereRequeteCoach    || null;
+    appState.createdAt              = saved.createdAt               || null;
   } catch(e) {}
 }
 
@@ -24614,6 +24617,7 @@ let appState = {
   derniereRequete: null,
   coachQuotaAujourdhui: 0,
   derniereRequeteCoach: null,
+  createdAt: null, // date d'inscription (profils.created_at), sert à calculer l'essai gratuit de 3 jours
 };
 
 // ============================================================
@@ -28248,6 +28252,58 @@ const SUPABASE_URL = 'https://dkxwltsmxnpqbgbeyqhx.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Bs-4nFV-JlmeyuruLiJqdQ_rfhGmvB9';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// ── Garde d'accès /api/proxy : ajoute automatiquement le jeton de connexion
+// et intercepte les réponses "essai terminé / accès bloqué" pour TOUS les
+// appels à /api/proxy, sans avoir à modifier chaque appel individuellement. ──
+(function() {
+  const fetchNatif = window.fetch.bind(window);
+  window.fetch = async function(input, init) {
+    const url = typeof input === 'string' ? input : (input && input.url) || '';
+    const estAppelProxy = url === '/api/proxy' || url.endsWith('/api/proxy');
+
+    if (estAppelProxy) {
+      init = init || {};
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session && session.access_token) {
+          init.headers = Object.assign({}, init.headers, { 'Authorization': 'Bearer ' + session.access_token });
+        }
+      } catch(e) { /* laisse passer sans le jeton, le serveur renverra 401 */ }
+    }
+
+    const response = await fetchNatif(input, init);
+
+    if (estAppelProxy && (response.status === 402 || response.status === 403)) {
+      try {
+        const corps = await response.clone().json();
+        if (corps && corps.code === 'trial_expired') {
+          ouvrirModalEssaiTermine();
+        } else if (corps && corps.code === 'access_blocked') {
+          ouvrirPremiumModal();
+        }
+      } catch(e) { /* réponse non-JSON, on ignore */ }
+    }
+
+    return response;
+  };
+})();
+
+function ouvrirPremiumModal() {
+  const titre = document.getElementById('premium-modal-title');
+  const desc = document.getElementById('premium-modal-desc');
+  if (titre) titre.textContent = 'Continuer sur EduAya';
+  if (desc) desc.textContent = 'Tu as atteint ta limite gratuite. Choisis une option :';
+  document.getElementById('premium-modal').style.display = 'flex';
+}
+
+function ouvrirModalEssaiTermine() {
+  const titre = document.getElementById('premium-modal-title');
+  const desc = document.getElementById('premium-modal-desc');
+  if (titre) titre.textContent = '⏳ Ton essai gratuit est terminé';
+  if (desc) desc.textContent = 'Ton essai gratuit de 3 jours est terminé. Passe en Premium ou achète des crédits pour continuer à utiliser EduAya.';
+  document.getElementById('premium-modal').style.display = 'flex';
+}
+
 // ── Vérification manuelle abonnement ──────────────────────────
 async function verifierAbonnement() {
   if (!appState.userEmail) { showToast('⚠️ Connecte-toi d\'abord'); return; }
@@ -28884,6 +28940,7 @@ function setupHome() {
   appliquerDevMode();
   enregistrerConnexion();
   updateHamburgerVisibility();
+  afficherBandeauEssaiGratuit();
   // checkRapportParent() désactivé volontairement, Isaac lance l'envoi manuellement pour l'instant
   afficherRappelAbsence();
 }
@@ -31923,7 +31980,7 @@ window.addEventListener('load', async () => {
 
     // Vérifier si le profil existe déjà dans Supabase
     const { data: profil } = await supabaseClient.from('profils')
-      .select('nom, classe, plan, premium_classe, credits, points, streak, requetes_aujourd_hui, derniere_requete, coach_quota_aujourd_hui, derniere_requete_coach, suspendu, role')
+      .select('nom, classe, plan, premium_classe, credits, points, streak, requetes_aujourd_hui, derniere_requete, coach_quota_aujourd_hui, derniere_requete_coach, suspendu, role, created_at')
       .eq('email', session.user.email)
       .single();
 
@@ -31942,6 +31999,7 @@ window.addEventListener('load', async () => {
       appState.credits = profil.credits || 0;
       appState.points = profil.points || appState.points || 0;
       appState.streak = profil.streak || appState.streak || 0;
+      appState.createdAt = profil.created_at || appState.createdAt;
       const todayISO = new Date().toISOString().split('T')[0];
       if (profil.derniere_requete !== todayISO) {
         appState.requetesAujourdhui = 0;
@@ -31998,7 +32056,7 @@ window.addEventListener('load', async () => {
     appState.userEmail = session.user.email;
     appState.userName = session.user.user_metadata?.full_name?.split(' ')[0] || 'Apprenant';
     const { data: profil } = await supabaseClient.from('profils')
-      .select('nom, classe, plan, premium_classe, credits, points, streak, requetes_aujourd_hui, derniere_requete, coach_quota_aujourd_hui, derniere_requete_coach, suspendu, role')
+      .select('nom, classe, plan, premium_classe, credits, points, streak, requetes_aujourd_hui, derniere_requete, coach_quota_aujourd_hui, derniere_requete_coach, suspendu, role, created_at')
       .eq('email', session.user.email)
       .single();
     if (profil && profil.suspendu) {
@@ -32015,6 +32073,7 @@ window.addEventListener('load', async () => {
       appState.credits = profil.credits || 0;
       appState.points = profil.points || 0;
       appState.streak = profil.streak || 0;
+      appState.createdAt = profil.created_at || appState.createdAt;
       const todayISO = new Date().toISOString().split('T')[0];
       appState.requetesAujourdhui = profil.derniere_requete !== todayISO ? 0 : (profil.requetes_aujourd_hui || 0);
       saveState();
@@ -32061,7 +32120,7 @@ async function syncLimiteFromSupabase() {
   if (!appState.userEmail) return;
   try {
     const { data, error } = await supabaseClient.from('profils')
-      .select('requetes_aujourd_hui, derniere_requete, plan, premium_classe, classe, nom, credits, points, streak, badges, coach_quota_aujourd_hui, derniere_requete_coach, suspendu, role')
+      .select('requetes_aujourd_hui, derniere_requete, plan, premium_classe, classe, nom, credits, points, streak, badges, coach_quota_aujourd_hui, derniere_requete_coach, suspendu, role, created_at')
       .eq('email', appState.userEmail)
       .single();
     if (error && error.code === 'PGRST116') {
@@ -32113,9 +32172,40 @@ async function syncLimiteFromSupabase() {
       appState.derniereRequete = todayISO;
       if (data.classe) appState.userClass = data.classe;
       if (data.role) appState.userRole = data.role;
+      if (data.created_at) appState.createdAt = data.created_at;
       saveState();
+      afficherBandeauEssaiGratuit();
     }
   } catch(e) { console.warn('syncLimite error:', e); }
+}
+
+// ── Essai gratuit de 3 jours ──────────────────────────────────
+const DUREE_ESSAI_JOURS = 3;
+
+function joursEssaiRestants() {
+  if (!appState.createdAt) return null;
+  const inscrit = new Date(appState.createdAt).getTime();
+  const joursEcoules = (Date.now() - inscrit) / (1000 * 60 * 60 * 24);
+  return Math.max(0, Math.ceil(DUREE_ESSAI_JOURS - joursEcoules));
+}
+
+function afficherBandeauEssaiGratuit() {
+  const bandeau = document.getElementById('bandeau-essai-gratuit');
+  if (!bandeau) return;
+  if (isPremiumActif() || isAdmin()) { bandeau.style.display = 'none'; return; }
+  const reste = joursEssaiRestants();
+  if (reste === null) { bandeau.style.display = 'none'; return; }
+  if (reste > 0) {
+    bandeau.style.display = 'flex';
+    bandeau.style.background = 'linear-gradient(135deg,#0D47A1,#1565C0)';
+    bandeau.innerHTML = '🎁 Il te reste <strong>' + reste + ' jour' + (reste > 1 ? 's' : '') + '</strong> d\'essai gratuit'
+      + '<button onclick="ouvrirPremiumModal()" style="margin-left:10px;background:white;color:#0D47A1;border:none;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:800;cursor:pointer;">Passer en Premium</button>';
+  } else {
+    bandeau.style.display = 'flex';
+    bandeau.style.background = 'linear-gradient(135deg,#C62828,#E53935)';
+    bandeau.innerHTML = '⏳ Ton essai gratuit est terminé'
+      + '<button onclick="ouvrirModalEssaiTermine()" style="margin-left:10px;background:white;color:#C62828;border:none;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:800;cursor:pointer;">Continuer</button>';
+  }
 }
 
 async function incrementLimiteInSupabase() {
@@ -32137,7 +32227,10 @@ function verifierLimiteGratuit() {
     appState.derniereRequete = today;
     saveState();
   }
-  if (appState.requetesAujourdhui >= LIMITE_GRATUIT) {
+  // Après 3 jours d'essai, les quotas journaliers gratuits ne se renouvellent plus,
+  // il faut un crédit ou le Premium pour continuer (l'application réelle se fait côté serveur).
+  const essaiTermine = joursEssaiRestants() === 0;
+  if (essaiTermine || appState.requetesAujourdhui >= LIMITE_GRATUIT) {
     if (appState.credits > 0) {
       appState.credits--;
       saveState();
@@ -32147,7 +32240,7 @@ function verifierLimiteGratuit() {
       showToast('💳 1 crédit utilisé, Il reste ' + appState.credits + ' crédit(s)');
       return true;
     }
-    document.getElementById('premium-modal').style.display = 'flex';
+    if (essaiTermine) { ouvrirModalEssaiTermine(); } else { ouvrirPremiumModal(); }
     return false;
   }
   appState.requetesAujourdhui = (appState.requetesAujourdhui || 0) + 1;
@@ -32247,8 +32340,8 @@ async function getSupabaseSession() {
 <div id="premium-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;justify-content:center;align-items:center;overflow-y:auto;padding:16px;box-sizing:border-box;">
   <div style="background:white;border-radius:24px;padding:24px;max-width:360px;width:100%;text-align:center;margin:auto;">
     <div style="font-size:40px;margin-bottom:8px;">💡</div>
-    <h2 style="color:#007A4D;font-family:'Nunito',sans-serif;margin-bottom:4px;font-size:20px;">Continuer sur EduAya</h2>
-    <p style="color:#555;font-size:13px;margin-bottom:16px;">Tu as atteint ta limite gratuite. Choisis une option :</p>
+    <h2 id="premium-modal-title" style="color:#007A4D;font-family:'Nunito',sans-serif;margin-bottom:4px;font-size:20px;">Continuer sur EduAya</h2>
+    <p id="premium-modal-desc" style="color:#555;font-size:13px;margin-bottom:16px;">Tu as atteint ta limite gratuite. Choisis une option :</p>
 
     <!-- NUMÉRO MOBILE MONEY EN PREMIER -->
     <input id="payment-phone" type="tel" placeholder="Numéro Mobile Money (ex: 97000000)"
