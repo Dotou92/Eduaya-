@@ -31941,14 +31941,6 @@ window.addEventListener('load', async () => {
   loadState();
   initModeHorsLigne();
 
-  // Lien direct vers l'écran de connexion (ex : https://eduaya.com/#connexion) :
-  // prioritaire sur tout le reste, y compris une session déjà active.
-  if (window.location.hash === '#connexion') {
-    history.replaceState(null, '', window.location.pathname);
-    allerConnexion();
-    return;
-  }
-
   // Deep link, sauvegarder avant connexion, gérer si déjà connecté
   sauvegarderDeepLink();
 
@@ -31972,7 +31964,19 @@ window.addEventListener('load', async () => {
 
   // Vérifier si l'élève est connecté via Supabase
   const { data: { session } } = await supabaseClient.auth.getSession();
-  
+
+  // Lien direct vers l'écran de connexion (ex : https://eduaya.com/#connexion) :
+  // n'affiche le formulaire de connexion QUE si aucune session valide n'existe.
+  // Si une session existe déjà (cas de l'app mobile, qui démarre toujours sur ce
+  // lien), on laisse le flux normal ci-dessous restaurer l'utilisateur connecté.
+  if (window.location.hash === '#connexion') {
+    history.replaceState(null, '', window.location.pathname);
+    if (!session) {
+      allerConnexion();
+      return;
+    }
+  }
+
   // Si connexion Google réussie (redirect)
   if (session && session.user && (session.user.app_metadata?.provider === 'google' || session.user.app_metadata?.providers?.includes('google'))) {
     appState.userEmail = session.user.email;
