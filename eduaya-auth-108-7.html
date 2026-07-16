@@ -31938,6 +31938,11 @@ document.getElementById('diag-modal').addEventListener('click', function(e) {
 });
 
 window.addEventListener('load', async () => {
+  // Capturé avant tout, car sauvegarderDeepLink() efface window.location.hash
+  // juste après (via history.replaceState) : sans ça, le hash #connexion
+  // disparaissait avant même d'être testé plus bas.
+  const hashInitial = window.location.hash;
+
   loadState();
   initModeHorsLigne();
 
@@ -31969,7 +31974,7 @@ window.addEventListener('load', async () => {
   // n'affiche le formulaire de connexion QUE si aucune session valide n'existe.
   // Si une session existe déjà (cas de l'app mobile, qui démarre toujours sur ce
   // lien), on laisse le flux normal ci-dessous restaurer l'utilisateur connecté.
-  if (window.location.hash === '#connexion') {
+  if (hashInitial === '#connexion') {
     history.replaceState(null, '', window.location.pathname);
     if (!session) {
       allerConnexion();
