@@ -32034,7 +32034,13 @@ window.addEventListener('load', async () => {
     appState.userName = 'Apprenant';
     appState.userClass = '';
     appState.userEmail = '';
-    goTo('screen-landing');
+    // Lien direct vers l'écran de connexion (ex : https://eduaya.com/#connexion),
+    // utile pour partager un lien qui ouvre directement le formulaire de connexion.
+    if (window.location.hash === '#connexion') {
+      allerConnexion();
+    } else {
+      goTo('screen-landing');
+    }
   }
 });
 
