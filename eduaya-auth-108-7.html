@@ -28339,14 +28339,23 @@ function allerConnexion() {
 }
 
 async function connexionGoogle() {
+  // Si la page tourne dans l'app mobile (wrapper WebView), "OpenExternalUrl" est
+  // injecté par le code natif Flutter : on ouvre alors Google dans le vrai
+  // navigateur du téléphone (Google bloque sinon la connexion depuis une WebView),
+  // et le retour de connexion est capté côté natif via le lien eduaya://login-callback.
+  const dansAppNative = typeof window.OpenExternalUrl !== 'undefined';
   try {
-    const { error } = await supabaseClient.auth.signInWithOAuth({
+    const { data, error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://eduaya.com'
+        redirectTo: dansAppNative ? 'eduaya://login-callback' : 'https://eduaya.com',
+        skipBrowserRedirect: dansAppNative
       }
     });
     if (error) throw error;
+    if (dansAppNative && data && data.url) {
+      window.OpenExternalUrl.postMessage(data.url);
+    }
   } catch(e) {
     showToast('⚠️ Erreur Google : ' + e.message);
   }
