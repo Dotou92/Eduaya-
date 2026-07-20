@@ -35861,6 +35861,16 @@ function estimerSeuilFiliere(placesTotal) {
   return 15.5;
 }
 
+// Certaines filières restent réputées très sélectives dans les faits (forte
+// demande nationale) même quand leur nombre de places (bourse+aide) est
+// élevé, ce que le nombre de places seul ne peut pas refléter. On relève
+// leur seuil estimé en conséquence.
+var SEUIL_MINIMUM_RESERVE = [
+  { motif: /m[ée]decine|pharmacie/i, seuilMin: 15 },
+  { motif: /classes? pr[ée]paratoires?|classe pr[ée]parat/i, seuilMin: 15 },
+  { motif: /kin[ée]sith[ée]rapie/i, seuilMin: 14 },
+];
+
 function getChanceFiliere(moy, filiere) {
   var placesTotal = (filiere.bourse || 0) + (filiere.aide || 0);
   if (filiere.modeEntree === 'concours') {
@@ -35870,10 +35880,13 @@ function getChanceFiliere(moy, filiere) {
     return Object.assign({}, CHANCE_LABELS.eleve, { tier: 'eleve', blocked: false, payant: true, placesTotal: placesTotal });
   }
   if (moy === null) return Object.assign({}, CHANCE_LABELS.moyenne, { tier: 'moyenne', blocked: false, placesTotal: placesTotal });
-  // Le seuil ne dépend que du nombre réel de places (bourse+aide) : à
-  // moyenne égale, une filière avec plus de places offre toujours plus de
-  // chances, sans exception liée au nom ou à la réputation de la filière.
   var seuil = estimerSeuilFiliere(placesTotal);
+  for (var ri = 0; ri < SEUIL_MINIMUM_RESERVE.length; ri++) {
+    if (SEUIL_MINIMUM_RESERVE[ri].motif.test(filiere.nom)) {
+      seuil = Math.max(seuil, SEUIL_MINIMUM_RESERVE[ri].seuilMin);
+      break;
+    }
+  }
   if (moy < seuil - 2) return Object.assign({}, CHANCE_LABELS.faible, { tier: 'faible', blocked: true, placesTotal: placesTotal, seuil: seuil });
   if (moy < seuil) return Object.assign({}, CHANCE_LABELS.moyenne, { tier: 'moyenne', blocked: false, placesTotal: placesTotal, seuil: seuil });
   return Object.assign({}, CHANCE_LABELS.eleve, { tier: 'eleve', blocked: false, placesTotal: placesTotal, seuil: seuil });
@@ -36782,6 +36795,15 @@ function getCandidatsBourseIA(serie, moyenne, limit) {
       pool.push(liste[i]);
     }
   }
+  // Filières nationalement réputées sélectives (médecine, pharmacie, classes
+  // prépa...) : leur seuil est relevé manuellement (SEUIL_MINIMUM_RESERVE)
+  // mais leur marge reste souvent "moyenne" plutôt que "la plus faible" face
+  // à de petites filières de niche à peu de places. On les inclut donc en
+  // priorité dès que l'élève n'y est pas bloqué, pour ne jamais les occulter.
+  var filieresReputees = nonBloquees.filter(function(f) {
+    return SEUIL_MINIMUM_RESERVE.some(function(r) { return r.motif.test(f.nom); });
+  }).sort(function(a, b) { return b._margeIA - a._margeIA; });
+  ajouter(filieresReputees);
   ajouter(parAmbition, Math.ceil(lim / 2));
   ajouter(parSurete, Math.ceil(lim / 2));
   ajouter(parSurete);
