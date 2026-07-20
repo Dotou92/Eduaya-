@@ -26301,23 +26301,47 @@ async function ouvrirConseillerIA() {
   appState.currentSubject = 'Orientation Scolaire';
   appState.currentMode = 'orientation';
   const repMarche = result.reponses ? result.reponses.slice(20, 25) : [];
+
+  // Série de bac + moyenne de classement renseignées dans l'onglet "Choix de
+  // filière" (si l'élève les a déjà remplies) : permet au conseiller IA de
+  // raisonner sur des filières et des chiffres de bourses réels plutôt que
+  // sur son seul profil de personnalité.
+  const serie = (typeof _oriChancesSerie !== 'undefined' && _oriChancesSerie) || '';
+  const moyenne = (typeof _oriChancesMoy !== 'undefined') ? _oriChancesMoy : null;
+  const candidatsBourse = (serie && moyenne !== null) ? getCandidatsBourseIA(serie, moyenne, 14) : [];
+
   appState.orientationContext = {
     profilPrincipal: profil ? profil.label : '',
     profilSecondaire: profilSec ? profilSec.label : '',
     seriesRecommandees: profil ? profil.series_bepc : [],
     filieres: profil ? profil.filieres_bac : [],
     prefEmploi: repMarche.find(function(r) { return r && r.startsWith('emploi_'); }) || '',
-    secteurInteret: repMarche.find(function(r) { return r && r.startsWith('marche_'); }) || ''
+    secteurInteret: repMarche.find(function(r) { return r && r.startsWith('marche_'); }) || '',
+    serie: serie,
+    moyenne: moyenne,
+    candidatsBourse: candidatsBourse
   };
 
   goToScreen('chat');
   const msgs = document.getElementById('chat-messages');
-  if (msgs) {
-    msgs.innerHTML = '';
+  if (!msgs) return;
+  msgs.innerHTML = '';
+
+  if (candidatsBourse.length > 0) {
+    // Série + notes déjà renseignées : on lance directement l'analyse
+    // approfondie des 3 meilleures chances de bourse, ancrée sur les
+    // données réelles du guide MESRS/DGES 2025-2026.
+    const input = document.getElementById('chat-input');
+    if (input) {
+      input.value = "Analyse mon profil en profondeur et identifie les 3 filières où j'ai le plus de chances d'être retenu(e) boursier(ère) de l'État béninois. Présente le résultat en 3 choix classés (1er choix, 2e choix, 3e choix), avec justification complète pour chacun.";
+      await sendMessage();
+    }
+  } else {
     addAIMessage('👋 Bonjour ! Je suis ton **conseiller d\'orientation** sur EduAya.\n\n'
       + 'D\'après ton test, ton profil dominant est **' + (profil ? profil.emoji + ' ' + profil.label : '') + '**.'
       + (profilSec ? ' Tu as aussi un fort penchant pour le profil **' + profilSec.label + '**.' : '') + '\n\n'
-      + 'Je suis là pour répondre à toutes tes questions sur :\n'
+      + '💡 Pour une analyse précise de tes **chances de bourse**, renseigne d\'abord ta série de bac et tes notes dans l\'onglet **🎓 Choix de filière**, puis reviens me voir : je pourrai te proposer 3 choix classés et justifiés, basés sur les vraies places boursières disponibles.\n\n'
+      + 'En attendant, je peux déjà répondre à tes questions sur :\n'
       + '- Les séries après le BEPC\n'
       + '- Les filières et universités au Bénin\n'
       + '- Les concours d\'entrée\n'
@@ -30060,32 +30084,64 @@ function buildSystemPrompt(subj, mode, level, userClass, topic) {
   // ── Mode Orientation ──
   if (mode === 'orientation') {
     const ctx = appState.orientationContext || {};
-    return `Tu es un conseiller d'orientation scolaire expert, bienveillant et spécialisé dans le système éducatif et le marché de l'emploi béninois (MESTFP).
+    const candidats = ctx.candidatsBourse || [];
 
-L'élève a passé un test d'orientation complet. Voici son profil :
+    const donneesCandidatsTxt = candidats.length > 0
+      ? candidats.map(function(f, i) {
+          return (i + 1) + '. ' + f.nom + ' — ' + f.universite + (f.etablissement ? ' / ' + f.etablissement : '')
+            + ' | bacs compatibles : ' + f.bacs.join(', ')
+            + ' | places bourse : ' + f.bourse + (f.aide ? ' (+ ' + f.aide + ' aide)' : '')
+            + ' | chance estimée : ' + f.chance.replace(/[^\w\sÀ-ÿ]/g, '').trim()
+            + (f.seuilEstime !== undefined ? ' (seuil de moyenne estimé ~' + f.seuilEstime + '/20)' : '')
+            + ' | débouchés : ' + (f.debouches || 'non précisé');
+        }).join('\n')
+      : null;
+
+    return `Tu es un conseiller d'orientation scolaire expert et rigoureux, spécialisé dans le système éducatif béninois et les procédures d'attribution des bourses de l'État (plateforme apresmonbac.bj, MESRS/DGES).
+
+═══ PROFIL DE L'ÉLÈVE (test d'orientation) ═══
 - Profil dominant : ${ctx.profilPrincipal || 'Non défini'}
 - Profil secondaire : ${ctx.profilSecondaire || 'Non défini'}
-- Séries recommandées après BEPC : ${(ctx.seriesRecommandees || []).join(', ')}
-- Filières recommandées : ${(ctx.filieres || []).slice(0, 3).join(', ')}
+- Séries recommandées après BEPC : ${(ctx.seriesRecommandees || []).join(', ') || 'Non précisé'}
+- Filières recommandées par le test : ${(ctx.filieres || []).slice(0, 3).join(', ') || 'Non précisé'}
 - Préférence emploi : ${ctx.prefEmploi || 'Non précisé'}
 - Secteurs d'intérêt : ${ctx.secteurInteret || 'Non précisé'}
+- Série de bac renseignée : ${ctx.serie || 'Non renseignée'}
+- Moyenne de classement calculée : ${ctx.moyenne !== null && ctx.moyenne !== undefined ? ctx.moyenne.toFixed(2) + '/20' : 'Non renseignée'}
 
-CONTEXTE MARCHÉ DE L'EMPLOI AU BÉNIN :
+═══ RÈGLES OFFICIELLES D'ORIENTATION ET DE BOURSE (${ORIENTATION_REGLES_OFFICIELLES.source}) ═══
+- Formule de classement : ${ORIENTATION_REGLES_OFFICIELLES.formuleClassement}
+- Ordre d'allocation des places dans chaque filière :
+${ORIENTATION_REGLES_OFFICIELLES.ordreAllocation.map(r => '  ' + r).join('\n')}
+- Règles importantes :
+${ORIENTATION_REGLES_OFFICIELLES.reglesImportantes.map(r => '  • ' + r).join('\n')}
+
+${donneesCandidatsTxt ? `═══ FILIÈRES CANDIDATES RÉELLES (guide MESRS/DGES 2025-2026, compatibles avec la série ${ctx.serie} et offrant des places bourse) ═══
+${donneesCandidatsTxt}
+
+INSTRUCTION CRITIQUE : quand l'élève te demande une analyse de ses chances de bourse, tu dois OBLIGATOIREMENT choisir tes 3 filières recommandées PARMI CETTE LISTE UNIQUEMENT. N'invente aucune filière, aucun chiffre de bourse et aucune université qui n'y figure pas. Utilise le champ "chance estimée" et le "seuil de moyenne" fournis comme base factuelle de ton analyse.
+
+Quand l'élève te demande cette analyse (ou dès sa première question sur ses chances de bourse), réponds selon cette structure exacte :
+1. Une courte analyse de profil (2-3 phrases) qui relie sa série, sa moyenne de classement ET son profil de personnalité issu du test (${ctx.profilPrincipal || 'son profil'}) — explique en quoi ce profil renforce ou nuance tes choix.
+2. **Premier choix** : la filière de la liste où ses chances d'obtenir la BOURSE sont les plus élevées. Justifie avec : (a) l'adéquation entre sa série et la filière, (b) les critères d'attribution de la bourse (nombre de places, sa marge par rapport au seuil estimé), (c) les débouchés concrets.
+3. **Deuxième choix** : une alternative solide, avec la même structure de justification.
+4. **Troisième choix** : une option de repli réaliste (chances plus sûres, quitte à viser un peu moins haut), avec la même structure de justification.
+5. Une section **Conseils pratiques** : rappelle que le classement se fait filière par filière (pas garanti même si admissible), que tout changement de filière après affectation fait perdre l'allocation, et donne 2-3 actions concrètes (ex. bien classer ses vœux sur apresmonbac.bj du plus ambitieux au plus sûr, vérifier les pièces du dossier, etc.).` : `Aucune série de bac ou moyenne de classement n'a encore été renseignée par l'élève. Si il/elle te demande une analyse de ses chances de bourse, explique-lui clairement qu'il doit d'abord aller dans l'onglet "🎓 Choix de filière" pour indiquer sa série de bac et ses notes, afin que tu puisses baser ton analyse sur des données réelles et non des suppositions. En attendant, tu peux répondre à ses autres questions générales sur l'orientation.`}
+
+═══ CONTEXTE MARCHÉ DE L'EMPLOI AU BÉNIN ═══
 - Secteurs porteurs : Numérique/Tech, Agrobusiness, BTP, Santé, Énergie renouvelable, Finance/Microfinance
 - Secteurs difficiles : Administration publique (peu de postes), Arts (revenus irréguliers)
 - Particularité Nord Bénin (Bembèrèkè/Borgou) : opportunités en santé, agriculture, enseignement, administration locale
 - Salaires moyens débutants : 80 000 – 200 000 FCFA (fonction publique), 150 000 – 400 000 FCFA (privé), variable (entrepreneuriat)
-- Universités clés : UAC (Cotonou), UNSTIM (Abomey), EPAC, FSS, FASEG, FLASH, FADESP, ENEAM, ENAM, ENS, IFRI
 
-TES RÈGLES :
-1. Tu connais parfaitement le système éducatif béninois : séries (A, B, C, D, G), universités et grandes écoles.
-2. Tu donnes des conseils CONCRETS avec des chiffres réels (salaires, durées d'études, coûts approximatifs).
-3. Tu mentionnes les concours d'entrée, les délais, les conditions d'admission.
-4. Tu es honnête sur les filières difficiles et encourageant sur les alternatives réalistes.
-5. Tu parles en français simple, accessible à un élève de 3ème ou de Terminale.
-6. Tu intègres toujours la réalité du marché de l'emploi béninois dans tes conseils.
-7. Si l'élève hésite entre deux voies, tu l'aides à peser le pour et le contre objectivement.
-8. Tu mentionnes les opportunités spécifiques au Nord Bénin quand c'est pertinent.`;
+═══ TES RÈGLES GÉNÉRALES ═══
+1. Tu ne cites que des filières, universités et chiffres de bourses présents dans les données candidates ci-dessus quand elles sont disponibles — jamais d'invention.
+2. Tu donnes des conseils CONCRETS avec des chiffres réels (places bourse, durées d'études, salaires).
+3. Tu es honnête sur les filières difficiles et encourageant sur les alternatives réalistes.
+4. Tu parles en français simple, accessible à un élève de 3ème ou de Terminale.
+5. Tu fais une analyse profonde et structurée, pas une réponse vague.
+6. Si l'élève hésite entre deux voies, tu l'aides à peser le pour et le contre objectivement.
+7. Tu mentionnes les opportunités spécifiques au Nord Bénin quand c'est pertinent.`;
   }
 
   // Fonction pour trouver la SA correspondant au topic sélectionné
@@ -35693,6 +35749,27 @@ const ORIENTATION_DATA = [
 ];
 
 
+// Règles officielles d'orientation et d'attribution des bourses au Bénin
+// (source : ORIENTATION_META de orientation_2025.js, guide MESRS/DGES 2025-2026)
+// — utilisées pour ancrer le conseiller IA dans des faits vérifiés plutôt que
+// de le laisser deviner les règles.
+const ORIENTATION_REGLES_OFFICIELLES = {
+  source: "Ministère de l'Enseignement Supérieur et de la Recherche Scientifique (MESRS/DGES), guide 2025-2026",
+  plateforme: "apresmonbac.bj",
+  formuleClassement: "Moyenne de classement M = (m1×coef1 + m2×coef2 + m3×coef3) / (coef1+coef2+coef3), calculée uniquement sur les notes des 3 matières fondamentales de la série du bac.",
+  ordreAllocation: [
+    "1. Bourse : places réservées aux meilleures moyennes de classement de la filière",
+    "2. Aide universitaire / partiellement payant : places suivantes, coût réduit",
+    "3. Entièrement payant : au-delà des places bourse + aide",
+  ],
+  reglesImportantes: [
+    "La sélection se fait filière par filière et séparément par université/établissement : être admissible dans une filière ne garantit pas la bourse — seuls les mieux classés dans CETTE filière précise l'obtiennent, dans la limite du nombre de places bourse indiqué.",
+    "Après classement et affectation, les demandes de transfert d'une université à une autre sont irrecevables.",
+    "Tout changement de filière après affectation entraîne la perte de l'allocation (bourse ou aide).",
+    "Pour les filières en mode Concours, la moyenne de classement n'est pas déterminante : l'admission se fait sur épreuve écrite.",
+  ],
+};
+
 // ============================================================
 // MODULE ORIENTATION v2, 3 onglets
 // 1. Test de profil (40 questions, existant)
@@ -36674,6 +36751,76 @@ function calculerChoixOptimaux(filtered) {
   choix = choix.filter(function(f) { if (seen[f.id]) return false; seen[f.id] = true; return true; });
   if (choix.length < 2) return null;
   return { ambitieux: ambitieux, realiste: realiste, sur: sur, liste: choix };
+}
+
+// Filières par classement, compatibles avec la série donnée et offrant
+// réellement des places BOURSE (bourse > 0), classées par marge au-dessus du
+// seuil de chance estimé (les meilleurs paris pour la bourse en premier).
+// Sert de données factuelles pour ancrer le conseiller IA (évite qu'il
+// invente des filières ou des chiffres de bourses).
+function getCandidatsBourseIA(serie, moyenne, limit) {
+  if (!serie || moyenne === null || moyenne === undefined || isNaN(moyenne)) return [];
+  var candidats = ORIENTATION_DATA.filter(function(f) {
+    if (f.modeEntree !== 'classement' || !(f.bourse > 0)) return false;
+    return f.bacs.some(function(b) {
+      return b === serie ||
+        (serie === 'F' && b.indexOf('F') === 0) ||
+        (serie === 'DT' && b.indexOf('DT') === 0) ||
+        (serie === 'DEAT' && b.indexOf('DEAT') === 0);
+    });
+  });
+
+  candidats.forEach(function(f) {
+    var moyF = f.matieres.length > 0 ? calcMoyenneFiliere(f.id, f.matieres) : null;
+    var moyRef = moyF !== null ? moyF : moyenne;
+    f._chanceIA = getChanceFiliere(moyRef, f);
+    f._moyRefIA = moyRef;
+    f._margeIA = moyRef - (f._chanceIA.seuil !== undefined ? f._chanceIA.seuil : moyRef);
+  });
+
+  var nonBloquees = candidats.filter(function(f) { return !f._chanceIA.blocked; });
+  var bloquees = candidats.filter(function(f) { return f._chanceIA.blocked; });
+  var lim = limit || 12;
+
+  // Pool équilibré : moitié "les plus sûres" (grande marge), moitié "les plus
+  // ambitieuses encore atteignables" (marge positive la plus faible), pour ne
+  // pas exclure d'office les filières sélectives (ex. Médecine) quand l'élève
+  // a réellement le niveau requis.
+  var parSurete = nonBloquees.slice().sort(function(a, b) { return b._margeIA - a._margeIA; });
+  var parAmbition = nonBloquees.slice().sort(function(a, b) { return a._margeIA - b._margeIA; });
+  var parBloqueesProches = bloquees.slice().sort(function(a, b) { return b._margeIA - a._margeIA; });
+
+  var pool = [];
+  var seen = {};
+  function ajouter(liste, max) {
+    for (var i = 0; i < liste.length && pool.length < lim; i++) {
+      if (max !== undefined && i >= max) break;
+      if (seen[liste[i].id]) continue;
+      seen[liste[i].id] = true;
+      pool.push(liste[i]);
+    }
+  }
+  // Filières nationalement réputées sélectives (médecine, pharmacie, classes
+  // prépa...) : leur seuil est relevé manuellement (SEUIL_MINIMUM_RESERVE)
+  // mais leur marge reste souvent "moyenne" plutôt que "la plus faible" face
+  // à de petites filières de niche à peu de places. On les inclut donc en
+  // priorité dès que l'élève n'y est pas bloqué, pour ne jamais les occulter.
+  var filieresReputees = nonBloquees.filter(function(f) {
+    return SEUIL_MINIMUM_RESERVE.some(function(r) { return r.motif.test(f.nom); });
+  }).sort(function(a, b) { return b._margeIA - a._margeIA; });
+  ajouter(filieresReputees);
+  ajouter(parAmbition, Math.ceil(lim / 2));
+  ajouter(parSurete, Math.ceil(lim / 2));
+  ajouter(parSurete);
+  ajouter(parBloqueesProches, 2);
+
+  return pool.slice(0, lim).map(function(f) {
+    return {
+      nom: f.nom, universite: f.universite, etablissement: f.etablissementNom,
+      bacs: f.bacs, bourse: f.bourse, aide: f.aide, debouches: f.debouches,
+      chance: f._chanceIA.label, seuilEstime: f._chanceIA.seuil, moyenneCandidat: f._moyRefIA,
+    };
+  });
 }
 
 function renderChoixOptimauxCard(choix) {
