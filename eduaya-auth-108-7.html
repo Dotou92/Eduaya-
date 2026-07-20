@@ -36852,22 +36852,23 @@ function renderChancesResults() {
     return b._moyRef - a._moyRef;
   });
 
-  // 1er / 2e / 3e choix : les meilleures filières par classement déjà présentes
-  // dans la liste ci-dessous, marquées directement sur leur carte.
+  // 1er / 2e / 3e choix : sortis de la liste et mis en avant tout en haut,
+  // dans un bloc dédié — ils ne sont plus répétés dans la liste ci-dessous.
   var top3 = getTop3Choix(filtered);
-  var rangChoix = {};
-  top3.forEach(function(f, idx) { rangChoix[f.id] = idx + 1; });
+  var topIds = {};
+  top3.forEach(function(f) { topIds[f.id] = true; });
+  var resteListe = filtered.filter(function(f) { return !topIds[f.id]; });
   var RANG_BADGES = {
-    1: { label: '🥇 1er choix', bg: '#FEF3C7', color: '#92400E', border: '#FCD34D' },
-    2: { label: '🥈 2e choix', bg: '#E5E7EB', color: '#374151', border: '#D1D5DB' },
-    3: { label: '🥉 3e choix', bg: '#FDE9D9', color: '#9A3412', border: '#FDBA74' },
+    1: { label: '🥇 1er choix', accent: '#D97706', bg: 'linear-gradient(135deg,#FEF3C7,#FDE68A)' },
+    2: { label: '🥈 2e choix', accent: '#6B7280', bg: 'linear-gradient(135deg,#F3F4F6,#E5E7EB)' },
+    3: { label: '🥉 3e choix', accent: '#C2410C', bg: 'linear-gradient(135deg,#FFEDD5,#FED7AA)' },
   };
 
-  // Grouper par université puis domaine
+  // Grouper le reste par université puis domaine
   var grouped = {};
   var uniOrder = [];
-  for (var gi = 0; gi < filtered.length; gi++) {
-    var gf = filtered[gi];
+  for (var gi = 0; gi < resteListe.length; gi++) {
+    var gf = resteListe[gi];
     if (!grouped[gf.universite]) { grouped[gf.universite] = {}; uniOrder.push(gf.universite); }
     if (!grouped[gf.universite][gf.domaine]) grouped[gf.universite][gf.domaine] = [];
     grouped[gf.universite][gf.domaine].push(gf);
@@ -36884,6 +36885,31 @@ function renderChancesResults() {
   html += '<div style="font-size:13px;color:#6B7A94;margin-bottom:6px;">' + filtered.length + ' filières compatibles avec ta série (classement, concours et payant)</div>';
   html += '<div style="display:flex;gap:8px;"><span style="padding:3px 10px;border-radius:10px;font-size:13px;font-weight:700;background:#DCFCE7;color:#166534;">' + accessible + ' accessibles</span>';
   html += '<span style="padding:3px 10px;border-radius:10px;font-size:13px;font-weight:700;background:#FEE2E2;color:#991B1B;">' + blocked + ' peu recommandées</span></div></div>';
+
+  if (top3.length > 0) {
+    html += '<div style="background:linear-gradient(135deg,#1A2332,#0D1520);border-radius:16px;padding:16px;margin-bottom:16px;">';
+    html += '<div style="font-size:15px;font-weight:900;color:white;margin-bottom:2px;">🏆 Tes meilleurs choix</div>';
+    html += '<div style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:12px;">Les filières où tes chances sont les plus solides, classées par ordre de priorité</div>';
+    top3.forEach(function(f, idx) {
+      var rb = RANG_BADGES[idx + 1];
+      var msT = f._moyF !== null ? f._moyF.toFixed(2) : _oriChancesMoy.toFixed(2);
+      var mtT = f.matieres.length > 0 ? ' (' + f.matieres.slice(0,3).join(', ') + ')' : '';
+      var placesTxtT = (f.bourse || f.aide) ? ((f.bourse||0) + (f.aide||0)) + ' places (bourse+aide)' : (f.modeEntree === 'payant' ? 'Places payantes' : 'Places non précisées');
+      var modeBadgeT = MODE_BADGES[f.modeEntree] || MODE_BADGES.classement;
+      html += '<div style="background:white;border-radius:14px;padding:14px;margin-bottom:' + (idx < top3.length - 1 ? '10px' : '0') + ';border-left:5px solid ' + rb.accent + ';">';
+      html += '<div style="display:inline-block;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:800;background:' + rb.bg + ';color:' + rb.accent + ';margin-bottom:8px;">' + rb.label + '</div>';
+      html += '<div style="font-size:16px;font-weight:800;color:#1A2332;line-height:1.3;">' + f.nom + '</div>';
+      html += '<div style="font-size:13px;color:#6B7A94;margin-top:2px;">' + f.universite + ' · ' + f.etablissementNom + '</div>';
+      html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center;">';
+      html += '<span style="font-size:13px;font-weight:800;color:#1565C0;">Moy. : ' + msT + '/20' + mtT + '</span>';
+      html += '<span style="padding:1px 7px;border-radius:8px;font-size:11px;font-weight:700;background:' + modeBadgeT.bg + ';color:' + modeBadgeT.color + ';">' + modeBadgeT.label + '</span>';
+      html += '<span style="padding:3px 8px;border-radius:10px;font-size:12px;font-weight:700;background:' + f._chance.bg + ';color:' + f._chance.color + ';border:1px solid ' + f._chance.border + ';">' + f._chance.label + '</span>';
+      html += '</div>';
+      html += '<div style="font-size:12px;color:#aaa;margin-top:6px;">' + placesTxtT + '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
 
   for (var ui = 0; ui < uniOrder.length; ui++) {
     var uni = uniOrder[ui];
@@ -36908,10 +36934,7 @@ function renderChancesResults() {
         var mt = fl.matieres.length > 0 ? ' (' + fl.matieres.slice(0,3).join(', ') + ')' : '';
         var placesTxt = (fl.bourse || fl.aide) ? ((fl.bourse||0) + (fl.aide||0)) + ' places (bourse+aide)' : (fl.modeEntree === 'payant' ? 'Places payantes' : 'Places non précisées');
         var modeBadge = MODE_BADGES[fl.modeEntree] || MODE_BADGES.classement;
-        var rang = rangChoix[fl.id];
-        var rangBadge = rang ? RANG_BADGES[rang] : null;
-        html += '<div style="padding:10px 14px;background:' + (rangBadge ? rangBadge.bg : bg) + ';border-top:1px solid #F0F4FF;opacity:' + op + ';' + (rangBadge ? 'border-left:4px solid ' + rangBadge.border + ';' : '') + '">';
-        if (rangBadge) html += '<div style="margin-bottom:6px;"><span style="padding:2px 9px;border-radius:8px;font-size:12px;font-weight:800;background:white;color:' + rangBadge.color + ';border:1px solid ' + rangBadge.border + ';">' + rangBadge.label + '</span></div>';
+        html += '<div style="padding:10px 14px;background:' + bg + ';border-top:1px solid #F0F4FF;opacity:' + op + ';">';
         html += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">';
         html += '<div style="flex:1;"><div style="font-size:15px;font-weight:700;color:#1A2332;line-height:1.3;' + ns + '">' + fl.nom + '</div>';
         html += '<div style="font-size:13px;color:#6B7A94;margin-top:2px;">' + fl.etablissementNom + '</div>';
