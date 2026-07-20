@@ -36487,6 +36487,15 @@ const PROFILS_ORIENTATION = {
 };
 
 function renderTabChances(container) {
+  // Présélectionne le profil issu du test "Mon profil" (onglet 1) s'il existe
+  // déjà et qu'aucun profil n'a encore été choisi ici.
+  if (!_oriChancesProfil) {
+    var resultatQuiz = (typeof orientationState !== 'undefined') ? orientationState.resultSauvegarde : null;
+    if (resultatQuiz && resultatQuiz.profilPrincipal && PROFILS_ORIENTATION[resultatQuiz.profilPrincipal]) {
+      _oriChancesProfil = resultatQuiz.profilPrincipal;
+    }
+  }
+
   const serieKeys = Object.keys(SERIES_MATIERES);
   let seriesOptions = '';
   serieKeys.forEach(function(s) {
@@ -36519,10 +36528,10 @@ function renderTabChances(container) {
 
     + '<div id="chances-profil-section" style="' + profilDisplay + '">'
     + '<div style="background:white;border:1.5px solid #DDEEFF;border-radius:14px;padding:14px;margin-bottom:12px;">'
-    + '<div style="font-size:14px;font-weight:800;color:#1565C0;margin-bottom:4px;">③ Ton profil <span style="font-size:13px;font-weight:600;color:#aaa;">(optionnel, filtre les résultats)</span></div>'
-    + '<div style="font-size:13px;color:#6B7A94;margin-bottom:10px;line-height:1.6;">Tu connais déjà ton profil d\'orientation ? Choisis-le ci-dessous pour ne voir que les filières qui te correspondent dans les résultats.</div>'
+    + '<div style="font-size:14px;font-weight:800;color:#1565C0;margin-bottom:4px;">③ Ton profil d\'orientation <span style="color:#DC2626;">*</span></div>'
+    + '<div style="font-size:13px;color:#6B7A94;margin-bottom:10px;line-height:1.6;">Obligatoire : c\'est ce profil qui détermine le classement des filières et le choix de tes 3 meilleures options. Si tu as déjà fait le test dans l\'onglet <strong>Mon profil</strong>, il est déjà présélectionné ci-dessous.</div>'
     + '<select id="chances-profil" onchange="onChancesProfilChange(this.value)" style="width:100%;padding:12px 14px;border:2px solid #DDEEFF;border-radius:12px;font-size:15px;font-family:Nunito,sans-serif;color:#1A2332;background:white;">'
-    + '<option value="">-- Tous les profils (aucun filtre) --</option>'
+    + '<option value="">-- Choisis ton profil --</option>'
     + profilOptions
     + '</select>'
     + '</div>'
@@ -36666,6 +36675,16 @@ function lancerChancesClassement() {
   if (!_oriChancesSerie) { showToast('⚠️ Choisis ta série'); return; }
   var serie = SERIES_MATIERES[_oriChancesSerie];
   if (!serie) { showToast('⚠️ Série introuvable'); return; }
+
+  var profilEl = document.getElementById('chances-profil');
+  _oriChancesProfil = profilEl ? profilEl.value : _oriChancesProfil;
+  if (!_oriChancesProfil) {
+    showToast('⚠️ Choisis ton profil d\'orientation avant de continuer');
+    if (profilEl) profilEl.focus();
+    var profilSectionCheck = document.getElementById('chances-profil-section');
+    if (profilSectionCheck) profilSectionCheck.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
 
   // Sauvegarder TOUTES les notes depuis les inputs
   var num = 0, den = 0;
