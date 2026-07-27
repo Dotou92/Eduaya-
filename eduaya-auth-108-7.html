@@ -2407,6 +2407,40 @@ window.addEventListener('load',function(){
   </div>
 </div>
 
+<!-- ========== LECTURE DE COURS (contenu officiel authored) ========== -->
+<div class="screen" id="screen-cours-lecture" style="display:none;flex-direction:column;position:relative;">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i></button>
+    <div class="topbar-title" id="cours-lecture-titre">Cours</div>
+    <div style="width:36px;"></div>
+  </div>
+  <div id="cours-lecture-body" style="overflow-y:auto;flex:1;padding:16px;padding-bottom:110px;background:#F8FAFF;"></div>
+
+  <button id="cours-fab-chat" onclick="ouvrirChatCoursOverlay()"
+    style="position:absolute;right:18px;bottom:24px;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#1565C0,#0D47A1);border:none;box-shadow:0 6px 20px rgba(21,101,192,0.45);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:50;">
+    <i class="fa-solid fa-comment-dots" style="color:white;font-size:22px;"></i>
+  </button>
+
+  <div id="cours-chat-overlay" style="display:none;position:absolute;inset:0;background:rgba(10,20,40,0.45);z-index:60;flex-direction:column;justify-content:flex-end;">
+    <div style="background:#F8FAFF;border-radius:20px 20px 0 0;max-height:82%;display:flex;flex-direction:column;box-shadow:0 -8px 28px rgba(0,0,0,0.25);">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1.5px solid #E5EAF5;">
+        <div>
+          <div style="font-size:14px;font-weight:900;color:#1A2332;">🤖 Assistant du cours</div>
+          <div style="font-size:11px;color:#6B7A94;" id="cours-chat-seq-label">Séquence</div>
+        </div>
+        <button onclick="fermerChatCoursOverlay()" style="background:none;border:none;font-size:22px;color:#6B7A94;cursor:pointer;line-height:1;">×</button>
+      </div>
+      <div id="cours-chat-messages" style="flex:1;overflow-y:auto;padding:14px 16px;min-height:180px;max-height:50vh;"></div>
+      <div style="display:flex;gap:8px;padding:10px 14px;border-top:1.5px solid #E5EAF5;">
+        <input id="cours-chat-input" type="text" placeholder="Pose ta question sur cette séquence..."
+          onkeydown="if(event.key==='Enter')envoyerMessageCoursChat()"
+          style="flex:1;padding:10px 14px;border:2px solid #DDEEFF;border-radius:20px;font-size:14px;font-family:'Nunito',sans-serif;">
+        <button onclick="envoyerMessageCoursChat()" style="width:40px;height:40px;border-radius:50%;background:#1565C0;border:none;color:white;cursor:pointer;flex-shrink:0;"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ========== ÉVALUATION, CHOIX SA ========== -->
 <div class="screen" id="screen-eval" style="display:none;flex-direction:column;">
   <div class="topbar">
@@ -3712,6 +3746,318 @@ const MATHS_6E = {
     criteres:["Pertinence de l'analyse (20%)","Exactitude de la mathématisation (30%)","Justesse de la production (40%)","Perfectionnement / présentation (10%)"],
     niveaux:{"Aucune maîtrise":"score < 25","Maîtrise partielle":"25 ≤ score < 50","Maîtrise minimale":"50 ≤ score < 75","Maîtrise maximale":"75 ≤ score ≤ 100"},
     regles:["Ne pas utiliser le terme 'translation' ni les notations vectorielles (glissement uniquement)","Ne pas parler de perspective cavalière avant la 4ème","La somme des angles d'un triangle n'est PAS au programme en 6ème","π ≠ 3,14 : toujours dire 'prendre pour valeur approchée de π le nombre...'","Les notations de symétrie type S_D(A)=A' sont INTERDITES en 6ème","Ne jamais utiliser les mots 'commutativité', 'associativité' ou 'distributivité', utiliser des formulations explicites ('pour multiplier une somme par un nombre, on peut...')","Les symboles ≤ et ≥ ne sont PAS introduits en 6ème (utiliser uniquement < et >)","La caractérisation de la médiatrice comme ensemble des points équidistants n'est PAS au programme de 6ème","La notion de droites perpendiculaires est primaire en 6ème : pas de définition formelle, on les exhibe par pliage","Distinguer clairement les propriétés À DÉMONTRER (7 au total) des propriétés À ADMETTRE (26 au total), ne jamais demander une démonstration d'une propriété qui est à admettre selon le programme"]
+  }
+};
+
+
+// ============================================================
+// COURS OFFICIELS — Lecture de cours structurée (remplace le
+// chat direct quand un contenu authored existe pour la séquence)
+// ============================================================
+const COURS_CONTENU = {
+  '📦 SA1, Cube, Pavé droit (patron, aire, volume)': {
+    titre: 'Cube et Pavé droit',
+    emoji: '📦',
+    objectifs: [
+      'Reconnaître et décrire un cube et un pavé droit.',
+      'Nommer et dénombrer les faces, sommets et arêtes de ces solides.',
+      'Reconnaître et construire le patron d\'un cube et d\'un pavé droit.',
+      'Calculer l\'aire de base, l\'aire latérale, l\'aire totale et le volume d\'un cube et d\'un pavé droit.'
+    ],
+    prerequis: [
+      'Notions de longueur, largeur, hauteur.',
+      'Aire d\'un rectangle et d\'un carré.',
+      'Unités de longueur, d\'aire et de volume.'
+    ],
+    sections: [
+      { type: 'def', titre: 'Pavé droit', texte: 'Le <strong>pavé droit</strong>, encore appelé parallélépipède rectangle, est un solide à six faces, dont chacune est un rectangle.<br><br><strong>Le pavé droit possède :</strong> 6 faces, 8 sommets et 12 arêtes.' },
+      { type: 'def', titre: 'Cube', texte: 'Le <strong>cube</strong> est un pavé droit particulier dont les six faces sont des carrés identiques.<br><br>Le cube possède donc lui aussi <strong>6 faces, 8 sommets et 12 arêtes</strong>, mais toutes ses arêtes ont la même longueur.' },
+      { type: 'vocab', titre: 'Vocabulaire des éléments', items: [
+        { terme: 'Face', description: 'chaque surface plane qui délimite le solide (ici un rectangle ou un carré).' },
+        { terme: 'Arête', description: 'segment situé à la jonction de deux faces.' },
+        { terme: 'Sommet', description: 'point de rencontre de trois arêtes.' },
+        { terme: 'Base', description: 'le pavé droit possède deux bases (les deux faces opposées choisies comme « bas » et « haut »).' },
+        { terme: 'Faces latérales', description: 'les 4 faces qui ne sont pas des bases.' },
+        { terme: 'Diagonale d\'une face', description: 'segment qui joint deux sommets opposés d\'une même face.' },
+        { terme: 'Faces opposées', description: 'deux faces qui ne se touchent pas (elles n\'ont aucune arête commune).' },
+        { terme: 'Faces superposables', description: 'faces qui peuvent être posées exactement (sans débordement) l\'une au-dessus de l\'autre.' }
+      ]},
+      { type: 'table', titre: 'Tableau récapitulatif des éléments', headers: ['Solide','Faces','Sommets','Arêtes','Bases','Faces latérales'], rows: [
+        ['Pavé droit','6','8','12','2','4'],
+        ['Cube','6','8','12','2','4']
+      ]},
+      { type: 'exemple', texte: 'Une boîte de craie a la forme d\'un pavé droit : ses 6 faces sont des rectangles. Un dé à jouer a la forme d\'un cube : ses 6 faces sont des carrés identiques.' },
+      { type: 'retenir', titre: 'Représenter un cube, un pavé droit', texte: 'Les règles de perspective cavalière ne sont pas au programme de la classe de sixième : on se contente d\'une représentation soignée où les arêtes cachées apparaissent en pointillés. La réalisation des solides de l\'espace réutilise les notions de droites, segments, parallélisme et perpendicularité vues à l\'école primaire.' },
+      { type: 'def', titre: 'Patron', texte: 'Le <strong>patron</strong> d\'un solide est une figure plane obtenue en découpant ce solide selon certaines arêtes, puis en le « dépliant » à plat.' },
+      { type: 'prop', items: [
+        'En pliant correctement un patron le long des traits, on reconstitue le solide sans trou ni recouvrement.',
+        'Le patron d\'un <strong>pavé droit</strong> est formé de 6 rectangles (les faces opposées sont deux à deux identiques).',
+        'Le patron d\'un <strong>cube</strong> est formé de 6 carrés identiques.'
+      ]},
+      { type: 'texte', titre: 'Fabriquer un cube, un pavé droit', texte: 'À partir d\'un patron, on peut fabriquer le solide correspondant. On apprend ainsi à :<br>• <strong>réaliser</strong> des patrons de cube et de pavé droit ;<br>• <strong>reconnaître</strong> un patron de cube, de pavé droit ;<br>• <strong>fabriquer</strong> un cube, un pavé droit à partir de leurs patrons.' },
+      { type: 'retenir', texte: 'Un même solide peut avoir <strong>plusieurs patrons différents</strong>. Une figure plane est un patron valable seulement si, une fois pliée, elle referme exactement le solide (les faces se rejoignent bord à bord, sans superposition).' },
+      { type: 'texte', titre: '3. Aire et volume d\'un cube et d\'un pavé droit', texte: 'On note pour le pavé droit : L la longueur, l la largeur, h la hauteur. Pour le cube, on note a la longueur de l\'arête.' },
+      { type: 'formules', titre: 'PAVÉ DROIT (longueur L, largeur l, hauteur h)', items: [
+        'Aire de base : 𝒜b = L × l',
+        'Périmètre de base : Pb = 2 × (L + l)',
+        'Aire latérale : 𝒜l = Pb × h',
+        'Aire totale : 𝒜t = 2 × 𝒜b + 𝒜l',
+        'Volume : 𝒱 = L × l × h'
+      ]},
+      { type: 'formules', titre: 'CUBE (arête a)', items: [
+        'Aire de base : 𝒜b = a × a = a²',
+        'Aire latérale : 𝒜l = 4 × a × a = 4a²',
+        'Aire totale : 𝒜t = 6 × a × a = 6a²',
+        'Volume : 𝒱 = a × a × a = a³'
+      ]},
+      { type: 'retenir', texte: '<strong>Attention aux unités.</strong> Une longueur s\'exprime en cm, m… ; une aire en cm², m²… ; un volume en cm³, m³… Les trois dimensions d\'un calcul de volume doivent être exprimées dans la même unité.' },
+      { type: 'retenir', texte: 'Dans le calcul des aires, les seules formules exigibles sont celles se rapportant au <strong>carré</strong> et au <strong>rectangle</strong>. Le volume du pavé droit s\'introduit en considérant un <strong>empilage de cubes</strong> dont les arêtes ont un centimètre de longueur : le nombre de petits cubes de 1 cm d\'arête qui remplissent le solide est égal à son volume en cm³.' },
+      { type: 'exResolu', titre: 'le pavé droit', enonce: 'Un pavé droit a pour dimensions L = 6 cm, l = 5 cm, h = 4 cm. Calculer son aire de base, son aire latérale, son aire totale et son volume.', etapes: [
+        '1) Aire de base : 𝒜b = L × l = 6 × 5 = <strong>30 cm²</strong>.',
+        '2) Périmètre de base : Pb = 2 × (6 + 5) = 2 × 11 = 22 cm.<br>Aire latérale : 𝒜l = Pb × h = 22 × 4 = <strong>88 cm²</strong>.',
+        '3) Aire totale : 𝒜t = 2 × 30 + 88 = 60 + 88 = <strong>148 cm²</strong>.',
+        '4) Volume : 𝒱 = 6 × 5 × 4 = <strong>120 cm³</strong>.'
+      ]},
+      { type: 'exResolu', titre: 'le cube', enonce: 'Un cube a une arête a = 4 cm. Calculer son aire totale et son volume.', etapes: [
+        'Aire totale : 𝒜t = 6 × a × a = 6 × 4 × 4 = 6 × 16 = <strong>96 cm²</strong>.',
+        'Volume : 𝒱 = a × a × a = 4 × 4 × 4 = <strong>64 cm³</strong>.'
+      ]}
+    ],
+    aRetenirFinal: { titre: 'Cube et pavé droit', items: [
+      'Pavé droit : 6 faces rectangulaires, 8 sommets, 12 arêtes.',
+      'Cube : pavé droit dont les 6 faces sont des carrés identiques.',
+      'Patron = solide déplié à plat ; un solide a plusieurs patrons possibles.',
+      'Pavé : 𝒜b = L×l ; 𝒜t = 2𝒜b+𝒜l ; 𝒱 = L×l×h.',
+      'Cube : 𝒜t = 6a² ; 𝒱 = a³.',
+      'Longueur → unité simple ; aire → unité² ; volume → unité³.'
+    ]},
+    verification: {
+      enonceHtml: '<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>'
+        + '<div>1. Un cube possède 8 faces.</div><div>2. Toutes les faces d\'un pavé droit sont des carrés.</div>'
+        + '<div>3. Un cube a 12 arêtes de même longueur.</div><div>4. Le volume s\'exprime dans la même unité qu\'une longueur.</div>'
+        + '<div style="margin-bottom:10px;">5. Un solide ne peut avoir qu\'un seul patron.</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>'
+        + '<div>1. Le nombre de sommets d\'un pavé droit est : a) 6 &nbsp; b) 8 &nbsp; c) 12</div>'
+        + '<div>2. L\'aire totale d\'un cube d\'arête a vaut : a) a³ &nbsp; b) 4a² &nbsp; c) 6a²</div>'
+        + '<div>3. Le volume d\'un pavé droit de dimensions L, l, h est : a) L+l+h &nbsp; b) L×l×h &nbsp; c) 2(L+l)</div>'
+        + '<div style="margin-bottom:10px;">4. Une aire s\'exprime en : a) cm &nbsp; b) cm² &nbsp; c) cm³</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>'
+        + '<div>1. Un pavé droit possède …… faces, …… sommets et …… arêtes.</div>'
+        + '<div>2. Le …… d\'un solide est la figure plane obtenue en le dépliant.</div>'
+        + '<div style="margin-bottom:10px;">3. Pour un cube d\'arête a, le volume est 𝒱 = ……</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>'
+        + '<div>1. Donne la définition d\'un cube.</div>'
+        + '<div>2. Cite deux objets de la vie courante ayant la forme d\'un pavé droit.</div>'
+        + '<div>3. Explique la différence entre l\'aire totale et le volume d\'un solide.</div>',
+      correctionHtml: '<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>'
+        + '<div>1. <strong>FAUX.</strong> Un cube possède 6 faces (et non 8). C\'est le nombre de sommets qui est 8.</div>'
+        + '<div>2. <strong>FAUX.</strong> Les faces d\'un pavé droit sont des rectangles ; carrés seulement dans le cas particulier du cube.</div>'
+        + '<div>3. <strong>VRAI.</strong> Un cube a 12 arêtes, toutes de même longueur.</div>'
+        + '<div>4. <strong>FAUX.</strong> Le volume s\'exprime en unité de longueur au cube (cm³, m³…).</div>'
+        + '<div style="margin-bottom:10px;">5. <strong>FAUX.</strong> Un même solide admet plusieurs patrons différents.</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>'
+        + '<div>1. <strong>b) 8.</strong> a) 6 = nombre de faces, c) 12 = nombre d\'arêtes.</div>'
+        + '<div>2. <strong>c) 6a².</strong> 6 faces carrées d\'aire a² chacune. a) est le volume ; b) est l\'aire latérale seule.</div>'
+        + '<div>3. <strong>b) L×l×h.</strong> Le volume est le produit des trois dimensions.</div>'
+        + '<div style="margin-bottom:10px;">4. <strong>b) cm².</strong> Une aire est mesurée en unité².</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>'
+        + '<div>1. 6 faces, 8 sommets, 12 arêtes.</div>'
+        + '<div>2. Le <strong>patron</strong> d\'un solide est la figure plane obtenue en le dépliant.</div>'
+        + '<div style="margin-bottom:10px;">3. 𝒱 = a × a × a = <strong>a³</strong>.</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>'
+        + '<div>1. Cube : pavé droit particulier dont les six faces sont des carrés identiques.</div>'
+        + '<div>2. Exemples : une boîte de craie, une brique, un carton de rangement, un réfrigérateur…</div>'
+        + '<div>3. L\'aire totale mesure la surface extérieure (unité²) ; le volume mesure la place occupée à l\'intérieur (unité³).</div>'
+    },
+    exercices: [
+      { niveau: 'Facile', enonceHtml: '<div>1. Un cube a une arête de 3 cm. Calcule son aire totale puis son volume.</div>'
+        + '<div>2. Un pavé droit a pour dimensions L = 8 cm, l = 3 cm, h = 5 cm. Calcule son volume.</div>'
+        + '<div>3. Dessine à main levée un cube, puis colorie l\'une de ses faces.</div>',
+        correctionHtml: '<div>1. 𝒜t = 6 × 3 × 3 = <strong>54 cm²</strong> ; 𝒱 = 3 × 3 × 3 = <strong>27 cm³</strong>.</div>'
+        + '<div>2. 𝒱 = 8 × 3 × 5 = <strong>120 cm³</strong>.</div>'
+        + '<div>3. Vérifie que ton dessin comporte bien 6 faces, avec les arêtes cachées en pointillés et une face coloriée.</div>' },
+      { niveau: 'Moyen', enonceHtml: '<div>1. Un pavé droit a pour dimensions L = 10 cm, l = 4 cm et h = 6 cm. Calcule son aire de base, son aire latérale et son aire totale.</div>'
+        + '<div>2. Une ONG offre à une école une caisse en forme de cube de 7 m d\'arête et une autre en forme de pavé droit de dimensions L = 7 m, l = 5 m, h = 9 m. Calcule le volume de chaque caisse.</div>'
+        + '<div>3. Toni range des morceaux de sucre cubiques de 2 cm d\'arête dans un carton en forme de pavé droit de dimensions 8 cm, 5 cm et 10 cm. a) Calcule le volume d\'un morceau de sucre. b) Combien de morceaux peut contenir le carton ?</div>',
+        correctionHtml: '<div>1. 𝒜b = 10 × 4 = 40 cm². Pb = 2×(10+4) = 28 cm, donc 𝒜l = 28 × 6 = 168 cm². 𝒜t = 2×40+168 = <strong>248 cm²</strong>.</div>'
+        + '<div>2. Cube : 𝒱 = 7×7×7 = <strong>343 m³</strong>. Pavé : 𝒱 = 7×5×9 = <strong>315 m³</strong>.</div>'
+        + '<div>3a) Volume d\'un morceau : 2×2×2 = <strong>8 cm³</strong>. 3b) Volume du carton : 8×5×10 = 400 cm³. Nombre de morceaux : 400 ÷ 8 = <strong>50 morceaux</strong>.</div>' },
+      { niveau: 'Avancé', enonceHtml: '<div>1. Un objet métallique est formé d\'un pavé droit de dimensions 16 cm × 8 cm × 10 cm surmonté d\'un cube de 8 cm d\'arête. a) Détermine le volume total du solide. b) On admettra que le cube repose entièrement sur la face supérieure du pavé. Détermine l\'aire totale de la surface extérieure du solide.</div>'
+        + '<div>2. Une fourmi est enfermée dans une boîte en forme de pavé droit de longueur 14 cm, de hauteur et de largeur 4 cm. a) Calcule l\'aire d\'une base, l\'aire latérale, l\'aire totale et le volume de la boîte. b) Combien de cubes de 1 cm d\'arête peut-on empiler dans cette boîte ?</div>',
+        correctionHtml: '<div>1a) Volume du pavé : 16×8×10 = 1280 cm³. Volume du cube : 8×8×8 = 512 cm³. Volume total : <strong>1792 cm³</strong>.</div>'
+        + '<div>1b) Aire totale du pavé seul : 2×(16×8)+2×(16×10)+2×(8×10) = 256+320+160 = 736 cm². Aire totale du cube seul : 6×8×8 = 384 cm². Le cube cache 64 cm² sur le pavé, donc on retire 2×64 = 128 cm². Aire extérieure = 736+384−128 = <strong>992 cm²</strong>.</div>'
+        + '<div>2a) 𝒜b = 4×4 = 16 cm². Pb = 2×(4+4) = 16 cm, 𝒜l = 16×14 = 224 cm². 𝒜t = 2×16+224 = <strong>256 cm²</strong>. 𝒱 = 14×4×4 = <strong>224 cm³</strong>.</div>'
+        + '<div>2b) Nombre de cubes de 1 cm³ empilables : <strong>224 cubes</strong> (= le volume en cm³).</div>' }
+    ]
+  },
+
+  '🔺 SA1, Cône de révolution': {
+    titre: 'Cône de révolution',
+    emoji: '🔺',
+    objectifs: [
+      'Reconnaître et décrire un cône de révolution (cône circulaire droit).',
+      'Nommer ses éléments : sommet, base, hauteur, rayon de base, génératrice, apothème.',
+      'Reconnaître et décrire le patron d\'un cône de révolution.'
+    ],
+    prerequis: ['Cercle et disque, rayon d\'un cercle.', 'Notion de secteur circulaire.'],
+    sections: [
+      { type: 'def', titre: 'Cône de révolution', texte: 'Un <strong>cône de révolution</strong> (ou cône circulaire droit) est un solide obtenu en faisant tourner un triangle rectangle autour de l\'un des côtés de son angle droit. Il possède une base qui est un disque, et un sommet situé à la verticale du centre de la base.' },
+      { type: 'vocab', titre: 'Éléments d\'un cône de révolution', items: [
+        { terme: 'Sommet (S)', description: 'le point situé au « haut » du cône.' },
+        { terme: 'Base', description: 'le disque situé au « bas » du cône.' },
+        { terme: 'Centre de la base (O)', description: 'le centre du disque de base.' },
+        { terme: 'Rayon de base (r)', description: 'le rayon du disque de base, par exemple [OA] ou [OB].' },
+        { terme: 'Hauteur (h)', description: 'le segment [SO] joignant le sommet au centre de la base ; il est perpendiculaire à la base.' },
+        { terme: 'Génératrice', description: 'tout segment reliant le sommet S à un point du bord de la base, par exemple [SA] ou [SB].' },
+        { terme: 'Apothème (a)', description: 'la longueur d\'une génératrice. Toutes les génératrices d\'un cône de révolution ont la même longueur.' },
+        { terme: 'Axe du cône', description: 'la droite (SO) qui joint le sommet S au centre O de la base.' }
+      ]},
+      { type: 'prop', items: [
+        'La base d\'un cône de révolution est toujours un disque.',
+        'La hauteur relie le sommet au centre de la base et lui est perpendiculaire.',
+        'Toutes les génératrices ont la même longueur (c\'est l\'apothème).'
+      ]},
+      { type: 'exemple', texte: 'Un chapeau de fête, un entonnoir ou un cornet de glace ont la forme d\'un cône de révolution.' },
+      { type: 'def', titre: 'Patron du cône', texte: 'Le <strong>patron</strong> d\'un cône de révolution (aussi appelé son développement) est une figure plane composée de deux parties : un <strong>disque</strong> de rayon r (la base) ; un <strong>secteur circulaire</strong> (portion de disque) de rayon a (l\'apothème) qui, une fois enroulé, forme la surface latérale.' },
+      { type: 'retenir', titre: 'Propriété clé du patron', texte: 'La longueur de l\'arc du secteur circulaire (surface latérale dépliée) est <strong>égale au périmètre du disque de base</strong>. C\'est cette condition qui permet au secteur de « se refermer » exactement autour de la base pour reconstituer le cône.' },
+      { type: 'texte', titre: 'Décrire le patron d\'un cône', texte: 'Pour décrire le patron d\'un cône circulaire droit, on utilise le vocabulaire approprié : face latérale (le secteur circulaire) ; disque de base ; longueur de l\'arc du développement de la face latérale ; périmètre de base ; apothème et rayon du cône.' },
+      { type: 'retenir', titre: 'Fabriquer un cône circulaire droit', texte: 'En classe de sixième, on ne réalise pas le patron complet d\'un cône : on part d\'un secteur circulaire, puis, après collage des bords libres, on pose le solide obtenu sur une surface plane pour découper le disque de base.' }
+    ],
+    aRetenirFinal: { titre: 'Cône de révolution', items: [
+      'Cône de révolution : base = disque, un sommet, une hauteur perpendiculaire à la base.',
+      'Éléments : sommet, base, centre, rayon de base r, hauteur h, génératrice, apothème a.',
+      'Toutes les génératrices ont la même longueur (apothème).',
+      'Le cône possède une face plane (le disque de base) et une face non plane (la surface latérale).',
+      'Patron = un disque (base) + un secteur circulaire (surface latérale).',
+      'Longueur de l\'arc du secteur = périmètre du disque de base.'
+    ]},
+    verification: {
+      enonceHtml: '<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>'
+        + '<div>1. La base d\'un cône de révolution est un carré.</div>'
+        + '<div>2. La hauteur d\'un cône relie le sommet au centre de la base.</div>'
+        + '<div>3. Les génératrices d\'un cône de révolution ont toutes la même longueur.</div>'
+        + '<div style="margin-bottom:10px;">4. Le patron d\'un cône est formé de deux disques.</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>'
+        + '<div>1. La base d\'un cône de révolution est : a) un disque &nbsp; b) un triangle &nbsp; c) un rectangle</div>'
+        + '<div>2. Le patron d\'un cône est composé de : a) 6 carrés &nbsp; b) un disque et un secteur circulaire &nbsp; c) deux triangles</div>'
+        + '<div style="margin-bottom:10px;">3. La longueur d\'une génératrice s\'appelle : a) la hauteur &nbsp; b) le rayon &nbsp; c) l\'apothème</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">C. Associer chaque élément à sa description</div>'
+        + '<div>1. Sommet &nbsp;&nbsp; 2. Hauteur &nbsp;&nbsp; 3. Rayon de base &nbsp;&nbsp; 4. Apothème</div>'
+        + '<div style="margin-bottom:10px;">a. rayon du disque de base &nbsp;&nbsp; b. point le plus haut du cône &nbsp;&nbsp; c. segment [SO] perpendiculaire à la base &nbsp;&nbsp; d. longueur d\'une génératrice</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>'
+        + '<div>1. Cite les principaux éléments d\'un cône de révolution.</div>'
+        + '<div>2. Explique pourquoi la longueur de l\'arc du secteur doit être égale au périmètre de la base.</div>',
+      correctionHtml: '<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>'
+        + '<div>1. <strong>FAUX.</strong> La base d\'un cône de révolution est un disque, jamais un carré.</div>'
+        + '<div>2. <strong>VRAI.</strong> La hauteur est le segment [SO], perpendiculaire à la base.</div>'
+        + '<div>3. <strong>VRAI.</strong> Toutes les génératrices ont la même longueur (l\'apothème).</div>'
+        + '<div style="margin-bottom:10px;">4. <strong>FAUX.</strong> Le patron est formé d\'UN disque et d\'UN secteur circulaire, pas de deux disques.</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>'
+        + '<div>1. <strong>a) un disque.</strong></div><div>2. <strong>b) un disque et un secteur circulaire.</strong></div>'
+        + '<div style="margin-bottom:10px;">3. <strong>c) l\'apothème.</strong></div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">C. Associer</div>'
+        + '<div style="margin-bottom:10px;">1→b (sommet) ; 2→c (hauteur) ; 3→a (rayon de base) ; 4→d (apothème).</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>'
+        + '<div>1. Éléments : sommet, base (disque), centre de la base, rayon de base r, hauteur h ([SO]), génératrices, apothème a.</div>'
+        + '<div>2. Le secteur circulaire s\'enroule autour du bord de la base ; pour que ses deux extrémités se rejoignent exactement sur tout le tour du disque, la longueur de son arc doit correspondre au tour complet de la base, c\'est-à-dire au périmètre du disque.</div>'
+    },
+    exercices: [
+      { niveau: 'Facile', enonceHtml: '<div>1. Sur un dessin de cône de révolution, nomme : le sommet, le centre de la base, un rayon, la hauteur et une génératrice.</div>'
+        + '<div>2. Dis quel objet de ton environnement a la forme d\'un cône de révolution.</div>',
+        correctionHtml: '<div>1. Sommet = S ; centre = O ; rayon = [OA] (ou [OB]) ; hauteur = [SO] ; génératrice = [SA] (ou [SB]).</div>'
+        + '<div>2. Exemple accepté : chapeau pointu, entonnoir, cornet de glace, toupie…</div>' },
+      { niveau: 'Moyen', enonceHtml: '<div>1. Parmi quatre figures (un triangle seul, un triangle surmontant un disque, un secteur circulaire seul, un secteur circulaire accompagné d\'un disque), indique laquelle peut être le patron d\'un cône de révolution, et justifie.</div>'
+        + '<div>2. Réalise le patron d\'un cône de révolution : trace un disque de 2 cm de rayon pour la base, puis un secteur circulaire dont l\'arc a une longueur égale au périmètre de ce disque.</div>',
+        correctionHtml: '<div>1. C\'est la figure « secteur circulaire accompagné d\'un disque ». Justification : le patron d\'un cône a exactement deux parties, un disque (base) et un secteur (surface latérale).</div>'
+        + '<div>2. Périmètre du disque de base : P = 2 × r × π = 2 × 2 × π ≈ <strong>12,57 cm</strong>. L\'arc du secteur doit mesurer ≈ 12,57 cm.</div>' },
+      { niveau: 'Avancé', enonceHtml: '<div>1. Bruce fabrique un chapeau ayant la forme d\'un cône de révolution de sommet O et de base [IJ]. a) Que représente le point O pour ce chapeau ? b) Que représentent les longueurs OI et OJ ? c) Si le chapeau a une capacité de 3,2 dm³, combien de boîtes cubiques de 4 cm d\'arête (donc de 64 cm³) faut-il pour le remplir complètement de gari ?</div>',
+        correctionHtml: '<div>a) O est le sommet du chapeau (cône). b) OI et OJ sont des génératrices (de même longueur, l\'apothème). c) Capacité : 3,2 dm³ = 3200 cm³ (1 dm³ = 1000 cm³). Volume d\'une boîte : 4×4×4 = 64 cm³. Nombre de boîtes : 3200 ÷ 64 = <strong>50 boîtes</strong>.</div>' }
+    ]
+  },
+
+  '🌐 SA1, Sphère et coordonnées géographiques': {
+    titre: 'Sphère',
+    emoji: '🌐',
+    objectifs: [
+      'Identifier et décrire une sphère.',
+      'Reconnaître sur le globe terrestre les méridiens et les parallèles.',
+      'Comprendre et déterminer les coordonnées géographiques d\'un point (longitude et latitude).'
+    ],
+    prerequis: ['Notion de cercle et de centre.', 'Repérage à l\'aide de deux informations (comme dans un tableau à double entrée).'],
+    sections: [
+      { type: 'def', titre: 'Sphère', texte: 'Une <strong>sphère</strong> de centre O et de rayon r est l\'ensemble des points de l\'espace situés à une distance exactement égale à r du point O.<br><br>• <strong>Centre :</strong> le point O, situé « au milieu » de la sphère.<br>• <strong>Rayon :</strong> la distance r entre le centre et n\'importe quel point de la sphère.<br>• <strong>Diamètre :</strong> un segment passant par le centre et reliant deux points de la sphère ; sa longueur vaut 2 × r.' },
+      { type: 'exemple', texte: 'Un ballon de football, une bille, une orange ou le globe terrestre ont (approximativement) la forme d\'une sphère.' },
+      { type: 'retenir', texte: 'On peut visualiser l\'idée de sphère en faisant <strong>tourner un cercle autour d\'un axe</strong> qui porte l\'un de ses diamètres.' },
+      { type: 'texte', titre: '2. Coordonnées géographiques d\'un point', texte: 'La Terre a la forme d\'une sphère. Pour repérer un lieu (ville, pays, cours d\'eau) à sa surface, on utilise deux familles de lignes : les <strong>méridiens</strong> et les <strong>parallèles</strong>.' },
+      { type: 'vocab', titre: 'Repérage sur le globe terrestre', items: [
+        { terme: 'Méridien de Greenwich', description: 'ligne courbe (méridien origine) qui relie le pôle Nord au pôle Sud. Il divise le globe en deux hémisphères : Ouest et Est.' },
+        { terme: 'Équateur', description: '(parallèle origine) ligne courbe qui fait le tour du globe et le divise en deux hémisphères : Nord et Sud.' },
+        { terme: 'Méridien', description: 'ligne qui relie le pôle Nord au pôle Sud ; le méridien de Greenwich est le méridien origine.' },
+        { terme: 'Parallèle', description: 'ligne qui fait le tour du globe parallèlement à l\'équateur ; l\'équateur est la parallèle origine.' },
+        { terme: 'Longitude', description: 'distance d\'un lieu, exprimée en degrés, à l\'Ouest ou à l\'Est du méridien de Greenwich.' },
+        { terme: 'Latitude', description: 'distance d\'un lieu, exprimée en degrés, au Nord ou au Sud de l\'équateur.' },
+        { terme: 'Coordonnées géographiques', description: 'le couple formé par la latitude et la longitude d\'un point.' }
+      ]},
+      { type: 'texte', titre: 'Méthode — Lire ou écrire des coordonnées géographiques', texte: '1. Repère le méridien qui passe par le point : sa graduation donne la longitude (Ouest ou Est).<br>2. Repère le parallèle qui passe par le point : sa graduation donne la latitude (Nord ou Sud).<br>3. Écris le couple (latitude ; longitude) en n\'oubliant jamais les points cardinaux.' },
+      { type: 'exemple', texte: 'Un point situé à 20° au Sud de l\'équateur et à 60° à l\'Ouest du méridien de Greenwich a pour coordonnées géographiques : <strong>latitude 20° Sud ; longitude 60° Ouest.</strong>' },
+      { type: 'texte', titre: 'Calculer la longitude et la latitude par proportionnalité', texte: 'En utilisant la proportionnalité, on peut déterminer la longitude et la latitude de quelques points particuliers d\'une carte (villes, arrondissements, villages, régions de forte altitude, embouchures…). On s\'aide de la calculatrice pour ces calculs.' },
+      { type: 'retenir', texte: '<strong>Attention.</strong> Un point situé exactement sur l\'équateur a une latitude de 0°. Un point situé exactement sur le méridien de Greenwich a une longitude de 0°.' }
+    ],
+    aRetenirFinal: { titre: 'Sphère', items: [
+      'Sphère de centre O et de rayon r : ensemble des points situés à la distance r de O.',
+      'Diamètre = 2 × rayon.',
+      'Méridien de Greenwich : relie les pôles Nord et Sud ; sépare Ouest et Est.',
+      'Équateur : sépare Nord et Sud ; latitude 0°.',
+      'Longitude : degrés Ouest/Est ; Latitude : degrés Nord/Sud.',
+      'Coordonnées géographiques = (latitude ; longitude), toujours avec les points cardinaux.'
+    ]},
+    verification: {
+      enonceHtml: '<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>'
+        + '<div>1. Tous les points d\'une sphère sont à la même distance du centre.</div>'
+        + '<div>2. Le diamètre d\'une sphère est égal à son rayon.</div>'
+        + '<div>3. L\'équateur sépare le globe en un hémisphère Ouest et un hémisphère Est.</div>'
+        + '<div style="margin-bottom:10px;">4. La longitude se mesure au Nord ou au Sud.</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>'
+        + '<div>1. Le méridien de Greenwich relie : a) l\'Est et l\'Ouest &nbsp; b) le pôle Nord et le pôle Sud &nbsp; c) deux villes</div>'
+        + '<div>2. La latitude d\'un point sur l\'équateur est : a) 0° &nbsp; b) 90° &nbsp; c) 180°</div>'
+        + '<div style="margin-bottom:10px;">3. Les coordonnées géographiques sont formées de : a) longueur et largeur &nbsp; b) latitude et longitude &nbsp; c) rayon et diamètre</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>'
+        + '<div>1. La …… se mesure en degrés à l\'Est ou à l\'Ouest du méridien de Greenwich.</div>'
+        + '<div>2. La …… se mesure en degrés au Nord ou au Sud de l\'équateur.</div>'
+        + '<div style="margin-bottom:10px;">3. Le diamètre d\'une sphère est égal à …… fois le rayon.</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>'
+        + '<div>1. Donne la définition d\'une sphère de centre O et de rayon r.</div>'
+        + '<div>2. Explique la différence entre un méridien et un parallèle.</div>',
+      correctionHtml: '<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>'
+        + '<div>1. <strong>VRAI.</strong> Par définition, tous les points d\'une sphère sont à la distance r du centre.</div>'
+        + '<div>2. <strong>FAUX.</strong> Le diamètre est égal à 2 fois le rayon, pas au rayon.</div>'
+        + '<div>3. <strong>FAUX.</strong> C\'est le méridien de Greenwich qui sépare Ouest et Est. L\'équateur sépare le Nord et le Sud.</div>'
+        + '<div style="margin-bottom:10px;">4. <strong>FAUX.</strong> La longitude se mesure à l\'Est ou à l\'Ouest ; la latitude au Nord ou au Sud.</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>'
+        + '<div>1. <strong>b)</strong> le pôle Nord et le pôle Sud.</div><div>2. <strong>a) 0°.</strong></div>'
+        + '<div style="margin-bottom:10px;">3. <strong>b) latitude et longitude.</strong></div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>'
+        + '<div>1. La <strong>longitude</strong> se mesure en degrés à l\'Est ou à l\'Ouest du méridien de Greenwich.</div>'
+        + '<div>2. La <strong>latitude</strong> se mesure en degrés au Nord ou au Sud de l\'équateur.</div>'
+        + '<div style="margin-bottom:10px;">3. Le diamètre est égal à <strong>2</strong> fois le rayon.</div>'
+        + '<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>'
+        + '<div>1. Sphère : ensemble des points de l\'espace situés à une distance exactement égale à r du centre O.</div>'
+        + '<div>2. Un méridien relie le pôle Nord au pôle Sud (ligne « verticale ») et sert à la longitude ; un parallèle fait le tour du globe parallèlement à l\'équateur (ligne « horizontale ») et sert à la latitude.</div>'
+    },
+    exercices: [
+      { niveau: 'Facile', enonceHtml: '<div>1. Cite trois objets de ton environnement ayant la forme d\'une sphère.</div>'
+        + '<div>2. Une sphère a un rayon de 7 cm. Quelle est la longueur de son diamètre ?</div>',
+        correctionHtml: '<div>1. Exemples : ballon, bille, orange, boule de pétanque… (toute sphère acceptée).</div>'
+        + '<div>2. Diamètre = 2 × 7 = <strong>14 cm</strong>.</div>' },
+      { niveau: 'Moyen', enonceHtml: '<div>1. Écris les coordonnées géographiques d\'un point F situé à 20° Sud et 60° Ouest, et d\'un point G situé à 40° Sud et 50° Est.</div>'
+        + '<div>2. Sur un globe, place mentalement un point H de latitude 0° et de longitude 80° Est : sur quelle grande ligne se trouve-t-il ?</div>',
+        correctionHtml: '<div>1. F : latitude 20° Sud ; longitude 60° Ouest. G : latitude 40° Sud ; longitude 50° Est.</div>'
+        + '<div>2. Latitude 0° signifie que H est sur l\'<strong>équateur</strong>.</div>' },
+      { niveau: 'Avancé', enonceHtml: '<div>1. On donne quatre points sur un globe : A (10° S ; 0°), B (20° N ; 10° E), C (30° N ; 20° O), D (10° N ; 10° O). a) Quels points sont sur le même méridien que A ? b) Quels points sont sur le même parallèle ? c) Écris les coordonnées géographiques complètes de chaque point.</div>',
+        correctionHtml: '<div>a) A a pour longitude 0° : il est sur le méridien de Greenwich. Aucun autre point de la liste n\'a une longitude de 0°, donc <strong>aucun point n\'est sur le même méridien que A</strong>.</div>'
+        + '<div>b) Aucun couple de points ne partage la même latitude ici (B=20°N seul, C=30°N seul, A=10°S seul, D=10°N seul).</div>'
+        + '<div>c) A (10° Sud ; 0°) ; B (20° Nord ; 10° Est) ; C (30° Nord ; 20° Ouest) ; D (10° Nord ; 10° Ouest).</div>' }
+    ]
   }
 };
 
@@ -29618,8 +29964,235 @@ function openClasse(subject, classe) {
 }
 
 function openChatWithTopic(topic) {
+  if (ouvrirCoursLecture(topic)) return;
   appState.currentMode = 'cours';
   openChat(topic);
+}
+
+// ============================================================
+// LECTURE DE COURS — contenu officiel authored (COURS_CONTENU)
+// Remplace le chat direct par la lecture du cours quand un
+// contenu authored existe pour la séquence ; le chat reste
+// disponible en assistance via le bouton flottant.
+// ============================================================
+let coursActuelKey = null;
+let coursChatHistory = [];
+
+function ouvrirCoursLecture(topicKey) {
+  const cours = typeof COURS_CONTENU !== 'undefined' ? COURS_CONTENU[topicKey] : null;
+  if (!cours) return false;
+
+  if (!appState.userEmail) {
+    showToast('🔒 Connecte-toi d\'abord pour accéder au cours');
+    goTo('screen-landing');
+    return true;
+  }
+
+  coursActuelKey = topicKey;
+  coursChatHistory = [];
+
+  document.getElementById('cours-lecture-titre').textContent = cours.titre;
+  document.getElementById('cours-chat-seq-label').textContent = cours.titre;
+  document.getElementById('cours-chat-messages').innerHTML = '';
+  document.getElementById('cours-chat-overlay').style.display = 'none';
+
+  renderCoursLecture(cours);
+  goToScreen('cours-lecture');
+  const body = document.getElementById('cours-lecture-body');
+  if (body) body.scrollTop = 0;
+  return true;
+}
+
+function renderCoursBlock(section) {
+  switch (section.type) {
+    case 'def':
+      return '<div style="background:white;border:1.5px solid #DDEEFF;border-left:4px solid #1565C0;border-radius:12px;padding:14px;margin-bottom:12px;">'
+        + '<div style="font-size:11px;font-weight:800;color:#1565C0;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Définition' + (section.titre ? ' — ' + section.titre : '') + '</div>'
+        + '<div style="font-size:14px;color:#333;line-height:1.7;">' + section.texte + '</div></div>';
+    case 'prop':
+      return '<div style="background:#F0FDF4;border:1.5px solid #BBF7D0;border-left:4px solid #16A34A;border-radius:12px;padding:14px;margin-bottom:12px;">'
+        + '<div style="font-size:11px;font-weight:800;color:#166534;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Propriété' + (section.titre ? ' — ' + section.titre : '') + '</div>'
+        + (section.items
+            ? section.items.map(function(i) { return '<div style="font-size:14px;color:#166534;line-height:1.7;margin-bottom:4px;">• ' + i + '</div>'; }).join('')
+            : '<div style="font-size:14px;color:#166534;line-height:1.7;">' + section.texte + '</div>')
+        + '</div>';
+    case 'vocab':
+      return '<div style="background:white;border:1.5px solid #DDEEFF;border-radius:12px;padding:14px;margin-bottom:12px;">'
+        + (section.titre ? '<div style="font-size:13px;font-weight:800;color:#1A2332;margin-bottom:8px;">' + section.titre + '</div>' : '')
+        + section.items.map(function(it) { return '<div style="font-size:14px;color:#333;line-height:1.7;margin-bottom:4px;">• <strong>' + it.terme + '</strong> : ' + it.description + '</div>'; }).join('')
+        + '</div>';
+    case 'table':
+      return '<div style="background:white;border:1.5px solid #DDEEFF;border-radius:12px;padding:14px;margin-bottom:12px;overflow-x:auto;">'
+        + (section.titre ? '<div style="font-size:13px;font-weight:800;color:#1A2332;margin-bottom:8px;">' + section.titre + '</div>' : '')
+        + '<table style="width:100%;border-collapse:collapse;font-size:13px;">'
+        + '<tr>' + section.headers.map(function(h) { return '<th style="padding:8px;background:#EFF6FF;color:#1565C0;font-weight:800;text-align:left;border-bottom:2px solid #DDEEFF;">' + h + '</th>'; }).join('') + '</tr>'
+        + section.rows.map(function(r) { return '<tr>' + r.map(function(c) { return '<td style="padding:8px;border-bottom:1px solid #F0F4FF;color:#333;">' + c + '</td>'; }).join('') + '</tr>'; }).join('')
+        + '</table></div>';
+    case 'exemple':
+      return '<div style="background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:12px;padding:14px;margin-bottom:12px;">'
+        + '<div style="font-size:11px;font-weight:800;color:#C2410C;text-transform:uppercase;margin-bottom:6px;">💡 Exemple</div>'
+        + '<div style="font-size:14px;color:#78350F;line-height:1.7;">' + section.texte + '</div></div>';
+    case 'retenir':
+      return '<div style="background:linear-gradient(135deg,#1A2332,#0D1520);border-radius:14px;padding:14px 16px;margin-bottom:12px;">'
+        + '<div style="font-size:12px;font-weight:800;color:#FDE68A;margin-bottom:6px;">★ À RETENIR' + (section.titre ? ' — ' + section.titre : '') + '</div>'
+        + (section.items
+            ? section.items.map(function(i) { return '<div style="font-size:14px;color:white;line-height:1.8;">• ' + i + '</div>'; }).join('')
+            : '<div style="font-size:14px;color:white;line-height:1.7;">' + section.texte + '</div>')
+        + '</div>';
+    case 'formules':
+      return '<div style="background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:14px;margin-bottom:12px;">'
+        + '<div style="font-size:13px;font-weight:800;color:#1565C0;margin-bottom:8px;">📐 ' + section.titre + '</div>'
+        + section.items.map(function(f) { return '<div style="font-size:14px;color:#1A2332;line-height:1.9;">• ' + f + '</div>'; }).join('')
+        + '</div>';
+    case 'exResolu':
+      return '<div style="background:white;border:2px solid #1565C0;border-radius:14px;padding:14px;margin-bottom:12px;">'
+        + '<div style="font-size:12px;font-weight:800;color:#1565C0;text-transform:uppercase;margin-bottom:8px;">✅ Exemple entièrement résolu — ' + section.titre + '</div>'
+        + '<div style="font-size:14px;color:#333;margin-bottom:8px;"><strong>Énoncé.</strong> ' + section.enonce + '</div>'
+        + section.etapes.map(function(e) { return '<div style="font-size:14px;color:#333;line-height:1.8;padding:3px 0;">' + e + '</div>'; }).join('')
+        + '</div>';
+    case 'texte':
+    default:
+      return '<div style="background:white;border:1.5px solid #DDEEFF;border-radius:12px;padding:14px;margin-bottom:12px;">'
+        + (section.titre ? '<div style="font-size:13px;font-weight:800;color:#1A2332;margin-bottom:6px;">' + section.titre + '</div>' : '')
+        + '<div style="font-size:14px;color:#333;line-height:1.7;">' + section.texte + '</div></div>';
+  }
+}
+
+function toggleReveal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function renderCoursLecture(cours) {
+  let html = '<div style="background:linear-gradient(135deg,#1565C0,#0D47A1);border-radius:16px;padding:18px;margin-bottom:16px;">'
+    + '<div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.75);letter-spacing:0.5px;margin-bottom:2px;">COURS</div>'
+    + '<div style="font-size:19px;font-weight:900;color:white;">' + cours.emoji + ' ' + cours.titre + '</div>'
+    + '</div>';
+
+  if (cours.objectifs && cours.objectifs.length) {
+    html += '<div style="background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:14px;margin-bottom:12px;">'
+      + '<div style="font-size:13px;font-weight:800;color:#1565C0;margin-bottom:8px;">🎯 Objectifs d\'apprentissage</div>'
+      + cours.objectifs.map(function(o) { return '<div style="font-size:14px;color:#1e40af;line-height:1.7;">• ' + o + '</div>'; }).join('')
+      + '</div>';
+  }
+  if (cours.prerequis && cours.prerequis.length) {
+    html += '<div style="background:#F8FAFF;border:1.5px solid #E5EAF5;border-radius:12px;padding:14px;margin-bottom:16px;">'
+      + '<div style="font-size:13px;font-weight:800;color:#6B7A94;margin-bottom:8px;">📌 Prérequis</div>'
+      + cours.prerequis.map(function(o) { return '<div style="font-size:14px;color:#555;line-height:1.7;">• ' + o + '</div>'; }).join('')
+      + '</div>';
+  }
+
+  (cours.sections || []).forEach(function(s) { html += renderCoursBlock(s); });
+
+  if (cours.aRetenirFinal) {
+    html += renderCoursBlock({ type: 'retenir', titre: cours.aRetenirFinal.titre, items: cours.aRetenirFinal.items });
+  }
+
+  if (cours.verification) {
+    const vid = 'verif-reveal';
+    html += '<div class="section-header" style="margin:24px 0 10px 0;"><div class="section-title">🔍 Questions de vérification des connaissances</div></div>';
+    html += '<div style="background:white;border:1.5px solid #DDEEFF;border-radius:14px;padding:16px;margin-bottom:16px;">'
+      + '<div style="font-size:14px;color:#333;line-height:1.8;">' + cours.verification.enonceHtml + '</div>'
+      + '<button onclick="toggleReveal(\'' + vid + '\')" style="margin-top:12px;padding:10px 18px;background:#1565C0;color:white;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:\'Nunito\',sans-serif;">👁️ Voir les réponses</button>'
+      + '<div id="' + vid + '" style="display:none;margin-top:14px;padding-top:14px;border-top:1.5px solid #F0F4FF;font-size:14px;color:#166534;line-height:1.8;">' + cours.verification.correctionHtml + '</div>'
+      + '</div>';
+  }
+
+  if (cours.exercices && cours.exercices.length) {
+    html += '<div class="section-header" style="margin:24px 0 10px 0;"><div class="section-title">✏️ Exercices d\'application</div></div>';
+    cours.exercices.forEach(function(ex, i) {
+      const eid = 'exo-reveal-' + i;
+      html += '<div style="background:white;border:1.5px solid #DDEEFF;border-radius:14px;padding:16px;margin-bottom:14px;">'
+        + '<div style="font-size:13px;font-weight:800;color:#7C3AED;text-transform:uppercase;margin-bottom:8px;">Niveau ' + ex.niveau + '</div>'
+        + '<div style="font-size:14px;color:#333;line-height:1.8;">' + ex.enonceHtml + '</div>'
+        + '<button onclick="toggleReveal(\'' + eid + '\')" style="margin-top:12px;padding:10px 18px;background:#7C3AED;color:white;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:\'Nunito\',sans-serif;">✅ Voir la correction</button>'
+        + '<div id="' + eid + '" style="display:none;margin-top:14px;padding-top:14px;border-top:1.5px solid #F0F4FF;font-size:14px;color:#166534;line-height:1.8;">' + ex.correctionHtml + '</div>'
+        + '</div>';
+    });
+  }
+
+  html += '<div style="height:30px;"></div>';
+  document.getElementById('cours-lecture-body').innerHTML = html;
+}
+
+// ── Bouton flottant + chat contextuel de la séquence ──────
+function ouvrirChatCoursOverlay() {
+  const overlay = document.getElementById('cours-chat-overlay');
+  overlay.style.display = 'flex';
+  if (coursChatHistory.length === 0) {
+    const cours = COURS_CONTENU[coursActuelKey];
+    ajouterMessageCoursChat('bot', '👋 Je suis là pour t\'aider sur **' + (cours ? cours.titre : 'cette séquence') + '**. Pose-moi une question sur ce cours !');
+  }
+}
+
+function fermerChatCoursOverlay() {
+  document.getElementById('cours-chat-overlay').style.display = 'none';
+}
+
+function ajouterMessageCoursChat(role, texte) {
+  const container = document.getElementById('cours-chat-messages');
+  const div = document.createElement('div');
+  div.style.cssText = 'margin-bottom:10px;display:flex;' + (role === 'user' ? 'justify-content:flex-end;' : 'justify-content:flex-start;');
+  div.innerHTML = '<div style="max-width:82%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.6;'
+    + (role === 'user' ? 'background:#1565C0;color:white;border-bottom-right-radius:4px;' : 'background:white;border:1.5px solid #E5EAF5;color:#1A2332;border-bottom-left-radius:4px;')
+    + '">' + texte.replace(/\n/g, '<br>') + '</div>';
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function construireTexteCoursPourIA(cours) {
+  let t = '';
+  if (cours.objectifs) t += 'Objectifs : ' + cours.objectifs.join('; ') + '\n';
+  (cours.sections || []).forEach(function(s) {
+    const contenu = s.texte || (s.items ? (Array.isArray(s.items) && typeof s.items[0] === 'object' && s.items[0] && s.items[0].terme
+      ? s.items.map(function(it) { return it.terme + ': ' + it.description; }).join('; ')
+      : s.items.join('; ')) : '');
+    t += (s.titre ? s.titre + ' : ' : '') + contenu.replace(/<[^>]+>/g, ' ') + '\n';
+  });
+  if (cours.aRetenirFinal) t += 'À retenir : ' + cours.aRetenirFinal.items.join('; ');
+  return t;
+}
+
+async function envoyerMessageCoursChat() {
+  const input = document.getElementById('cours-chat-input');
+  const texte = input.value.trim();
+  if (!texte) return;
+  input.value = '';
+  ajouterMessageCoursChat('user', texte);
+  coursChatHistory.push({ role: 'user', content: texte });
+
+  const messagesEl = document.getElementById('cours-chat-messages');
+  const typingDiv = document.createElement('div');
+  typingDiv.id = 'cours-chat-typing';
+  typingDiv.style.marginBottom = '10px';
+  typingDiv.innerHTML = '<div style="display:inline-block;padding:10px 14px;border-radius:14px;background:white;border:1.5px solid #E5EAF5;font-size:13px;color:#6B7A94;">✍️ ...</div>';
+  messagesEl.appendChild(typingDiv);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+
+  const cours = COURS_CONTENU[coursActuelKey] || {};
+  const texteCours = construireTexteCoursPourIA(cours);
+  const systemPrompt = 'Tu es un tuteur pédagogique béninois. L\'élève est en train de lire le cours ci-dessous. '
+    + 'Réponds UNIQUEMENT en te basant sur ce cours et le programme officiel correspondant, de façon simple et adaptée à son niveau. '
+    + 'Si sa question sort complètement du sujet de cette séquence, recentre-le gentiment dessus.\n\n'
+    + '=== COURS ACTUEL : ' + (cours.titre || '') + ' ===\n' + texteCours;
+
+  try {
+    if (!verifierLimiteGratuit()) { const t = document.getElementById('cours-chat-typing'); if (t) t.remove(); return; }
+    const response = await fetch('/api/proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1500, system: systemPrompt, messages: coursChatHistory.slice(-10) })
+    });
+    const data = await response.json();
+    const t1 = document.getElementById('cours-chat-typing'); if (t1) t1.remove();
+    const reply = (data.content && data.content.map(function(b) { return b.text || ''; }).join('')) || 'Je n\'ai pas pu répondre, réessaie.';
+    coursChatHistory.push({ role: 'assistant', content: reply });
+    ajouterMessageCoursChat('bot', reply);
+  } catch (e) {
+    const t2 = document.getElementById('cours-chat-typing'); if (t2) t2.remove();
+    ajouterMessageCoursChat('bot', '⚠️ Erreur de connexion, réessaie.');
+  }
 }
 
 function selectLevel(el, level) {
