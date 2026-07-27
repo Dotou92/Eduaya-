@@ -4081,6 +4081,701 @@ const COURS_CONTENU = {
         + '<div>b) Aucun couple de points ne partage la même latitude ici (B=20°N seul, C=30°N seul, A=10°S seul, D=10°N seul).</div>'
         + '<div>c) A (10° Sud ; 0°) ; B (20° Nord ; 10° Est) ; C (30° Nord ; 20° Ouest) ; D (10° Nord ; 10° Ouest).</div>' }
     ]
+  },
+'↔️ SA2, Droites (perpendiculaires, parallèles)': {
+    titre: `Droites du plan`,
+    emoji: `↔️`,
+    objectifs: [
+      `Reconnaître et nommer une droite, une demi-droite.`,
+      `Utiliser les symboles d'appartenance ∈ et ∉ d'un point à une droite.`,
+      `Reconnaître et caractériser deux droites sécantes, perpendiculaires ou parallèles.`,
+      `Construire une perpendiculaire et une parallèle à une droite donnée.`
+    ],
+    prerequis: [`Notion de point et de ligne.`, `Utilisation de la règle et de l'équerre.`],
+    sections: [
+      { type: 'def', titre: `Droite`, texte: `Une droite est une ligne illimitée dans les deux sens. Par deux points distincts A et K, il passe une seule droite, notée (AK). On peut aussi la nommer par une lettre : (∆), (D)…<br><br>Si un point A est sur la droite (∆), on dit que A <strong>appartient</strong> à (∆) et on écrit A ∈ (∆). Sinon, on écrit A ∉ (∆).` },
+      { type: 'prop', items: [`Par deux points distincts, il passe une seule droite.`, `Par un seul point, on peut tracer une infinité de droites.`] },
+      { type: 'def', titre: `Demi-droite`, texte: `Une demi-droite est une portion de droite délimitée par un point appelé origine. La demi-droite d'origine T passant par M se note [TM).<br><br>Deux demi-droites de même origine qui forment une droite entière sont dites <strong>opposées</strong>. Ainsi [TM) et [TN) sont opposées lorsque T est entre M et N.` },
+      { type: 'def', titre: `Droites sécantes`, texte: `Deux droites sécantes sont deux droites qui ont un seul point commun (leur point d'intersection).` },
+      { type: 'def', titre: `Droites perpendiculaires`, texte: `Deux droites perpendiculaires sont deux droites sécantes qui forment un angle droit. On note (D₁) ⊥ (D₂).` },
+      { type: 'prop', texte: `Par un point donné, on ne peut tracer qu'<strong>une seule droite perpendiculaire</strong> à une droite donnée.` },
+      { type: 'def', titre: `Droites parallèles`, texte: `Deux droites parallèles sont deux droites qui n'ont aucun point commun (ou qui sont confondues). On note (D₁) ∥ (D₂).` },
+      { type: 'prop', items: [
+        `Deux droites perpendiculaires à une même troisième sont parallèles entre elles.`,
+        `Par un point n'appartenant pas à une droite, on ne peut tracer qu'une seule parallèle à cette droite.`,
+        `Lorsque deux droites sont parallèles : toute parallèle à l'une est parallèle à l'autre ; toute sécante à l'une est sécante à l'autre ; toute perpendiculaire à l'une est perpendiculaire à l'autre.`
+      ]}
+    ],
+    aRetenirFinal: { titre: `Droites du plan`, items: [
+      `Par deux points distincts passe une seule droite ; par un point, une infinité.`,
+      `Demi-droite [TM) : portion de droite limitée par une origine T.`,
+      `Sécantes = 1 point commun ; perpendiculaires = angle droit (⊥) ; parallèles = aucun point commun (∥).`,
+      `Deux droites ⊥ à une même troisième sont parallèles.`,
+      `Par un point hors d'une droite : une seule parallèle et une seule perpendiculaire.`
+    ]},
+    verification: {
+      enonceHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. Par deux points distincts, il passe plusieurs droites.</div>`
+        + `<div>2. Deux droites sécantes ont un seul point commun.</div>`
+        + `<div>3. Deux droites perpendiculaires sont parallèles.</div>`
+        + `<div style="margin-bottom:10px;">4. Par un point hors d'une droite, on trace une seule parallèle à cette droite.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. Deux droites perpendiculaires à une même troisième sont : a) sécantes &nbsp; b) parallèles &nbsp; c) confondues</div>`
+        + `<div>2. Le symbole ⊥ signifie : a) parallèle &nbsp; b) perpendiculaire &nbsp; c) appartient</div>`
+        + `<div style="margin-bottom:10px;">3. La demi-droite d'origine T passant par M se note : a) (TM) &nbsp; b) [TM] &nbsp; c) [TM)</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter (avec ∈ ou ∉, ∥ ou ⊥)</div>`
+        + `<div>1. Si le point A est sur la droite (∆), on écrit A …… (∆).</div>`
+        + `<div>2. Deux droites qui ne se coupent jamais sont …… .</div>`
+        + `<div style="margin-bottom:10px;">3. Deux droites formant un angle droit sont notées (D₁) …… (D₂).</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Donne la définition de deux droites parallèles.</div>`
+        + `<div>2. Combien de droites peut-on tracer passant par un même point ?</div>`,
+      correctionHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. <strong>FAUX.</strong> Par deux points distincts passe une seule droite.</div>`
+        + `<div>2. <strong>VRAI.</strong> Deux sécantes ont exactement un point commun.</div>`
+        + `<div>3. <strong>FAUX.</strong> Deux perpendiculaires se coupent (angle droit) : elles sont sécantes, pas parallèles.</div>`
+        + `<div style="margin-bottom:10px;">4. <strong>VRAI.</strong> C'est la propriété d'unicité de la parallèle passant par un point extérieur.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. <strong>b) parallèles.</strong> Deux droites ⊥ à une même troisième sont parallèles entre elles.</div>`
+        + `<div>2. <strong>b) perpendiculaire.</strong> ⊥ = perpendiculaire ; ∥ = parallèle ; ∈ = appartient.</div>`
+        + `<div style="margin-bottom:10px;">3. <strong>c) [TM).</strong> Le crochet marque l'origine T, la parenthèse le côté illimité. (TM) est une droite ; [TM] un segment.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. A ∈ (∆).</div><div>2. … sont <strong>parallèles</strong> (∥).</div>`
+        + `<div style="margin-bottom:10px;">3. (D₁) ⊥ (D₂).</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Parallèles : deux droites sans aucun point commun (ou confondues).</div>`
+        + `<div>2. Une infinité de droites passent par un même point.</div>`
+    },
+    exercices: [
+      { niveau: `Facile`, enonceHtml: `<div>1. Trace une droite (∆) et place un point A dessus, un point B en dehors. Écris les relations d'appartenance avec ∈ et ∉.</div>`
+        + `<div>2. Trace deux demi-droites opposées d'origine O.</div>`,
+        correctionHtml: `<div>1. A ∈ (∆) et B ∉ (∆). Vérifie ta figure.</div>`
+        + `<div>2. Deux demi-droites [OA) et [OB) opposées : O entre A et B, alignés.</div>` },
+      { niveau: `Moyen`, enonceHtml: `<div>1. Trace une droite (D₁) et un point A hors de (D₁). Construis la perpendiculaire (D₂) à (D₁) passant par A. Combien peux-tu en tracer ?</div>`
+        + `<div>2. Trace une droite (D). Trace deux droites (D₁) et (D₂) toutes deux perpendiculaires à (D). Que peut-on dire de (D₁) et (D₂) ? Justifie.</div>`,
+        correctionHtml: `<div>1. Une seule perpendiculaire passe par A (propriété d'unicité).</div>`
+        + `<div>2. (D₁) ∥ (D₂) car deux droites perpendiculaires à une même droite (D) sont parallèles.</div>` },
+      { niveau: `Avancé`, enonceHtml: `<div>1. Sur une figure, (AB) et (BC) sont perpendiculaires, et (DC) est perpendiculaire à (AB). a) Justifie à l'aide d'un déductogramme que (BC) et (DC) sont parallèles. b) Que peut-on dire de (AD) et (BC) si (AD) ⊥ (AB) ?</div>`,
+        correctionHtml: `<div>a) (BC) ⊥ (AB) et (DC) ⊥ (AB) ⇒ (BC) ∥ (DC) (deux droites ⊥ à une même droite).</div>`
+        + `<div>b) (AD) ⊥ (AB) et (BC) ⊥ (AB) ⇒ (AD) ∥ (BC).</div>` }
+    ]
+  },
+
+  '📏 SA2, Segments, milieu, médiatrice': {
+    titre: `Segments de droite`,
+    emoji: `📏`,
+    objectifs: [`Reconnaître un segment, son support et sa longueur.`, `Déterminer et construire le milieu d'un segment.`, `Définir et construire la médiatrice d'un segment.`],
+    prerequis: [`Droite, demi-droite, perpendiculaire.`, `Mesure de longueur à la règle.`],
+    sections: [
+      { type: 'def', titre: `Segment`, texte: `Le segment d'extrémités A et B, noté [AB], est la portion de la droite (AB) comprise entre A et B. La droite (AB) est le <strong>support</strong> du segment. La <strong>longueur</strong> du segment [AB] est la distance AB.` },
+      { type: 'def', titre: `Milieu`, texte: `Le milieu d'un segment [AB] est le point I de [AB] tel que IA = IB = AB ÷ 2. Le milieu partage le segment en deux parties de même longueur.` },
+      { type: 'texte', titre: `Remarque`, texte: `Si un point M appartient au segment [AB], alors MA + MB = AB.` },
+      { type: 'def', titre: `Médiatrice`, texte: `La médiatrice d'un segment [AB] est la droite perpendiculaire à (AB) et passant par le milieu de [AB]. Elle est à la fois perpendiculaire au segment ET passe par son milieu.` }
+    ],
+    aRetenirFinal: { titre: `Segments de droite`, items: [
+      `Segment [AB] : portion de la droite (AB) entre A et B ; support = la droite (AB).`,
+      `Milieu I : IA = IB = AB ÷ 2.`,
+      `Si M ∈ [AB], alors MA + MB = AB.`,
+      `Médiatrice = droite perpendiculaire au segment passant par son milieu.`
+    ]},
+    verification: {
+      enonceHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. Le support d'un segment [AB] est la droite (AB).</div>`
+        + `<div>2. Le milieu d'un segment le partage en deux parties inégales.</div>`
+        + `<div>3. La médiatrice d'un segment passe par son milieu.</div>`
+        + `<div style="margin-bottom:10px;">4. La médiatrice est parallèle au segment.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. Si I est le milieu de [AB] et AB = 8 cm, alors IA vaut : a) 8 cm &nbsp; b) 4 cm &nbsp; c) 16 cm</div>`
+        + `<div style="margin-bottom:10px;">2. La médiatrice de [AB] est : a) parallèle à (AB) &nbsp; b) perpendiculaire à (AB) et passe par le milieu &nbsp; c) une demi-droite</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. Le milieu I de [AB] vérifie IA = IB = ……</div>`
+        + `<div style="margin-bottom:10px;">2. Si M ∈ [AB] alors MA + MB = ……</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Donne la définition de la médiatrice d'un segment.</div>`,
+      correctionHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. <strong>VRAI.</strong> Le support est la droite (AB) qui porte le segment.</div>`
+        + `<div>2. <strong>FAUX.</strong> Le milieu partage le segment en deux parties de MÊME longueur.</div>`
+        + `<div>3. <strong>VRAI.</strong> La médiatrice passe par le milieu et est perpendiculaire au segment.</div>`
+        + `<div style="margin-bottom:10px;">4. <strong>FAUX.</strong> La médiatrice est perpendiculaire au segment, pas parallèle.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. <strong>b) 4 cm.</strong> IA = AB ÷ 2 = 8 ÷ 2 = 4 cm.</div>`
+        + `<div style="margin-bottom:10px;">2. <strong>b).</strong> La médiatrice est ⊥ à (AB) et passe par le milieu.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. IA = IB = AB ÷ 2.</div><div style="margin-bottom:10px;">2. MA + MB = AB.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Médiatrice : droite perpendiculaire à [AB] passant par le milieu de [AB].</div>`
+    },
+    exercices: [
+      { niveau: `Facile`, enonceHtml: `<div>1. Trace un segment [AB] de 6 cm et place son milieu I. Donne IA et IB.</div>`
+        + `<div>2. Trace un segment [IJ] de 8 cm, place son milieu A, puis trace la médiatrice (D) de [IJ].</div>`,
+        correctionHtml: `<div>1. IA = IB = 3 cm.</div><div>2. (D) ⊥ (IJ) passant par A (milieu) : c'est la médiatrice.</div>` },
+      { niveau: `Moyen`, enonceHtml: `<div>1. Observe une figure où O est sur la médiatrice (∆) de [AB], avec OB = 40 mm et O milieu de [AB]. a) Donne la longueur [OA]. b) Détermine [AB]. c) Que représente (∆) pour [AB] ?</div>`
+        + `<div>2. Un segment [AB] est tel que AB = 10 cm. Place le point I tel que IA = IB, construis la médiatrice (∆), et dis ce que représente I pour (∆).</div>`,
+        correctionHtml: `<div>1. a) OA = OB = 40 mm (O milieu). b) AB = OA + OB = 80 mm. c) (∆) est la médiatrice de [AB].</div>`
+        + `<div>2. I est le milieu de [AB], donc I appartient à la médiatrice (∆) ; (∆) passe par I.</div>` },
+      { niveau: `Avancé`, enonceHtml: `<div>1. Trace un segment [AB] de 7 cm. Place le point C de la demi-droite [BA), situé à 12 cm de B. Trace la médiatrice (m₁) de [AC] et la médiatrice (m₂) de [AB]. Justifie que (m₁) et (m₂) sont parallèles.</div>`,
+        correctionHtml: `<div>(m₁) ⊥ (AC) et (m₂) ⊥ (AB) ; or A, B, C sont alignés donc (AC) et (AB) sont la même droite. Deux droites ⊥ à une même droite sont parallèles : (m₁) ∥ (m₂).</div>` }
+    ]
+  },
+
+  '⭕ SA2, Cercle, longueur, aire du disque': {
+    titre: `Cercle`,
+    emoji: `⭕`,
+    objectifs: [`Définir et construire un cercle de centre et de rayon donnés.`, `Reconnaître un rayon, une corde, un diamètre.`, `Calculer le périmètre d'un cercle et l'aire d'un disque.`],
+    prerequis: [`Compas, mesure de longueur.`, `Notion de multiplication et nombre π.`],
+    sections: [
+      { type: 'def', titre: `Cercle`, texte: `Le cercle de centre O et de rayon r est l'ensemble des points situés à une distance exactement égale à r du point O. On le note 𝒞(O ; r).` },
+      { type: 'vocab', items: [
+        { terme: `Rayon`, description: `segment (ou distance) reliant le centre O à un point du cercle.` },
+        { terme: `Corde`, description: `segment reliant deux points quelconques du cercle.` },
+        { terme: `Diamètre`, description: `corde particulière passant par le centre ; sa longueur vaut 2 × r.` },
+        { terme: `Disque`, description: `surface délimitée par le cercle (l'intérieur, bord compris).` }
+      ]},
+      { type: 'formules', titre: `Longueur du cercle et aire du disque (rayon r, diamètre D = 2r)`, items: [
+        `Périmètre : P = 2 × r × π ou P = D × π`,
+        `Aire du disque : 𝒜 = r × r × π = πr²`
+      ]},
+      { type: 'retenir', titre: `Valeur de π`, texte: `On prend souvent π ≈ 3,14 pour les calculs. Le périmètre s'exprime en unité de longueur (cm, m…) et l'aire en unité² (cm², m²…).` },
+      { type: 'exResolu', titre: `un cercle`, enonce: `Un cercle a un rayon r = 5 cm. Calculer son périmètre et l'aire du disque (π ≈ 3,14).`, etapes: [
+        `Périmètre : P = 2 × 5 × 3,14 = <strong>31,4 cm</strong>.`,
+        `Aire : 𝒜 = 5 × 5 × 3,14 = <strong>78,5 cm²</strong>.`
+      ]}
+    ],
+    aRetenirFinal: { titre: `Cercle`, items: [
+      `Cercle 𝒞(O ; r) : points à distance r du centre O.`,
+      `Rayon (O → cercle), corde (2 points du cercle), diamètre (corde par le centre = 2r).`,
+      `Périmètre : P = 2 × r × π = D × π.`,
+      `Aire du disque : 𝒜 = r × r × π.`
+    ]},
+    verification: {
+      enonceHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. Un diamètre est une corde qui passe par le centre.</div>`
+        + `<div>2. Le rayon est le double du diamètre.</div>`
+        + `<div>3. Tous les points d'un cercle sont à la même distance du centre.</div>`
+        + `<div style="margin-bottom:10px;">4. Le périmètre d'un cercle s'exprime en cm².</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. Le périmètre d'un cercle de rayon r est : a) πr² &nbsp; b) 2×r×π &nbsp; c) r+π</div>`
+        + `<div>2. L'aire d'un disque de rayon r est : a) 2πr &nbsp; b) r×r×π &nbsp; c) D×π</div>`
+        + `<div style="margin-bottom:10px;">3. Un diamètre vaut : a) le rayon &nbsp; b) 2 fois le rayon &nbsp; c) la moitié du rayon</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. Un segment reliant deux points du cercle est une ……</div>`
+        + `<div style="margin-bottom:10px;">2. L'aire du disque est 𝒜 = ……</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Donne la définition d'un cercle de centre O et de rayon r.</div>`,
+      correctionHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. <strong>VRAI.</strong> Le diamètre est la corde particulière qui passe par le centre.</div>`
+        + `<div>2. <strong>FAUX.</strong> C'est l'inverse : le diamètre est le double du rayon (D = 2r).</div>`
+        + `<div>3. <strong>VRAI.</strong> Par définition, tous les points du cercle sont à la distance r du centre.</div>`
+        + `<div style="margin-bottom:10px;">4. <strong>FAUX.</strong> Le périmètre est une longueur : il s'exprime en cm (l'aire en cm²).</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. <strong>b) 2×r×π.</strong></div><div>2. <strong>b) r×r×π.</strong></div>`
+        + `<div style="margin-bottom:10px;">3. <strong>b) 2 fois le rayon.</strong> D = 2r.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. … une <strong>corde</strong>.</div><div style="margin-bottom:10px;">2. 𝒜 = r × r × π.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Cercle : ensemble des points situés à une distance exactement égale à r du centre O.</div>`
+    },
+    exercices: [
+      { niveau: `Facile`, enonceHtml: `<div>1. Trace un cercle 𝒞(E ; 4 cm) au compas. Place un point A dessus et donne EA.</div>`
+        + `<div>2. Un cercle a un diamètre de 10 cm. Quel est son rayon ?</div>`,
+        correctionHtml: `<div>1. EA = 4 cm (c'est le rayon).</div><div>2. Rayon = 10 ÷ 2 = 5 cm.</div>` },
+      { niveau: `Moyen`, enonceHtml: `<div>1. Trace un cercle de centre O et de diamètre AB = 5 cm. Calcule son périmètre et l'aire du disque (π ≈ 3,14).</div>`
+        + `<div>2. On considère un cercle 𝒞(E ; 3 cm). Place deux points A et B tels que A, E, B soient alignés. Que représente [AB] pour le cercle ? Et [EA] ?</div>`,
+        correctionHtml: `<div>1. r = AB ÷ 2 = 2,5 cm. P = 2 × 2,5 × 3,14 = 15,7 cm. 𝒜 = 2,5 × 2,5 × 3,14 = 19,625 cm².</div>`
+        + `<div>2. [AB] est un diamètre (passe par E) ; [EA] est un rayon.</div>` },
+      { niveau: `Avancé`, enonceHtml: `<div>1. Un jardinier décore un rond-point de 10 m de rayon (π ≈ 3,14). a) Il plante du gazon sur toute la surface : quelle aire doit-il couvrir ? b) Il plante des fleurs sur le bord, tous les 20 cm : combien de pots doit-il prévoir ?</div>`,
+        correctionHtml: `<div>a) 𝒜 = 10 × 10 × 3,14 = <strong>314 m²</strong>. b) Périmètre = 2 × 10 × 3,14 = 62,8 m = 6280 cm. Un pot tous les 20 cm : 6280 ÷ 20 = <strong>314 pots</strong>.</div>` }
+    ]
+  },
+
+  '📐 SA2, Angles (mesure, bissectrice)': {
+    titre: `Angles`,
+    emoji: `📐`,
+    objectifs: [`Reconnaître un angle, son sommet et ses côtés ; le mesurer en degrés au rapporteur.`, `Classer les angles (nul, aigu, droit, obtus, plat).`, `Reconnaître des angles adjacents.`, `Définir et construire la bissectrice d'un angle.`],
+    prerequis: [`Demi-droites, sommet, rapporteur.`],
+    sections: [
+      { type: 'def', titre: `Angle`, texte: `Un angle est une portion de plan délimitée par deux demi-droites de même origine. Ces demi-droites sont les <strong>côtés</strong> de l'angle ; leur origine commune est le <strong>sommet</strong>. On mesure un angle en degrés (°) à l'aide du rapporteur.` },
+      { type: 'table', titre: `Classification des angles`, headers: [`Mesure de l'angle`, `Nature de l'angle`], rows: [
+        [`égale à 0°`, `angle nul`],
+        [`entre 0° et 90°`, `angle aigu`],
+        [`égale à 90°`, `angle droit`],
+        [`entre 90° et 180°`, `angle obtus`],
+        [`égale à 180°`, `angle plat`]
+      ]},
+      { type: 'def', titre: `Angles adjacents`, texte: `Deux angles sont adjacents lorsqu'ils ont : le même sommet, un côté commun, et qu'ils sont situés de part et d'autre de ce côté commun.` },
+      { type: 'def', titre: `Bissectrice`, texte: `La bissectrice d'un angle est la droite (ou demi-droite) qui passe par le sommet de l'angle et le partage en deux angles adjacents de même mesure.` }
+    ],
+    aRetenirFinal: { titre: `Angles`, items: [
+      `Angle = 2 demi-droites de même origine ; sommet + 2 côtés ; mesuré en degrés.`,
+      `Nul 0°, aigu &lt;90°, droit 90°, obtus entre 90° et 180°, plat 180°.`,
+      `Adjacents : même sommet, un côté commun, de part et d'autre de ce côté.`,
+      `Bissectrice : partage l'angle en deux angles adjacents égaux.`
+    ]},
+    verification: {
+      enonceHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. Un angle droit mesure 90°.</div>`
+        + `<div>2. Un angle obtus mesure moins de 90°.</div>`
+        + `<div>3. La bissectrice partage l'angle en deux angles de même mesure.</div>`
+        + `<div style="margin-bottom:10px;">4. Deux angles adjacents ont des sommets différents.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. Un angle de 140° est : a) aigu &nbsp; b) droit &nbsp; c) obtus</div>`
+        + `<div>2. Un angle plat mesure : a) 90° &nbsp; b) 180° &nbsp; c) 0°</div>`
+        + `<div style="margin-bottom:10px;">3. La bissectrice passe par : a) le milieu d'un côté &nbsp; b) le sommet de l'angle &nbsp; c) l'extérieur de l'angle</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Associer (nature ↔ mesure)</div>`
+        + `<div style="margin-bottom:10px;">1. angle nul &nbsp; 2. angle aigu &nbsp; 3. angle droit &nbsp; 4. angle plat &nbsp;&nbsp;|&nbsp;&nbsp; a. 90° &nbsp; b. 180° &nbsp; c. 0° &nbsp; d. entre 0° et 90°</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Donne la définition d'un angle.</div>`
+        + `<div>2. À quelles conditions deux angles sont-ils adjacents ?</div>`,
+      correctionHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. <strong>VRAI.</strong> L'angle droit mesure exactement 90°.</div>`
+        + `<div>2. <strong>FAUX.</strong> Un angle obtus mesure entre 90° et 180° (donc plus de 90°).</div>`
+        + `<div>3. <strong>VRAI.</strong> C'est la définition même de la bissectrice.</div>`
+        + `<div style="margin-bottom:10px;">4. <strong>FAUX.</strong> Deux angles adjacents ont au contraire le MÊME sommet.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. <strong>c) obtus.</strong> 140° est entre 90° et 180°.</div>`
+        + `<div>2. <strong>b) 180°.</strong> L'angle plat correspond à une demi-tour.</div>`
+        + `<div style="margin-bottom:10px;">3. <strong>b) le sommet de l'angle.</strong></div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Associer</div>`
+        + `<div style="margin-bottom:10px;">1→c (nul=0°) ; 2→d (aigu=entre 0° et 90°) ; 3→a (droit=90°) ; 4→b (plat=180°).</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Angle : portion de plan délimitée par deux demi-droites de même origine (sommet + deux côtés).</div>`
+        + `<div>2. Adjacents : même sommet, un côté commun, situés de part et d'autre de ce côté commun.</div>`
+    },
+    exercices: [
+      { niveau: `Facile`, enonceHtml: `<div>1. Construis un angle de 140° au rapporteur, puis donne sa nature.</div>`
+        + `<div>2. Cite un angle droit, deux angles aigus et un angle obtus autour de toi.</div>`,
+        correctionHtml: `<div>1. Angle de 140° : c'est un angle <strong>obtus</strong> (entre 90° et 180°).</div>`
+        + `<div>2. Ex. : coin de table = droit ; pointe de crayon = aigu ; ouverture large d'une porte = obtus.</div>` },
+      { niveau: `Moyen`, enonceHtml: `<div>1. Construis un angle EFG de 120°, puis trace sa bissectrice (∆). Quelle est la mesure de chacun des deux angles obtenus ?</div>`
+        + `<div>2. Construis un angle ABC de 104°. Trace sa bissectrice et place un point D dessus. Trace ensuite la bissectrice de l'angle DBC. Quelle est la mesure de l'angle ABN où N est sur cette dernière bissectrice ?</div>`,
+        correctionHtml: `<div>1. La bissectrice partage 120° en deux angles de 120 ÷ 2 = <strong>60°</strong> chacun.</div>`
+        + `<div>2. La 1ʳᵉ bissectrice donne DBC = 104 ÷ 2 = 52°. La bissectrice de DBC donne NBC = 52 ÷ 2 = 26°. Donc mes ABN = ABC − NBC = 104 − 26 = <strong>78°</strong>.</div>` },
+      { niveau: `Avancé`, enonceHtml: `<div>1. Construis un angle AOB tel que mes AOB = 76°. Trace la demi-droite [OC) telle que AOB et BOC soient adjacents avec mes BOC = 14°. a) Démontre que (OA) et (OC) sont perpendiculaires. b) Trace la bissectrice [OD) de l'angle AOB et calcule mes DOC.</div>`,
+        correctionHtml: `<div>a) mes AOC = mes AOB + mes BOC = 76 + 14 = <strong>90°</strong>, donc (OA) ⊥ (OC).</div>`
+        + `<div>b) [OD) bissectrice de AOB : mes AOD = mes DOB = 76 ÷ 2 = 38°. mes DOC = mes DOB + mes BOC = 38 + 14 = <strong>52°</strong>.</div>` }
+    ]
+  },
+
+  '🔺 SA2, Triangles (construction, aire)': {
+    titre: `Triangles`,
+    emoji: `🔺`,
+    objectifs: [`Reconnaître un triangle, ses sommets, côtés et angles.`, `Construire un triangle à partir de données.`, `Reconnaître les triangles particuliers (isocèle, équilatéral, rectangle).`, `Reconnaître une hauteur, une médiatrice et une bissectrice d'un triangle.`, `Calculer le périmètre et l'aire d'un triangle.`],
+    prerequis: [`Segments, angles, perpendiculaires, médiatrice, bissectrice.`, `Règle, compas, rapporteur.`],
+    sections: [
+      { type: 'prop', titre: `Triangle`, texte: `Trois points non alignés A, B, C déterminent un triangle ABC. Ses trois côtés sont les segments [AB], [AC] et [BC] ; ses trois sommets sont A, B, C ; ses trois angles ont pour sommets A, B et C. Le côté opposé au sommet A est [BC].` },
+      { type: 'texte', titre: `Construction des triangles`, texte: `On peut construire un triangle connaissant : ses trois côtés (règle + compas) ; deux côtés et l'angle entre eux (règle + rapporteur) ; un côté et deux angles (règle + rapporteur).` },
+      { type: 'vocab', titre: `Triangles particuliers`, items: [
+        { terme: `Triangle isocèle`, description: `triangle qui a deux côtés de même longueur.` },
+        { terme: `Triangle équilatéral`, description: `triangle dont les trois côtés sont de même longueur.` },
+        { terme: `Triangle rectangle`, description: `triangle dont deux côtés ont leurs supports perpendiculaires (il a un angle droit).` }
+      ]},
+      { type: 'def', titre: `Hauteur`, texte: `Une hauteur d'un triangle est la droite passant par un sommet et perpendiculaire au support du côté opposé.` },
+      { type: 'texte', titre: `À savoir`, texte: `La médiatrice d'un côté d'un triangle est appelée médiatrice du triangle. La bissectrice d'un des angles d'un triangle est appelée bissectrice du triangle.` },
+      { type: 'formules', titre: `Périmètre et aire d'un triangle`, items: [
+        `Périmètre : 𝒫 = somme des trois côtés.`,
+        `Aire : 𝒜 = (b × h) ÷ 2, où b est une base et h la hauteur relative à cette base.`
+      ]},
+      { type: 'exResolu', titre: `un triangle`, enonce: `Un triangle ABC a pour côtés AB = 7 cm, AC = 6 cm, BC = 5 cm, et une hauteur issue de C mesurant CH = 4 cm (relative au côté [AB]). Calculer le périmètre et l'aire.`, etapes: [
+        `Périmètre : 𝒫 = 7 + 6 + 5 = <strong>18 cm</strong>.`,
+        `Aire : en prenant [AB] comme base (b=7) et CH comme hauteur (h=4) : 𝒜 = (7 × 4) ÷ 2 = 28 ÷ 2 = <strong>14 cm²</strong>.`
+      ]}
+    ],
+    aRetenirFinal: { titre: `Triangles`, items: [
+      `Triangle = 3 points non alignés ; 3 sommets, 3 côtés, 3 angles.`,
+      `Isocèle : 2 côtés égaux ; équilatéral : 3 côtés égaux ; rectangle : un angle droit.`,
+      `Hauteur : passe par un sommet, ⊥ au côté opposé.`,
+      `Périmètre = somme des côtés ; Aire = (base × hauteur) ÷ 2.`
+    ]},
+    verification: {
+      enonceHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. Un triangle équilatéral a ses trois côtés de même longueur.</div>`
+        + `<div>2. Un triangle isocèle a ses trois côtés égaux.</div>`
+        + `<div>3. Une hauteur passe par un sommet et est perpendiculaire au côté opposé.</div>`
+        + `<div style="margin-bottom:10px;">4. L'aire d'un triangle est le produit de la base par la hauteur.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. Un triangle rectangle a : a) trois côtés égaux &nbsp; b) un angle droit &nbsp; c) deux angles droits</div>`
+        + `<div>2. L'aire d'un triangle de base b et de hauteur h est : a) b×h &nbsp; b) (b×h)÷2 &nbsp; c) b+h</div>`
+        + `<div style="margin-bottom:10px;">3. Le côté opposé au sommet A du triangle ABC est : a) [AB] &nbsp; b) [AC] &nbsp; c) [BC]</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. Un triangle qui a deux côtés de même longueur est ……</div>`
+        + `<div>2. Le périmètre d'un triangle est la …… de ses trois côtés.</div>`
+        + `<div style="margin-bottom:10px;">3. L'aire d'un triangle est 𝒜 = ……</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Donne la définition d'un triangle rectangle.</div>`
+        + `<div>2. Qu'est-ce qu'une hauteur d'un triangle ?</div>`,
+      correctionHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. <strong>VRAI.</strong> C'est la définition de l'équilatéral.</div>`
+        + `<div>2. <strong>FAUX.</strong> L'isocèle a DEUX côtés égaux ; trois côtés égaux = équilatéral.</div>`
+        + `<div>3. <strong>VRAI.</strong> C'est la définition de la hauteur.</div>`
+        + `<div style="margin-bottom:10px;">4. <strong>FAUX.</strong> L'aire est (base × hauteur) ÷ 2, pas le produit seul.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. <strong>b) un angle droit.</strong></div><div>2. <strong>b) (b×h)÷2.</strong></div>`
+        + `<div style="margin-bottom:10px;">3. <strong>c) [BC].</strong> Le côté opposé à A ne contient pas A.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. … est <strong>isocèle</strong>.</div><div>2. … la <strong>somme</strong> de ses trois côtés.</div>`
+        + `<div style="margin-bottom:10px;">3. 𝒜 = (base × hauteur) ÷ 2.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Rectangle : triangle dont deux côtés ont leurs supports perpendiculaires (un angle droit).</div>`
+        + `<div>2. Hauteur : droite passant par un sommet et perpendiculaire au support du côté opposé.</div>`
+    },
+    exercices: [
+      { niveau: `Facile`, enonceHtml: `<div>1. Construis un triangle ABC tel que AB = 4,5 cm, BC = 5,5 cm et AC = 3 cm.</div>`
+        + `<div>2. Construis un triangle équilatéral de côté 5 cm.</div>`,
+        correctionHtml: `<div>1. Construction au compas : reporter les longueurs à partir d'un premier côté. Vérifie que AB=4,5 ; BC=5,5 ; AC=3.</div>`
+        + `<div>2. Reporter trois fois 5 cm au compas ; triangle équilatéral.</div>` },
+      { niveau: `Moyen`, enonceHtml: `<div>1. Construis un triangle EFG tel que EF = 4,5 cm, EG = 6 cm et mes FEG = 40°.</div>`
+        + `<div>2. Construis un triangle FIN, rectangle en F, tel que FI = 5 cm et NF = 6 cm, puis calcule son aire.</div>`,
+        correctionHtml: `<div>1. Tracer [EF]=4,5 cm, un angle de 40° en E, reporter EG=6 cm, joindre F et G.</div>`
+        + `<div>2. Angle droit en F, FI=5 et NF=6 côtés de l'angle droit. Aire = (5 × 6) ÷ 2 = <strong>15 cm²</strong>.</div>` },
+      { niveau: `Avancé`, enonceHtml: `<div>1. Un triangle ABC a pour côté BC = 8 cm et une hauteur issue de A qui mesure 3,9 cm. a) Calcule son aire. b) Un autre triangle a une base de 16 cm et une hauteur de 15 cm : calcule son aire. c) Compare les deux aires.</div>`,
+        correctionHtml: `<div>a) 𝒜 = (8 × 3,9) ÷ 2 = 31,2 ÷ 2 = <strong>15,6 cm²</strong>.</div>`
+        + `<div>b) 𝒜 = (16 × 15) ÷ 2 = 240 ÷ 2 = <strong>120 cm²</strong>.</div>`
+        + `<div>c) Le second triangle a une aire bien plus grande (120 cm² contre 15,6 cm²).</div>` }
+    ]
+  },
+
+  '▱ SA2, Parallélogramme (rectangle, carré, losange)': {
+    titre: `Parallélogramme (et quadrilatères particuliers)`,
+    emoji: `▱`,
+    objectifs: [`Reconnaître et définir un parallélogramme et ses propriétés.`, `Reconnaître le rectangle, le carré et le losange.`, `Calculer le périmètre et l'aire de ces quadrilatères.`],
+    prerequis: [`Droites parallèles et perpendiculaires, angles droits.`, `Aire du rectangle et du carré.`],
+    sections: [
+      { type: 'def', titre: `Parallélogramme`, texte: `Un parallélogramme est un quadrilatère dont les côtés opposés sont parallèles deux à deux.` },
+      { type: 'prop', items: [
+        `Les diagonales d'un parallélogramme se coupent en leur milieu.`,
+        `Réciproque : un quadrilatère dont les diagonales se coupent en leur milieu est un parallélogramme.`,
+        `Les côtés opposés d'un parallélogramme ont la même longueur.`,
+        `Réciproque : un quadrilatère dont les côtés opposés sont de même longueur est un parallélogramme.`
+      ]},
+      { type: 'def', titre: `Rectangle`, texte: `Un rectangle est un quadrilatère qui a quatre angles droits.` },
+      { type: 'prop', items: [
+        `Un quadrilatère ayant trois angles droits est un rectangle (le quatrième l'est aussi).`,
+        `Un rectangle est un parallélogramme particulier.`,
+        `Un parallélogramme ayant un angle droit est un rectangle.`
+      ]},
+      { type: 'def', titre: `Carré`, texte: `Un carré est un quadrilatère qui a quatre angles droits ET quatre côtés de même longueur.` },
+      { type: 'prop', texte: `Un carré est à la fois un rectangle (4 angles droits) et un losange (4 côtés égaux).` },
+      { type: 'def', titre: `Losange`, texte: `Un losange est un quadrilatère qui a ses quatre côtés de même longueur.` },
+      { type: 'prop', items: [`Un losange est un parallélogramme particulier.`, `Les diagonales d'un losange sont perpendiculaires.`] },
+      { type: 'formules', titre: `Périmètre et aire`, items: [
+        `Rectangle (longueur L, largeur l) : 𝒜 = L × l.`,
+        `Carré (côté c) : 𝒜 = c × c = c².`,
+        `Losange (grande diagonale D, petite diagonale d) : 𝒜 = (D × d) ÷ 2.`,
+        `Parallélogramme (base b, hauteur h) : 𝒜 = b × h.`,
+        `Périmètre (tous les cas) : somme des longueurs des quatre côtés.`
+      ]},
+      { type: 'exResolu', titre: `un rectangle`, enonce: `Un rectangle a pour dimensions L = 8 cm et l = 5 cm. Calculer son périmètre et son aire.`, etapes: [
+        `Périmètre : 𝒫 = 2 × (8 + 5) = 2 × 13 = <strong>26 cm</strong>.`,
+        `Aire : 𝒜 = 8 × 5 = <strong>40 cm²</strong>.`
+      ]}
+    ],
+    aRetenirFinal: { titre: `Parallélogramme et quadrilatères`, items: [
+      `Parallélogramme : côtés opposés parallèles ; diagonales se coupant en leur milieu ; côtés opposés égaux.`,
+      `Rectangle : 4 angles droits. Carré : 4 angles droits + 4 côtés égaux. Losange : 4 côtés égaux.`,
+      `Aires : rectangle L×l ; carré c² ; losange (D×d)÷2 ; parallélogramme b×h.`,
+      `Périmètre = somme des 4 côtés.`
+    ]},
+    verification: {
+      enonceHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. Les côtés opposés d'un parallélogramme sont parallèles.</div>`
+        + `<div>2. Un rectangle a quatre côtés de même longueur.</div>`
+        + `<div>3. Un carré est à la fois un rectangle et un losange.</div>`
+        + `<div style="margin-bottom:10px;">4. Les diagonales d'un losange sont parallèles.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. L'aire d'un losange de diagonales D et d est : a) D×d &nbsp; b) (D×d)÷2 &nbsp; c) D+d</div>`
+        + `<div>2. Un quadrilatère à quatre angles droits est un : a) losange &nbsp; b) rectangle &nbsp; c) trapèze</div>`
+        + `<div style="margin-bottom:10px;">3. L'aire d'un parallélogramme de base b et hauteur h est : a) b+h &nbsp; b) (b×h)÷2 &nbsp; c) b×h</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. Un …… a quatre côtés de même longueur.</div>`
+        + `<div>2. L'aire d'un carré de côté c est 𝒜 = ……</div>`
+        + `<div style="margin-bottom:10px;">3. Les diagonales d'un parallélogramme se coupent en leur ……</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Donne la définition d'un parallélogramme.</div>`
+        + `<div>2. Cite deux propriétés d'un losange.</div>`,
+      correctionHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. <strong>VRAI.</strong> C'est la définition même du parallélogramme.</div>`
+        + `<div>2. <strong>FAUX.</strong> Un rectangle a 4 angles droits, mais seuls ses côtés opposés sont égaux (le carré a 4 côtés égaux).</div>`
+        + `<div>3. <strong>VRAI.</strong> Le carré a 4 angles droits (rectangle) et 4 côtés égaux (losange).</div>`
+        + `<div style="margin-bottom:10px;">4. <strong>FAUX.</strong> Les diagonales d'un losange sont PERPENDICULAIRES, pas parallèles.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. <strong>b) (D×d)÷2.</strong></div><div>2. <strong>b) rectangle.</strong></div>`
+        + `<div style="margin-bottom:10px;">3. <strong>c) b×h.</strong></div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. Un <strong>losange</strong> a quatre côtés de même longueur.</div>`
+        + `<div>2. 𝒜 = c × c = c².</div>`
+        + `<div style="margin-bottom:10px;">3. … en leur <strong>milieu</strong>.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Parallélogramme : quadrilatère dont les côtés opposés sont parallèles.</div>`
+        + `<div>2. Losange : c'est un parallélogramme ; ses diagonales sont perpendiculaires ; ses 4 côtés sont égaux.</div>`
+    },
+    exercices: [
+      { niveau: `Facile`, enonceHtml: `<div>1. Un rectangle mesure 12 cm de long et 7 cm de large. Calcule son périmètre et son aire.</div>`
+        + `<div>2. Un carré a un côté de 6 cm. Calcule son périmètre et son aire.</div>`,
+        correctionHtml: `<div>1. 𝒫 = 2×(12+7) = <strong>38 cm</strong> ; 𝒜 = 12×7 = <strong>84 cm²</strong>.</div>`
+        + `<div>2. 𝒫 = 4×6 = <strong>24 cm</strong> ; 𝒜 = 6×6 = <strong>36 cm²</strong>.</div>` },
+      { niveau: `Moyen`, enonceHtml: `<div>1. Un losange a des diagonales de 8 cm et 6 cm. Calcule son aire.</div>`
+        + `<div>2. Un parallélogramme a une base de 10 cm et une hauteur de 4 cm. Calcule son aire. Ses côtés mesurent 10 cm et 5 cm : calcule son périmètre.</div>`,
+        correctionHtml: `<div>1. 𝒜 = (8×6)÷2 = 48÷2 = <strong>24 cm²</strong>.</div>`
+        + `<div>2. 𝒜 = 10×4 = <strong>40 cm²</strong> ; 𝒫 = 2×(10+5) = <strong>30 cm</strong>.</div>` },
+      { niveau: `Avancé`, enonceHtml: `<div>1. Un terrain a la forme suivante : un carré ABCD de côté 20 m accolé à un rectangle EFGC de longueur 90 m et de largeur 10 m (E, C alignés). a) Calcule le périmètre et l'aire du carré ABCD. b) Calcule l'aire du rectangle EFGC. c) Calcule l'aire totale du terrain.</div>`,
+        correctionHtml: `<div>a) 𝒫 = 4×20 = <strong>80 m</strong>, 𝒜 = 20×20 = <strong>400 m²</strong>.</div>`
+        + `<div>b) 𝒜 = 90×10 = <strong>900 m²</strong>.</div>`
+        + `<div>c) Aire totale = 400 + 900 = <strong>1300 m²</strong>.</div>` }
+    ]
+  },
+
+  '🔢 SA2, Entiers naturels ℕ (divisibilité)': {
+    titre: `Entiers naturels`,
+    emoji: `🔢`,
+    objectifs: [`Reconnaître l'ensemble ℕ des entiers naturels et écrire les nombres en lettres et en chiffres.`, `Effectuer les opérations en respectant les priorités.`, `Reconnaître multiples et diviseurs d'un nombre.`, `Appliquer les critères de divisibilité par 2, 3, 4, 5, 9, 10, 100 et 1000.`],
+    prerequis: [`Les quatre opérations posées.`, `Numération jusqu'aux millions/milliards.`],
+    sections: [
+      { type: 'def', texte: `Les nombres 0 ; 1 ; 2 ; 3 ; 4 ; … sont les <strong>entiers naturels</strong>. Leur ensemble est noté ℕ. C'est un ensemble <strong>infini</strong> : on ne peut pas tous les citer.` },
+      { type: 'texte', titre: `Règles d'écriture en lettres`, texte: `« MILLE » est invariable (ne prend jamais de s). « MILLION » et « MILLIARD » s'accordent normalement (peuvent prendre un s). « VINGT » et « CENT » prennent un s au pluriel SAUF s'ils sont suivis d'un autre nombre. Pour les nombres inférieurs à 100, on met un trait d'union, sauf autour de « et ».` },
+      { type: 'texte', titre: `Priorités des opérations`, texte: `On effectue d'abord les calculs entre parenthèses. La multiplication (et la division) est prioritaire sur l'addition et la soustraction.` },
+      { type: 'exemple', texte: `A = 14 + 3 × 8 − 2. On calcule d'abord 3 × 8 = 24, puis 14 + 24 − 2 = <strong>36</strong>.` },
+      { type: 'retenir', titre: `Multiples et diviseurs`, texte: `Multiples de a : ce sont a×0 ; a×1 ; a×2 ; a×3 ; … Un nombre est <strong>divisible</strong> par a s'il est un multiple de a.` },
+      { type: 'prop', items: [`Chaque entier est multiple de lui-même et de 1.`, `0 est multiple de chaque entier naturel.`, `Le plus petit diviseur d'un entier non nul est 1 ; le plus grand est le nombre lui-même.`] },
+      { type: 'retenir', titre: `Nombres pairs / impairs`, texte: `Les multiples de 2 sont les nombres pairs. 0 est pair. Les autres sont impairs.` },
+      { type: 'table', titre: `Critères de divisibilité`, headers: [`Divisible par…`, `Critère`], rows: [
+        [`2`, `se termine par 0, 2, 4, 6 ou 8 (nombre pair)`],
+        [`3`, `la somme de ses chiffres est un multiple de 3`],
+        [`4`, `ses deux derniers chiffres forment un multiple de 4`],
+        [`5`, `se termine par 0 ou 5`],
+        [`9`, `la somme de ses chiffres est un multiple de 9`],
+        [`10 ; 100 ; 1000`, `se termine par 0 ; 00 ; 000`]
+      ]},
+      { type: 'exemple', texte: `342 est divisible par 3 car 3 + 4 + 2 = 9, et 9 est un multiple de 3. Il n'est pas divisible par 5 (ne se termine ni par 0 ni par 5).` }
+    ],
+    aRetenirFinal: { titre: `Entiers naturels`, items: [
+      `ℕ = {0 ; 1 ; 2 ; 3 ; …}, ensemble infini.`,
+      `Priorités : parenthèses d'abord, puis × et ÷ avant + et −.`,
+      `Multiple de a = a×0, a×1, a×2… ; divisible par a = multiple de a.`,
+      `Divisibilité : 2 (pair) ; 3 et 9 (somme des chiffres) ; 4 (2 derniers chiffres) ; 5 (0 ou 5) ; 10/100/1000 (zéros finaux).`
+    ]},
+    verification: {
+      enonceHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. L'ensemble ℕ est fini.</div>`
+        + `<div>2. 0 est un multiple de tout entier naturel.</div>`
+        + `<div>3. Un nombre divisible par 3 a la somme de ses chiffres multiple de 3.</div>`
+        + `<div style="margin-bottom:10px;">4. Dans un calcul, l'addition est prioritaire sur la multiplication.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. Le nombre 5 064 est divisible par : a) 5 &nbsp; b) 4 &nbsp; c) 9</div>`
+        + `<div>2. Un nombre divisible par 10 se termine par : a) 5 &nbsp; b) 0 &nbsp; c) 1</div>`
+        + `<div style="margin-bottom:10px;">3. Le résultat de 7 × 4 + 5 × 3 est : a) 43 &nbsp; b) 63 &nbsp; c) 105</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. Un nombre pair est un multiple de ……</div>`
+        + `<div>2. Un nombre est divisible par 9 si la …… de ses chiffres est un multiple de 9.</div>`
+        + `<div style="margin-bottom:10px;">3. Le plus petit diviseur d'un entier non nul est ……</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Écris en lettres le nombre 1 421.</div>`
+        + `<div>2. Détermine les cinq premiers multiples de 7.</div>`,
+      correctionHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. <strong>FAUX.</strong> ℕ est infini.</div>`
+        + `<div>2. <strong>VRAI.</strong> 0 = a×0, donc 0 est multiple de tout entier a.</div>`
+        + `<div>3. <strong>VRAI.</strong> C'est le critère de divisibilité par 3.</div>`
+        + `<div style="margin-bottom:10px;">4. <strong>FAUX.</strong> La multiplication est prioritaire sur l'addition.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. <strong>b) 4.</strong> Ses deux derniers chiffres forment 64 = 4×16, multiple de 4.</div>`
+        + `<div>2. <strong>b) 0.</strong></div>`
+        + `<div style="margin-bottom:10px;">3. <strong>a) 43.</strong> 7×4=28, 5×3=15 (multiplications d'abord), puis 28+15=43.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. … multiple de <strong>2</strong>.</div><div>2. … la <strong>somme</strong> de ses chiffres…</div>`
+        + `<div style="margin-bottom:10px;">3. … est <strong>1</strong>.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. 1 421 : mille quatre cent vingt et un.</div>`
+        + `<div>2. Multiples de 7 : 0 ; 7 ; 14 ; 21 ; 28.</div>`
+    },
+    exercices: [
+      { niveau: `Facile`, enonceHtml: `<div>1. Calcule : A = 26 − (3 × 8) ; B = 48 − (9 + 7) + (8 − 3).</div>`
+        + `<div>2. Écris tous les diviseurs de 32.</div>`,
+        correctionHtml: `<div>1. A = 26 − 24 = <strong>2</strong>. B = 48 − 16 + 5 = <strong>37</strong>.</div>`
+        + `<div>2. Diviseurs de 32 : 1 ; 2 ; 4 ; 8 ; 16 ; 32.</div>` },
+      { niveau: `Moyen`, enonceHtml: `<div>1. Parmi 24 ; 25 ; 544 ; 600 ; 173 ; 205 : a) cite les nombres divisibles par 2 ; b) par 5 ; c) par 3.</div>`
+        + `<div>2. Le nombre 1 605 est-il divisible par 2 ? par 5 ? par 4 ? par 3 ? Justifie chaque réponse.</div>`,
+        correctionHtml: `<div>1. a) divisibles par 2 : 24, 544, 600. b) par 5 : 25, 600, 205. c) par 3 : 24 et 600.</div>`
+        + `<div>2. Par 2 → non (finit par 5, impair) ; par 5 → oui (finit par 5) ; par 4 → non (05 non multiple de 4) ; par 3 → oui (1+6+0+5=12, multiple de 3).</div>` },
+      { niveau: `Avancé`, enonceHtml: `<div>1. Un nombre s'écrit 79X (7, 9 puis un chiffre X). a) Détermine X pour que 79X soit divisible par 3. b) Détermine X pour que 79X soit divisible par 4. c) Détermine X pour que 79X soit divisible à la fois par 3 et par 4.</div>`,
+        correctionHtml: `<div>a) 7+9+X = 16+X multiple de 3 : X ∈ {2 ; 5 ; 8}.</div>`
+        + `<div>b) 79X divisible par 4 ⇔ « 9X » multiple de 4 : X ∈ {2 ; 6}.</div>`
+        + `<div>c) X dans les deux listes : <strong>X = 2</strong> (792, divisible par 3 et par 4).</div>` }
+    ]
+  },
+
+  '🔢 SA2, Nombres décimaux': {
+    titre: `Nombres décimaux arithmétiques`,
+    emoji: `🔢`,
+    objectifs: [`Reconnaître un nombre décimal et l'ensemble 𝔻.`, `Déterminer la partie entière et la partie décimale d'un nombre.`, `Comparer et ranger des nombres décimaux.`, `Effectuer les opérations sur les décimaux et estimer un ordre de grandeur.`],
+    prerequis: [`Entiers naturels, numération de position.`, `Les quatre opérations.`],
+    sections: [
+      { type: 'def', texte: `Un <strong>nombre décimal</strong> est un nombre qui possède une partie entière et une partie après la virgule (partie décimale). L'ensemble des nombres décimaux est noté 𝔻. Tout entier naturel est un décimal : on a ℕ ⊂ 𝔻.` },
+      { type: 'def', texte: `Pour un nombre décimal, la <strong>partie entière</strong> est le nombre entier situé avant la virgule ; la <strong>partie décimale</strong> est ce qui suit la virgule (0,…). Exemple : 4,17 = 4 + 0,17 : partie entière 4, partie décimale 0,17.` },
+      { type: 'texte', titre: `Comparaison des nombres décimaux`, texte: `1. On compare d'abord les parties entières.<br>2. Si elles sont égales, on compare les chiffres des dixièmes.<br>3. Si ceux-ci sont égaux, on compare les centièmes, et ainsi de suite.` },
+      { type: 'exemple', texte: `14,289 et 14,27 : parties entières égales (14). Dixièmes : 2 = 2. Centièmes : 8 > 7. Donc <strong>14,289 > 14,27</strong>.` },
+      { type: 'texte', titre: `Opérations et ordre de grandeur`, texte: `Dans une somme, on peut changer l'ordre des termes et les regrouper sans changer le résultat. Pour multiplier une somme (ou une différence) par un nombre, on multiplie chaque terme puis on additionne (ou soustrait) les produits. Ordre de grandeur : on remplace chaque nombre par un nombre proche « facile à calculer » pour estimer et vérifier un résultat.` },
+      { type: 'exemple', texte: `Pour S = 21,37 + 482 + 8,921 − 63,97, un ordre de grandeur est 20 + 480 + 10 − 60 = <strong>450</strong>.` }
+    ],
+    aRetenirFinal: { titre: `Nombres décimaux`, items: [
+      `𝔻 = ensemble des nombres décimaux ; ℕ ⊂ 𝔻.`,
+      `Nombre = partie entière + partie décimale.`,
+      `Comparer : parties entières, puis dixièmes, puis centièmes…`,
+      `Ordre de grandeur = estimation rapide pour contrôler un calcul.`
+    ]},
+    verification: {
+      enonceHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. Tout entier naturel est un nombre décimal.</div>`
+        + `<div>2. Dans 7,83, la partie décimale est 83.</div>`
+        + `<div>3. Pour comparer deux décimaux, on commence par les parties entières.</div>`
+        + `<div style="margin-bottom:10px;">4. 19,08 et 19,080 sont deux nombres différents.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. La partie entière de 18,815 est : a) 18 &nbsp; b) 815 &nbsp; c) 0,815</div>`
+        + `<div>2. Parmi ces nombres, le plus grand est : a) 5,3 &nbsp; b) 5,31 &nbsp; c) 5,03</div>`
+        + `<div style="margin-bottom:10px;">3. Un ordre de grandeur de 2,9 × 7 est : a) 21 &nbsp; b) 63 &nbsp; c) 9</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. L'ensemble des décimaux se note ……</div>`
+        + `<div style="margin-bottom:10px;">2. 4,17 = 4 + …… (partie décimale).</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Explique comment comparer 42,12 et 42,32.</div>`,
+      correctionHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. <strong>VRAI.</strong> ℕ ⊂ 𝔻.</div>`
+        + `<div>2. <strong>FAUX.</strong> La partie décimale de 7,83 est 0,83 (et non 83).</div>`
+        + `<div>3. <strong>VRAI.</strong></div>`
+        + `<div style="margin-bottom:10px;">4. <strong>FAUX.</strong> 19,08 = 19,080 : ajouter un zéro à droite ne change pas le nombre.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. <strong>a) 18.</strong></div><div>2. <strong>b) 5,31.</strong> Parties entières égales (5), dixièmes 3=3, centièmes 0&lt;1.</div>`
+        + `<div style="margin-bottom:10px;">3. <strong>a) 21.</strong> On remplace 2,9 par 3 : 3 × 7 = 21.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. … se note 𝔻.</div><div style="margin-bottom:10px;">2. 4,17 = 4 + 0,17.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Parties entières égales (42) ; on compare les dixièmes : 1 &lt; 3, donc 42,12 &lt; 42,32.</div>`
+    },
+    exercices: [
+      { niveau: `Facile`, enonceHtml: `<div>1. Donne la partie entière et la partie décimale de : 18,815 ; 0,036 ; 7,83.</div>`
+        + `<div>2. Compare avec &lt; ou &gt; : 15,1 et 15,09 ; 7,101 et 7,011.</div>`,
+        correctionHtml: `<div>1. 18,815 → 18 et 0,815 ; 0,036 → 0 et 0,036 ; 7,83 → 7 et 0,83.</div>`
+        + `<div>2. 15,1 &gt; 15,09 ; 7,101 &gt; 7,011.</div>` },
+      { niveau: `Moyen`, enonceHtml: `<div>1. Range dans l'ordre croissant : 3,02 ; 1,01 ; 5,31 ; 2,89 ; 5,3 ; 4 ; 0.</div>`
+        + `<div>2. Calcule : A = 116,52 + 58,748 ; C = 254 − 239,95 − 6,624.</div>`,
+        correctionHtml: `<div>1. 0 &lt; 1,01 &lt; 2,89 &lt; 3,02 &lt; 4 &lt; 5,3 &lt; 5,31.</div>`
+        + `<div>2. A = <strong>175,268</strong> ; C = 254 − 239,95 = 14,05, puis 14,05 − 6,624 = <strong>7,426</strong>.</div>` },
+      { niveau: `Avancé`, enonceHtml: `<div>1. Calcule en respectant les priorités : A = 305,76 × 0,12 + (30,4 − 20,9) ; B = 4 × 12,5 + 3 × (5,6 + 1,6).</div>`,
+        correctionHtml: `<div>A : 305,76 × 0,12 = 36,6912 ; (30,4−20,9) = 9,5 ; A = 36,6912 + 9,5 = <strong>46,1912</strong>.</div>`
+        + `<div>B : 4×12,5 = 50 ; (5,6+1,6) = 7,2 ; 3×7,2 = 21,6 ; B = 50 + 21,6 = <strong>71,6</strong>.</div>` }
+    ]
+  },
+
+  '½ SA2, Fractions': {
+    titre: `Fractions`,
+    emoji: `½`,
+    objectifs: [`Reconnaître une fraction, ses termes (numérateur, dénominateur), et la simplifier.`, `Écrire un nombre décimal sous forme de fraction décimale.`, `Additionner, soustraire une fraction et multiplier une fraction par un nombre.`, `Déterminer une valeur approchée d'une fraction.`],
+    prerequis: [`Multiples et diviseurs.`, `Nombres décimaux.`],
+    sections: [
+      { type: 'def', texte: `Tout nombre de la forme a/b (avec b non nul) est une <strong>fraction</strong>. a est le numérateur, b le dénominateur ; ce sont les termes de la fraction.` },
+      { type: 'prop', titre: `Fractions égales`, items: [
+        `On obtient une fraction égale en multipliant ses deux termes par un même entier naturel non nul.`,
+        `On obtient une fraction égale en divisant ses deux termes par un même diviseur commun : on dit qu'on simplifie la fraction.`
+      ]},
+      { type: 'exemple', texte: `9/12 : 9 et 12 sont divisibles par 3, donc 9/12 = 3/4. La fraction 3/4 est simplifiée.` },
+      { type: 'def', titre: `Fraction décimale`, texte: `Une fraction décimale est une fraction dont le dénominateur est 1, 10, 100, 1000, etc. Exemple : 122,5 = 1225/10 ; 0,34 = 34/100.` },
+      { type: 'texte', titre: `Opérations sur les fractions (même dénominateur b)`, texte: `Addition : a/b + c/b = (a+c)/b. Soustraction : a/b − c/b = (a−c)/b. Multiplication par un nombre k : k × (a/b) = (k×a)/b.` },
+      { type: 'exemple', texte: `5/7 + 11/7 = 16/7. Et 7 × (47/16) = 329/16.` },
+      { type: 'def', titre: `Valeur approchée`, texte: `La valeur approchée d'une fraction est le nombre décimal le plus proche à une précision donnée (au dixième, au centième…). On distingue la valeur approchée par défaut (inférieure) et par excès (supérieure).` }
+    ],
+    aRetenirFinal: { titre: `Fractions`, items: [
+      `Fraction a/b : a numérateur, b dénominateur (b ≠ 0).`,
+      `Fractions égales : multiplier ou diviser les deux termes par un même nombre non nul.`,
+      `Fraction décimale : dénominateur 10, 100, 1000…`,
+      `Même dénominateur : a/b + c/b = (a+c)/b ; k × (a/b) = (k×a)/b.`
+    ]},
+    verification: {
+      enonceHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. Dans la fraction 44/8, le numérateur est 8.</div>`
+        + `<div>2. On peut simplifier une fraction en divisant ses deux termes par un même nombre.</div>`
+        + `<div>3. 34/100 est une fraction décimale.</div>`
+        + `<div style="margin-bottom:10px;">4. Pour additionner deux fractions de même dénominateur, on additionne les dénominateurs.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. La fraction 9/12 simplifiée donne : a) 3/4 &nbsp; b) 1/2 &nbsp; c) 9/12</div>`
+        + `<div>2. 5/7 + 11/7 = a) 16/14 &nbsp; b) 16/7 &nbsp; c) 55/7</div>`
+        + `<div style="margin-bottom:10px;">3. Le nombre 0,34 s'écrit : a) 34/10 &nbsp; b) 34/100 &nbsp; c) 34/1000</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. Dans a/b, a est le …… et b le ……</div>`
+        + `<div style="margin-bottom:10px;">2. a/b + c/b = ……</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Qu'est-ce qu'une fraction décimale ?</div>`,
+      correctionHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. <strong>FAUX.</strong> Dans 44/8, le numérateur est 44 ; 8 est le dénominateur.</div>`
+        + `<div>2. <strong>VRAI.</strong></div>`
+        + `<div>3. <strong>VRAI.</strong> Son dénominateur est 100.</div>`
+        + `<div style="margin-bottom:10px;">4. <strong>FAUX.</strong> On additionne les numérateurs, on garde le dénominateur.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. <strong>a) 3/4.</strong></div><div>2. <strong>b) 16/7.</strong></div>`
+        + `<div style="margin-bottom:10px;">3. <strong>b) 34/100.</strong></div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. a est le <strong>numérateur</strong> et b le <strong>dénominateur</strong>.</div>`
+        + `<div style="margin-bottom:10px;">2. a/b + c/b = (a+c)/b.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Fraction décimale : fraction dont le dénominateur est 1, 10, 100, 1000, etc.</div>`
+    },
+    exercices: [
+      { niveau: `Facile`, enonceHtml: `<div>1. Simplifie : 9/12 ; 48/6.</div>`
+        + `<div>2. Écris sous forme de fraction décimale : 2,5 ; 0,15.</div>`,
+        correctionHtml: `<div>1. 9/12 = 3/4 (÷3) ; 48/6 = 8 (÷6).</div>`
+        + `<div>2. 2,5 = 25/10 ; 0,15 = 15/100.</div>` },
+      { niveau: `Moyen`, enonceHtml: `<div>1. Calcule et simplifie : A = 5/7 + 11/7 ; B = 18/4 − 10/4.</div>`
+        + `<div>2. Pour un boubou, un tailleur utilise les 3/4 de 12 m de tissu. Quelle longueur de tissu a-t-il utilisée ?</div>`,
+        correctionHtml: `<div>1. A = 16/7. B = 8/4 = <strong>2</strong>.</div>`
+        + `<div>2. 3/4 de 12 m = (3 × 12)/4 = 36/4 = <strong>9 m</strong>.</div>` },
+      { niveau: `Avancé`, enonceHtml: `<div>1. Trois amis cueillent 200 kg de pommes. Le premier prend les 23/100, le deuxième les 3/10, le troisième prend le reste. Calcule la part (en kg) de chacun.</div>`,
+        correctionHtml: `<div>Premier : 23/100 de 200 = 46 kg. Deuxième : 3/10 de 200 = 60 kg. Troisième (reste) : 200 − 46 − 60 = <strong>94 kg</strong>.</div>` }
+    ]
+  },
+
+  '🔤 SA2, Calcul littéral': {
+    titre: `Calcul littéral`,
+    emoji: `🔤`,
+    objectifs: [`Comprendre qu'une lettre peut représenter un nombre inconnu.`, `Calculer la valeur numérique d'une expression littérale.`, `Utiliser une formule pour retrouver une dimension manquante.`],
+    prerequis: [`Opérations sur les nombres.`, `Formules d'aire et de volume (rectangle, pavé droit).`],
+    sections: [
+      { type: 'def', titre: `Expression littérale`, texte: `Une expression littérale est une expression qui contient une ou plusieurs lettres représentant des nombres. Pour calculer sa <strong>valeur numérique</strong>, on remplace chaque lettre par sa valeur puis on effectue les calculs.` },
+      { type: 'exemple', texte: `Soit A = 2x − 7. Pour x = 6 : A = 2 × 6 − 7 = 12 − 7 = <strong>5</strong>.` },
+      { type: 'texte', titre: `Utiliser une formule pour trouver une grandeur`, texte: `Quand une formule relie plusieurs grandeurs (aire, volume…), on peut retrouver une grandeur manquante en utilisant l'opération inverse. Exemple : si l'aire d'un rectangle vaut 𝒜 = L × l, alors la longueur est L = 𝒜 ÷ l.` },
+      { type: 'exemple', texte: `Un rectangle a une aire de 24 cm² et une largeur de 4 cm. Sa longueur est L = 24 ÷ 4 = <strong>6 cm</strong>.` }
+    ],
+    aRetenirFinal: { titre: `Calcul littéral`, items: [
+      `Une lettre représente un nombre ; une expression littérale contient des lettres.`,
+      `Valeur numérique : on remplace la lettre par sa valeur, puis on calcule.`,
+      `Pour trouver une dimension manquante, on utilise l'opération inverse (÷ au lieu de ×).`
+    ]},
+    verification: {
+      enonceHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. Dans une expression littérale, une lettre représente un nombre.</div>`
+        + `<div style="margin-bottom:10px;">2. Pour x = 3, l'expression 5x vaut 8.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. Pour x = 6, l'expression B = 15 + 3x vaut : a) 18 &nbsp; b) 33 &nbsp; c) 24</div>`
+        + `<div style="margin-bottom:10px;">2. Si l'aire d'un rectangle est L×l = 24 et l = 4, alors L vaut : a) 6 &nbsp; b) 20 &nbsp; c) 96</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div style="margin-bottom:10px;">1. Pour calculer la valeur numérique de 2x − 7 quand x = 6, on remplace x par ……</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Explique ce qu'est la valeur numérique d'une expression littérale.</div>`,
+      correctionHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. <strong>VRAI.</strong></div>`
+        + `<div style="margin-bottom:10px;">2. <strong>FAUX.</strong> 5x pour x=3 vaut 5×3=15, pas 8.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. <strong>b) 33.</strong> B = 15 + 3×6 = 15+18 = 33.</div>`
+        + `<div style="margin-bottom:10px;">2. <strong>a) 6.</strong> L = 24 ÷ 4 = 6.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div style="margin-bottom:10px;">1. … on remplace x par 6.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Valeur numérique : le nombre obtenu en remplaçant chaque lettre par sa valeur et en effectuant les calculs.</div>`
+    },
+    exercices: [
+      { niveau: `Facile`, enonceHtml: `<div>1. Calcule la valeur numérique de A = 2x − 7 et B = 15 + 3x pour x = 6.</div>`,
+        correctionHtml: `<div>A = 2×6−7 = <strong>5</strong> ; B = 15+3×6 = <strong>33</strong>.</div>` },
+      { niveau: `Moyen`, enonceHtml: `<div>1. Un rectangle a une aire de 24 cm² et une largeur de 4 cm. Détermine sa longueur.</div>`,
+        correctionHtml: `<div>L = 24 ÷ 4 = <strong>6 cm</strong>.</div>` },
+      { niveau: `Avancé`, enonceHtml: `<div>1. Un pavé droit a une longueur de 8 cm, une largeur de 4 cm et un volume de 192 cm³. Détermine sa hauteur. (Indice : 𝒱 = L × l × h.)</div>`,
+        correctionHtml: `<div>h = 𝒱 ÷ (L × l) = 192 ÷ (8 × 4) = 192 ÷ 32 = <strong>6 cm</strong>.</div>` }
+    ]
   }
 };
 
