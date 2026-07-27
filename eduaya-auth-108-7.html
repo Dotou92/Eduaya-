@@ -37468,55 +37468,80 @@ const ORIENTATION_REGLES_OFFICIELLES = {
 // ============================================================
 
 // Coefficients officiels par série pour les 3 matières principales
+// Coefficients officiels des 14 séries du Baccalauréat béninois (source :
+// grille officielle de l'Office du Baccalauréat). Pour chaque série, les 3
+// premières matières listées (coeffs les plus élevés / les plus représentatives
+// de la série) sont les "matières fondamentales" utilisées dans la formule
+// officielle de la moyenne de classement (M = Σ(note×coef) / Σcoef).
 const SERIES_MATIERES = {
   'A1': {
-    matieres: ['Français', 'Anglais (LV1)', 'Hist-Géo', 'Philosophie', 'LV2'],
-    coeffs:   [4,           3,               2,           2,              1],
+    matieres: ['Français', 'Philosophie', 'Langue vivante 1', 'Hist-Géo', 'Langue vivante 2', 'Maths', 'SVT', 'EPS'],
+    coeffs:   [5,           4,             3,                  3,          2,                   2,       2,     1],
     principaux: [0,1,2] // indices des 3 matières fondamentales
   },
   'A2': {
-    matieres: ['Français', 'LV1 (autre)', 'Hist-Géo', 'Philosophie', 'Anglais'],
-    coeffs:   [4,           3,              2,           2,              1],
+    matieres: ['Hist-Géo', 'Français', 'Philosophie', 'Langue vivante 1', 'Langue vivante 2', 'Maths', 'SVT', 'EPS'],
+    coeffs:   [5,           4,          3,              3,                  2,                   2,       2,     1],
     principaux: [0,1,2]
   },
   'B': {
-    matieres: ['Économie', 'Maths', 'Français', 'Hist-Géo', 'Philosophie'],
-    coeffs:   [4,           3,       2,           2,           1],
+    matieres: ['Français', 'Hist-Géo', 'Économie', 'Philosophie', 'Langue vivante 1', 'Maths', 'SVT', 'EPS'],
+    coeffs:   [4,           4,          4,           3,             2,                   2,       2,     1],
     principaux: [0,1,2]
   },
   'C': {
-    matieres: ['Maths', 'PCT', 'Français', 'SVT', 'Anglais', 'Philosophie', 'Hist-Géo'],
-    coeffs:   [6,        5,     2,           2,     2,          2,             2],
+    matieres: ['Maths', 'PCT', 'SVT', 'Français', 'Anglais', 'Hist-Géo', 'Philosophie', 'EPS'],
+    coeffs:   [6,        5,     2,     2,           2,          2,           2,             1],
     principaux: [0,1,2]
   },
   'D': {
-    matieres: ['SVT', 'Maths', 'PCT', 'Français', 'Anglais', 'Hist-Géo', 'Philosophie'],
-    coeffs:   [5,      4,       4,     2,           1,          1,           1],
+    matieres: ['SVT', 'Maths', 'PCT', 'Français', 'Anglais', 'Hist-Géo', 'Philosophie', 'EPS'],
+    coeffs:   [5,      4,       4,     2,           2,          2,           2,             1],
     principaux: [0,1,2]
   },
   'E': {
-    matieres: ['Maths', 'PCT', 'Français', 'Anglais'],
-    coeffs:   [6,        4,     2,           1],
+    matieres: ['Maths', 'Sciences physiques', 'Construction mécanique', 'Manipulation/Travaux pratiques', 'Français', 'Étude de fabrication/Technologie', 'EPS'],
+    coeffs:   [5,        4,                     3,                        3,                                2,           2,                                  1],
     principaux: [0,1,2]
   },
-  'F': {
-    matieres: ['Maths', 'PCT', 'Français', 'Technologie'],
-    coeffs:   [5,        4,     2,           3],
+  'F1': {
+    matieres: ['Construction mécanique', 'Analyse de fabrication', 'Maths', 'Travaux pratiques', 'Français', 'Sciences physiques', 'Mécanique', 'Automatique', "Étude d'outillage", 'EPS'],
+    coeffs:   [3,                         3,                        3,       3,                   2,           2,                    2,           2,             2,                    1],
+    principaux: [0,1,2]
+  },
+  'F2': {
+    matieres: [`Étude d'un système technique`, 'Réalisation de maquette (TP)', 'Maths', 'Mesures et essais de laboratoire (TP)', 'Informatique (TP)', 'Français', 'Sciences physiques', 'Construction mécanique', 'EPS'],
+    coeffs:   [4,                                4,                             3,       3,                                        2,                    2,           2,                    2,                         1],
+    principaux: [0,1,2]
+  },
+  'F3': {
+    matieres: ['Étude de système technique', 'Électrotechnique', 'Maths', 'Construction (TP)', 'Mesures et essais de laboratoire (TP)', 'Français', 'Sciences physiques', 'EPS'],
+    coeffs:   [5,                              3,                  3,       4,                   3,                                        2,           2,                    1],
+    principaux: [0,1,2]
+  },
+  'F4': {
+    matieres: ['Résistance des matériaux', 'Maths', 'Dessin technique (TP)', `Projet d'exploitation (TP)`, 'Français', 'Sciences physiques', 'Béton armé', 'Métré et étude de prix', 'Procédé de construction', 'EPS'],
+    coeffs:   [3,                           3,       3,                       3,                             2,           2,                    2,             2,                        2,                          1],
     principaux: [0,1,2]
   },
   'G1': {
-    matieres: ['Étude de cas', 'Français', 'Hist-Géo', 'Économie', 'Droit Admin.'],
-    coeffs:   [4,               3,           2,           2,           1],
+    matieres: ['Étude de cas', 'Français', 'Économie', 'Techniques de base de secrétariat (pratique)', 'Compte rendu, procès-verbal et rapport', 'Anglais', 'Droit administratif et droit du travail', 'EPS'],
+    coeffs:   [4,               3,          3,           3,                                                3,                                        2,          2,                                          1],
     principaux: [0,1,2]
   },
   'G2': {
-    matieres: ['Étude de cas', 'Maths', 'Français', 'Économie', 'Anglais'],
-    coeffs:   [4,               4,       2,           2,           1],
+    matieres: ['Étude de cas', 'Mathématiques appliquées', 'Économie', 'Français', 'Anglais', 'Droit, TBAD et Finances publiques', 'EPS'],
+    coeffs:   [6,               3,                           3,          3,           2,          2,                                    1],
     principaux: [0,1,2]
   },
   'G3': {
-    matieres: ['Étude de cas', 'Maths', 'Français', 'Économie', 'Anglais'],
-    coeffs:   [4,               3,       2,           2,           1],
+    matieres: ['Étude de cas', 'Économie', 'Mathématiques appliquées', 'Français', 'Anglais', 'Droit, TBAD et Finances publiques', 'EPS'],
+    coeffs:   [6,               3,          3,                          3,           2,          2,                                    1],
+    principaux: [0,1,2]
+  },
+  'EA': {
+    matieres: [`Traitement de l'eau (TP)`, 'Mobilisation des ressources en eau', `Projet d'exploitation`, 'Réseaux hydrauliques (TP)', 'Maths', 'Assainissement', 'Sciences physiques', 'Français', 'Anglais', 'EPS'],
+    coeffs:   [4,                            4,                                    4,                       3,                            3,       2,                 2,                    2,           1,           1],
     principaux: [0,1,2]
   },
   'DEAT': {
@@ -38189,7 +38214,7 @@ function renderTabChances(container) {
   const serieKeys = Object.keys(SERIES_MATIERES);
   let seriesOptions = '';
   serieKeys.forEach(function(s) {
-    const labels = {A1:', Littéraire (Anglais)',A2:', Littéraire (Autre LV)',B:', Éco & Social',C:', Maths & Sciences Phys.',D:', SVT',E:', Maths & Technique',F:', Technique Industrielle',G1:', Éco Sociale',G2:', TQ Gestion',G3:', Commercialisation',DEAT:', Agricole Tropical',DT:', Diplôme Technique'};
+    const labels = {A1:', Lettres et Langues',A2:', Lettres et Sciences humaines',B:', Lettres et Sciences sociales',C:', Sciences et Techniques',D:', Biologie et Géologie',E:', Maths et Techniques',F1:', Construction mécanique',F2:', Électronique',F3:', Électrotechnique',F4:', Génie civil',G1:', Techniques administratives',G2:', Techniques quantitatives de gestion',G3:', Techniques commerciales',EA:', Eau et Assainissement',DEAT:', Agricole Tropical',DT:', Diplôme Technique'};
     seriesOptions += '<option value="' + s + '"' + (_oriChancesSerie === s ? ' selected' : '') + '>' + s + (labels[s]||'') + '</option>';
   });
 
@@ -38436,7 +38461,6 @@ function getCandidatsBourseIA(serie, moyenne, limit) {
     if (f.modeEntree !== 'classement' || !(f.bourse > 0)) return false;
     return f.bacs.some(function(b) {
       return b === serie ||
-        (serie === 'F' && b.indexOf('F') === 0) ||
         (serie === 'DT' && b.indexOf('DT') === 0) ||
         (serie === 'DEAT' && b.indexOf('DEAT') === 0);
     });
@@ -38509,7 +38533,6 @@ function renderChancesResults() {
     for (var bi = 0; bi < f.bacs.length; bi++) {
       var b = f.bacs[bi];
       if (b === _oriChancesSerie) { bonSerie = true; break; }
-      if (_oriChancesSerie === 'F' && b.indexOf('F') === 0) { bonSerie = true; break; }
       if (_oriChancesSerie === 'DT' && b.indexOf('DT') === 0) { bonSerie = true; break; }
       if (_oriChancesSerie === 'DEAT' && b.indexOf('DEAT') === 0) { bonSerie = true; break; }
     }
