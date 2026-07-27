@@ -4776,6 +4776,363 @@ const COURS_CONTENU = {
       { niveau: `Avancé`, enonceHtml: `<div>1. Un pavé droit a une longueur de 8 cm, une largeur de 4 cm et un volume de 192 cm³. Détermine sa hauteur. (Indice : 𝒱 = L × l × h.)</div>`,
         correctionHtml: `<div>h = 𝒱 ÷ (L × l) = 192 ÷ (8 × 4) = 192 ÷ 32 = <strong>6 cm</strong>.</div>` }
     ]
+  },
+'🪞 SA3, Figures symétriques par rapport à une droite': {
+    titre: `Figures symétriques par rapport à une droite`,
+    emoji: `🪞`,
+    objectifs: [
+      `Construire le symétrique d'un point par rapport à une droite.`,
+      `Construire le symétrique d'un segment, d'une droite, d'un angle, d'une figure.`,
+      `Connaître les propriétés conservées par la symétrie axiale (alignement, longueur, mesure d'angle, parallélisme).`,
+      `Reconnaître et tracer le(s) axe(s) de symétrie d'une figure.`
+    ],
+    prerequis: [`Médiatrice d'un segment, perpendiculaire, milieu.`, `Segment, droite, angle, triangle.`],
+    sections: [
+      { type: 'def', titre: `Symétrique d'un point`, texte: `Deux points A et B sont symétriques par rapport à une droite (D) signifie que (D) est la <strong>médiatrice</strong> du segment [AB].<br><br>Tout point M de la droite (D) est son <strong>propre symétrique</strong> par rapport à (D).` },
+      { type: 'texte', titre: `Méthode — Construire le symétrique A′ d'un point A par rapport à (D)`, texte: `1. On trace la perpendiculaire à (D) passant par A ; soit I le point d'intersection de ces deux droites.<br>2. On construit le point A′ tel que I soit le milieu du segment [AA′].` },
+      { type: 'prop', titre: `Conservation par la symétrie axiale`, items: [
+        `Lorsque des points sont alignés, leurs symétriques par rapport à une droite (D) sont alignés (la symétrie conserve l'alignement).`,
+        `Lorsque deux points A et B ont pour symétriques A′ et B′ par rapport à (D), alors les droites (AB) et (A′B′) sont symétriques par rapport à (D).`,
+        `Lorsque deux points A et B ont pour symétriques A′ et B′ par rapport à (D), alors les segments [AB] et [A′B′] sont symétriques par rapport à (D) et ont la même longueur (la symétrie conserve les longueurs).`
+      ]},
+      { type: 'prop', titre: `Droites parallèles`, texte: `Lorsque deux droites sont parallèles, alors leurs symétriques par rapport à une droite sont parallèles (la symétrie conserve le parallélisme).` },
+      { type: 'prop', titre: `Angles`, texte: `Deux angles symétriques par rapport à une droite ont la <strong>même mesure</strong> (la symétrie conserve les mesures d'angles).` },
+      { type: 'def', titre: `Axe de symétrie`, texte: `Une droite (D) est un axe de symétrie d'une figure (F) signifie que chaque point de (F) a pour symétrique par rapport à (D) un point de (F). Autrement dit, la figure se superpose à elle-même quand on la plie le long de (D).` },
+      { type: 'texte', titre: `Remarque`, texte: `Une figure peut avoir aucun, un, ou plusieurs axes de symétrie. Exemples : un rectangle (non carré) a 2 axes de symétrie ; un carré en a 4 ; un cercle en a une infinité.` }
+    ],
+    aRetenirFinal: { titre: `Symétrie par rapport à une droite`, items: [
+      `A et A′ symétriques par rapport à (D) ⇔ (D) est la médiatrice de [AA′].`,
+      `Tout point de (D) est son propre symétrique.`,
+      `Construction : perpendiculaire à (D) par A, puis A′ tel que I (intersection) soit milieu de [AA′].`,
+      `La symétrie axiale conserve : l'alignement, les longueurs, les mesures d'angles, le parallélisme.`,
+      `Axe de symétrie : droite selon laquelle la figure se replie exactement sur elle-même.`
+    ]},
+    verification: {
+      enonceHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. Si A et A′ sont symétriques par rapport à (D), alors (D) est la médiatrice de [AA′].</div>`
+        + `<div>2. Un point situé sur l'axe (D) a un symétrique différent de lui-même.</div>`
+        + `<div>3. La symétrie axiale conserve les longueurs.</div>`
+        + `<div style="margin-bottom:10px;">4. Un rectangle non carré possède quatre axes de symétrie.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. Deux segments symétriques par rapport à une droite ont : a) des longueurs différentes &nbsp; b) la même longueur &nbsp; c) des directions opposées seulement</div>`
+        + `<div>2. Le symétrique d'un point M situé sur l'axe (D) est : a) un autre point &nbsp; b) M lui-même &nbsp; c) le milieu de (D)</div>`
+        + `<div style="margin-bottom:10px;">3. Deux angles symétriques par rapport à une droite ont : a) la même mesure &nbsp; b) des mesures opposées &nbsp; c) une mesure double</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. Pour construire le symétrique A′ de A par rapport à (D), on trace la …… à (D) passant par A.</div>`
+        + `<div style="margin-bottom:10px;">2. La symétrie axiale conserve l'……, les longueurs et les mesures d'……</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Explique la méthode pour construire le symétrique d'un point par rapport à une droite.</div>`
+        + `<div>2. Qu'est-ce qu'un axe de symétrie d'une figure ?</div>`,
+      correctionHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. <strong>VRAI.</strong> C'est la définition même de deux points symétriques par rapport à une droite.</div>`
+        + `<div>2. <strong>FAUX.</strong> Tout point de l'axe est son PROPRE symétrique (il ne bouge pas).</div>`
+        + `<div>3. <strong>VRAI.</strong></div>`
+        + `<div style="margin-bottom:10px;">4. <strong>FAUX.</strong> Un rectangle non carré a 2 axes de symétrie ; c'est le carré qui en a 4.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. <strong>b) la même longueur.</strong></div><div>2. <strong>b) M lui-même.</strong></div>`
+        + `<div style="margin-bottom:10px;">3. <strong>a) la même mesure.</strong></div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. … on trace la <strong>perpendiculaire</strong> à (D) passant par A.</div>`
+        + `<div style="margin-bottom:10px;">2. … l'<strong>alignement</strong>, les longueurs et les mesures d'<strong>angles</strong>.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Tracer la perpendiculaire à (D) passant par A ; appeler I le point d'intersection ; placer A′ tel que I soit le milieu de [AA′].</div>`
+        + `<div>2. Axe de symétrie : droite (D) telle que chaque point de la figure a pour symétrique par rapport à (D) un point de la figure.</div>`
+    },
+    exercices: [
+      { niveau: `Facile`, enonceHtml: `<div>1. On donne une droite (D) et un point A hors de (D). Construis le symétrique A′ de A par rapport à (D).</div>`
+        + `<div>2. Trace un rectangle et dessine tous ses axes de symétrie.</div>`,
+        correctionHtml: `<div>1. Perpendiculaire à (D) par A, point I sur (D), A′ tel que IA = IA′.</div>`
+        + `<div>2. Le rectangle (non carré) a 2 axes : les deux médiatrices de ses côtés.</div>` },
+      { niveau: `Moyen`, enonceHtml: `<div>1. Trois points A, B, C sont alignés. Construis leurs symétriques A′, B′, C′ par rapport à une droite (∆). Que peut-on dire de A′, B′, C′ ? Compare les longueurs [AC] et [A′C′].</div>`
+        + `<div>2. Trace un triangle ABC rectangle en B et une droite (D). Construis le symétrique A′B′C′ de ABC par rapport à (D). Le triangle A′B′C′ est-il aussi rectangle ? Justifie.</div>`,
+        correctionHtml: `<div>1. A′, B′, C′ sont alignés (la symétrie conserve l'alignement). [A′C′] = [AC] (conservation des longueurs).</div>`
+        + `<div>2. Oui, A′B′C′ est rectangle en B′ : la symétrie conserve les mesures d'angles, donc l'angle droit reste droit.</div>` },
+      { niveau: `Avancé`, enonceHtml: `<div>1. Trace deux droites perpendiculaires (d) et (d′), de point d'intersection O. Place A sur (d) tel que OA = 2 cm, et B sur (d′) tel que AB = 4 cm. Trace le symétrique E de A par rapport à (d′) et le symétrique F de B par rapport à (d). Quelle est la nature du quadrilatère ABEF ? Justifie.</div>`,
+        correctionHtml: `<div>(d) ⊥ (d′) en O. Par les symétries, OA = OE = 2 cm et OB = OF, et les diagonales se coupent en O en leur milieu en formant un angle droit : ABEF est un quadrilatère dont les diagonales se coupent en leur milieu perpendiculairement — c'est un <strong>losange</strong> (et selon les longueurs, éventuellement un carré). Justification : symétries conservant longueurs et perpendicularité.</div>` }
+    ]
+  },
+
+  '🪞 SA3, Figures symétriques par rapport à un point': {
+    titre: `Figures symétriques par rapport à un point`,
+    emoji: `🪞`,
+    objectifs: [
+      `Construire le symétrique d'un point par rapport à un point O.`,
+      `Construire le symétrique d'un segment, d'une droite, d'un angle, d'une figure.`,
+      `Connaître les propriétés conservées par la symétrie centrale.`,
+      `Reconnaître et construire le centre de symétrie d'une figure.`
+    ],
+    prerequis: [`Milieu d'un segment, alignement.`, `Symétrie par rapport à une droite (notion précédente).`],
+    sections: [
+      { type: 'def', titre: `Symétrique d'un point par rapport à un point`, texte: `Deux points A et B sont symétriques par rapport au point O signifie que O est le <strong>milieu</strong> du segment [AB].` },
+      { type: 'texte', titre: `Méthode — Construire le symétrique A′ d'un point A par rapport à O`, texte: `1. On trace la demi-droite [AO).<br>2. On place A′ sur cette demi-droite, de l'autre côté de O, tel que O soit le milieu de [AA′] (donc OA′ = OA).` },
+      { type: 'prop', titre: `Conservation par la symétrie centrale`, items: [
+        `Lorsque des points sont alignés, leurs symétriques par rapport à un point O sont alignés.`,
+        `Lorsque deux points A et B ont pour symétriques A′ et B′ par rapport à O, alors les droites (AB) et (A′B′) sont symétriques par rapport à O.`,
+        `Lorsque deux points A et B ont pour symétriques A′ et B′ par rapport à O, alors les segments [AB] et [A′B′] sont symétriques par rapport à O et ont la même longueur.`
+      ]},
+      { type: 'prop', titre: `Droites parallèles`, texte: `Lorsque deux droites sont parallèles, alors leurs symétriques par rapport à un point sont parallèles.` },
+      { type: 'prop', titre: `Angles`, texte: `Deux angles symétriques par rapport à un point ont la <strong>même mesure</strong>.` },
+      { type: 'def', titre: `Centre de symétrie`, texte: `Un point O est un centre de symétrie d'une figure (F) signifie que chaque point de (F) a pour symétrique par rapport à O un point de (F).` }
+    ],
+    aRetenirFinal: { titre: `Symétrie par rapport à un point`, items: [
+      `A et A′ symétriques par rapport à O ⇔ O est le milieu de [AA′].`,
+      `Construction : demi-droite [AO), puis A′ tel que O soit milieu de [AA′] (OA′ = OA).`,
+      `La symétrie centrale conserve : l'alignement, les longueurs, les mesures d'angles, le parallélisme.`,
+      `Centre de symétrie : point O tel que la figure se retrouve sur elle-même par symétrie autour de O.`
+    ]},
+    verification: {
+      enonceHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. Si A et A′ sont symétriques par rapport à O, alors O est le milieu de [AA′].</div>`
+        + `<div>2. La symétrie par rapport à un point ne conserve pas les longueurs.</div>`
+        + `<div>3. Deux droites parallèles ont pour symétriques par rapport à un point deux droites parallèles.</div>`
+        + `<div style="margin-bottom:10px;">4. Un centre de symétrie est toujours à l'extérieur de la figure.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. A et A′ sont symétriques par rapport à O si O est : a) le milieu de [AA′] &nbsp; b) sur la médiatrice de [AA′] &nbsp; c) un sommet</div>`
+        + `<div>2. La symétrie centrale conserve : a) seulement les longueurs &nbsp; b) longueurs, angles, alignement et parallélisme &nbsp; c) rien</div>`
+        + `<div style="margin-bottom:10px;">3. Le symétrique d'une droite (AB) par rapport à O est : a) une demi-droite &nbsp; b) une droite (parallèle à (AB)) &nbsp; c) un point</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. Deux points A et B sont symétriques par rapport à O si O est le …… de [AB].</div>`
+        + `<div style="margin-bottom:10px;">2. La symétrie centrale conserve les mesures d'……</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Explique comment construire le symétrique d'un point A par rapport à un point O.</div>`
+        + `<div>2. Qu'est-ce qu'un centre de symétrie d'une figure ?</div>`,
+      correctionHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. <strong>VRAI.</strong></div>`
+        + `<div>2. <strong>FAUX.</strong> La symétrie centrale conserve bien les longueurs.</div>`
+        + `<div>3. <strong>VRAI.</strong></div>`
+        + `<div style="margin-bottom:10px;">4. <strong>FAUX.</strong> Le centre de symétrie appartient souvent à la figure (ex. centre d'un cercle, intersection des diagonales d'un parallélogramme).</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. <strong>a) le milieu de [AA′].</strong></div><div>2. <strong>b).</strong></div>`
+        + `<div style="margin-bottom:10px;">3. <strong>b) une droite parallèle à (AB).</strong></div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. … O est le <strong>milieu</strong> de [AB].</div>`
+        + `<div style="margin-bottom:10px;">2. … les mesures d'<strong>angles</strong>.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Tracer la demi-droite [AO) ; placer A′ de l'autre côté de O tel que OA′ = OA (O milieu de [AA′]).</div>`
+        + `<div>2. Centre de symétrie : point O tel que chaque point de la figure a pour symétrique par rapport à O un point de la figure.</div>`
+    },
+    exercices: [
+      { niveau: `Facile`, enonceHtml: `<div>1. On donne deux points A et O. Construis le symétrique A′ de A par rapport à O.</div>`
+        + `<div>2. [AB] est un segment de 6 cm, I son milieu. Construis le symétrique E de I par rapport à B.</div>`,
+        correctionHtml: `<div>1. A′ sur [AO), de l'autre côté de O, avec OA′ = OA.</div>`
+        + `<div>2. E symétrique de I par rapport à B : B milieu de [IE], donc IB = BE. Comme I est milieu de [AB], IB = 3 cm, donc IE = 6 cm.</div>` },
+      { niveau: `Moyen`, enonceHtml: `<div>1. ABC est un triangle tel que AB = 3 cm, AC = 2 cm et BC = 4 cm ; O est extérieur au triangle. Construis les symétriques A′, B′, C′ de A, B, C par rapport à O. Donne les longueurs [A′B′], [A′C′], [B′C′].</div>`
+        + `<div>2. Un rectangle ABCD a AB = 6 cm et BC = 3 cm. Construis le symétrique E de B par rapport à C, et le symétrique F de D par rapport à C. Donne les longueurs [BE] et [DF].</div>`,
+        correctionHtml: `<div>1. La symétrie conserve les longueurs : A′B′ = 3 cm ; A′C′ = 2 cm ; B′C′ = 4 cm.</div>`
+        + `<div>2. C milieu de [BE] ⇒ BE = 2×BC = 2×3 = <strong>6 cm</strong>. C milieu de [DF] ⇒ DF = 2×DC = 2×6 = <strong>12 cm</strong>.</div>` },
+      { niveau: `Avancé`, enonceHtml: `<div>1. Soit (D) une droite et A, B, C trois points de (D) dans cet ordre avec AB = 4 cm et AC = 6 cm. a) Calcule BC. b) Soit O un point hors de (D) tel que AO = 5 cm. Construis les symétriques A′, B′, C′ de A, B, C par rapport à O. c) Justifie que A′, B′, C′ sont alignés. d) Justifie que B′C′ = 2 cm.</div>`,
+        correctionHtml: `<div>a) BC = AC − AB = 6 − 4 = <strong>2 cm</strong>.</div>`
+        + `<div>c) La symétrie centrale conserve l'alignement ; A, B, C alignés ⇒ A′, B′, C′ alignés.</div>`
+        + `<div>d) La symétrie conserve les longueurs : B′C′ = BC = <strong>2 cm</strong>.</div>` }
+    ]
+  },
+
+  '➡️ SA3, Glissement': {
+    titre: `Glissement`,
+    emoji: `➡️`,
+    objectifs: [
+      `Comprendre ce qu'est un glissement (déplacement d'une figure sans la retourner ni la tourner).`,
+      `Reconnaître un glissement par une flèche (direction, sens, longueur).`,
+      `Construire l'image d'un point ou d'une figure par un glissement donné.`
+    ],
+    prerequis: [`Segment, longueur, direction, demi-droite.`, `Report de longueur au compas.`],
+    sections: [
+      { type: 'def', titre: `Glissement`, texte: `Un glissement est une correspondance qui permet de déplacer une figure d'une position à une autre en la faisant « glisser », sans la tourner ni la retourner. On l'indique par une flèche qui précise trois choses : la <strong>direction</strong>, le <strong>sens</strong> et la <strong>longueur</strong> du déplacement.` },
+      { type: 'texte', titre: `Information`, texte: `La flèche allant de A vers B, notée →AB, indique le glissement qui amène la figure 1 sur la figure 2 : la direction est celle de la droite (AB), le sens va de A vers B, et la longueur est AB.` },
+      { type: 'texte', titre: `Méthode — Image C′ d'un point C par le glissement de flèche →AB`, texte: `1. On repère la direction (celle de (AB)), le sens (de A vers B) et la longueur (AB) du glissement.<br>2. À partir de C, on trace un déplacement de même direction, même sens et même longueur : on obtient le point C′.<br>3. Ainsi, le segment [CC′] a la même longueur que [AB], la même direction et le même sens.` },
+      { type: 'retenir', titre: `Remarque`, texte: `Un glissement conserve les longueurs, les mesures d'angles, l'alignement et le parallélisme : la figure obtenue est identique à la figure de départ, simplement déplacée.` }
+    ],
+    aRetenirFinal: { titre: `Glissement`, items: [
+      `Glissement : déplacement d'une figure sans rotation ni retournement, indiqué par une flèche →AB.`,
+      `La flèche donne la direction, le sens et la longueur du déplacement.`,
+      `Pour l'image C′ de C : [CC′] a même direction, même sens et même longueur que [AB].`,
+      `Le glissement conserve longueurs, angles, alignement et parallélisme.`
+    ]},
+    verification: {
+      enonceHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. Un glissement fait tourner la figure.</div>`
+        + `<div>2. Une flèche de glissement indique une direction, un sens et une longueur.</div>`
+        + `<div>3. Le glissement conserve les longueurs.</div>`
+        + `<div style="margin-bottom:10px;">4. Par le glissement de flèche →AB, le segment [CC′] a la même longueur que [AB].</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. Un glissement est déterminé par : a) un point &nbsp; b) une flèche (direction, sens, longueur) &nbsp; c) un angle</div>`
+        + `<div>2. Par un glissement, la figure obtenue est : a) plus grande &nbsp; b) identique mais déplacée &nbsp; c) retournée</div>`
+        + `<div style="margin-bottom:10px;">3. Le glissement conserve : a) uniquement le sens &nbsp; b) longueurs, angles et parallélisme &nbsp; c) rien</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. Une flèche de glissement précise la direction, le …… et la longueur du déplacement.</div>`
+        + `<div style="margin-bottom:10px;">2. Par le glissement de flèche →AB, le segment [CC′] a la même …… que [AB].</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Explique ce qu'indique la flèche d'un glissement.</div>`,
+      correctionHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. <strong>FAUX.</strong> Un glissement ne fait NI tourner NI retourner la figure : il la déplace seulement.</div>`
+        + `<div>2. <strong>VRAI.</strong></div>`
+        + `<div>3. <strong>VRAI.</strong></div>`
+        + `<div style="margin-bottom:10px;">4. <strong>VRAI.</strong> Par définition du glissement.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. <strong>b) une flèche.</strong></div><div>2. <strong>b) identique mais déplacée.</strong></div>`
+        + `<div style="margin-bottom:10px;">3. <strong>b).</strong> Le glissement conserve longueurs, angles et parallélisme.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. … la direction, le <strong>sens</strong> et la longueur…</div>`
+        + `<div style="margin-bottom:10px;">2. … la même <strong>longueur</strong> que [AB] (et aussi même direction, même sens).</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. La flèche indique la direction (celle de (AB)), le sens (de A vers B) et la longueur (AB) du déplacement.</div>`
+    },
+    exercices: [
+      { niveau: `Facile`, enonceHtml: `<div>1. On donne une flèche →AB (AB = 4 cm) et un point C. Construis l'image C′ de C par le glissement.</div>`
+        + `<div>2. Deux figures identiques sont dessinées côte à côte ; trace la flèche qui illustre le glissement de la première vers la seconde.</div>`,
+        correctionHtml: `<div>1. Reporter à partir de C la même direction, le même sens et la longueur AB = 4 cm ; extrémité = C′.</div>`
+        + `<div>2. Flèche partant d'un point de la figure 1 vers le point correspondant de la figure 2.</div>` },
+      { niveau: `Moyen`, enonceHtml: `<div>1. On considère un glissement de flèche →AB avec AB = 4 cm, et deux points C et D du plan. Construis les images C′ et D′ de C et D par ce glissement.</div>`
+        + `<div>2. Trois figures identiques 1, 2 et 3 sont placées à des positions différentes. Trace les flèches illustrant le glissement de la figure 1 à la figure 3, puis de la figure 2 à la figure 3.</div>`,
+        correctionHtml: `<div>1. Reporter à partir de C, puis de D, un déplacement de même direction, sens et longueur que →AB : on obtient C′ et D′.</div>`
+        + `<div>2. Flèche de 1 vers 3 : d'un point de la figure 1 au point correspondant de la figure 3. Idem entre figures 2 et 3.</div>` },
+      { niveau: `Avancé`, enonceHtml: `<div>1. On considère un carré ABCD tel que AB = 2 cm. Construis les images B′ et D′ de B et D par le glissement de longueur AC, de direction (AC) et orienté de A vers C.</div>`,
+        correctionHtml: `<div>Chaque point est déplacé de la longueur AC, dans la direction (AC), de A vers C. [BB′] est parallèle et de même longueur que [AC] ; de même pour D′. On obtient un nouveau carré translaté du carré initial.</div>` }
+    ]
+  },
+
+  '📊 SA4, Proportionnalité et pourcentages': {
+    titre: `Proportionnalité`,
+    emoji: `📊`,
+    objectifs: [`Reconnaître un tableau de proportionnalité et déterminer un coefficient de proportionnalité.`, `Déterminer et appliquer un pourcentage.`, `Déterminer et utiliser une échelle.`],
+    prerequis: [`Multiplication, division, fractions.`, `Unités de longueur et conversions.`],
+    sections: [
+      { type: 'def', titre: `Tableau de proportionnalité`, texte: `Un tableau à deux lignes est un <strong>tableau de proportionnalité</strong> lorsqu'on passe de chaque nombre de la première ligne au nombre correspondant de la deuxième ligne en multipliant toujours par un même nombre. Ce nombre est appelé <strong>coefficient de proportionnalité</strong>.` },
+      { type: 'texte', titre: `Méthode — Trouver le coefficient de proportionnalité`, texte: `On divise un nombre de la deuxième ligne par le nombre correspondant de la première ligne. Si on obtient le même résultat pour toutes les colonnes, le tableau est proportionnel et ce résultat est le coefficient.` },
+      { type: 'exemple', texte: `Distance (km) : 75 ; 100 ; 125 et Consommation (L) : 15 ; 20 ; 25. On a 15÷75 = 0,2 ; 20÷100 = 0,2 ; 25÷125 = 0,2. Le coefficient est 0,2. Pour 400 km : 400 × 0,2 = <strong>80 L</strong>.` },
+      { type: 'def', titre: `Pourcentage`, texte: `Un pourcentage est une proportion exprimée sur 100. Prendre t % d'une quantité, c'est multiplier cette quantité par t puis diviser par 100 : t % de N = (t × N) ÷ 100.` },
+      { type: 'texte', titre: `Méthode — Calculer un pourcentage de remise`, texte: `Pour trouver le pourcentage qu'une remise représente : pourcentage = (montant de la remise × 100) ÷ prix de départ.` },
+      { type: 'exemple', texte: `Une remise de 1 500 F sur un achat de 10 000 F représente (1 500 × 100) ÷ 10 000 = <strong>15 %</strong>. Pour un achat de 23 000 F, la remise de 15 % vaut (15 × 23 000) ÷ 100 = <strong>3 450 F</strong>.` },
+      { type: 'def', titre: `Échelle`, texte: `L'échelle d'un plan ou d'une carte est le rapport entre une longueur sur le dessin et la longueur réelle correspondante, exprimées dans la même unité : échelle = longueur sur le dessin ÷ longueur réelle.` },
+      { type: 'texte', titre: `Méthode`, texte: `Longueur réelle = longueur sur le dessin ÷ échelle.<br>Longueur sur le dessin = longueur réelle × échelle.<br>Toujours convertir les deux longueurs dans la même unité avant de calculer.` },
+      { type: 'exemple', texte: `À l'échelle 1/200, un domaine dessiné mesure 32 cm : sa longueur réelle est 32 × 200 = 6 400 cm = <strong>64 m</strong>.` }
+    ],
+    aRetenirFinal: { titre: `Proportionnalité`, items: [
+      `Tableau proportionnel : on passe d'une ligne à l'autre en multipliant par un même coefficient.`,
+      `Coefficient = (valeur 2ᵉ ligne) ÷ (valeur 1ʳᵉ ligne), identique pour toutes les colonnes.`,
+      `t % de N = (t × N) ÷ 100 ; pourcentage de remise = (remise × 100) ÷ prix.`,
+      `Échelle = longueur dessin ÷ longueur réelle (même unité) ; réel = dessin ÷ échelle.`
+    ]},
+    verification: {
+      enonceHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. Dans un tableau de proportionnalité, on passe d'une ligne à l'autre en ajoutant un même nombre.</div>`
+        + `<div>2. Prendre 20 % d'un nombre, c'est le multiplier par 20 puis diviser par 100.</div>`
+        + `<div>3. Pour calculer une échelle, les deux longueurs doivent être dans la même unité.</div>`
+        + `<div style="margin-bottom:10px;">4. Un coefficient de proportionnalité change d'une colonne à l'autre.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. Le coefficient d'un tableau où 15 correspond à 75 est : a) 5 &nbsp; b) 0,2 &nbsp; c) 60</div>`
+        + `<div>2. 60 % de 30 élèves représente : a) 18 &nbsp; b) 12 &nbsp; c) 50</div>`
+        + `<div style="margin-bottom:10px;">3. À l'échelle 1/100, 6 cm sur le plan correspondent à : a) 6 cm &nbsp; b) 600 cm &nbsp; c) 60 cm</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. t % de N = (…… × N) ÷ 100.</div>`
+        + `<div style="margin-bottom:10px;">2. Échelle = longueur sur le …… ÷ longueur ……</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Comment reconnaît-on un tableau de proportionnalité ?</div>`
+        + `<div>2. Explique comment calculer 25 % d'une somme de 8 000 F.</div>`,
+      correctionHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. <strong>FAUX.</strong> On passe d'une ligne à l'autre en MULTIPLIANT par un même nombre (le coefficient), pas en ajoutant.</div>`
+        + `<div>2. <strong>VRAI.</strong> 20 % de N = (20 × N) ÷ 100.</div>`
+        + `<div>3. <strong>VRAI.</strong></div>`
+        + `<div style="margin-bottom:10px;">4. <strong>FAUX.</strong> Le coefficient est le MÊME pour toutes les colonnes.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. <strong>b) 0,2.</strong> 15÷75 = 0,2.</div><div>2. <strong>a) 18.</strong> (60×30)÷100 = 18.</div>`
+        + `<div style="margin-bottom:10px;">3. <strong>b) 600 cm.</strong> 6×100 = 600 cm.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Compléter</div>`
+        + `<div>1. t % de N = (t × N) ÷ 100.</div>`
+        + `<div style="margin-bottom:10px;">2. Échelle = longueur sur le dessin ÷ longueur réelle.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. On divise chaque valeur de la 2ᵉ ligne par la valeur correspondante de la 1ʳᵉ ligne ; si on obtient toujours le même résultat, le tableau est proportionnel.</div>`
+        + `<div>2. 25 % de 8 000 F : (25 × 8 000) ÷ 100 = <strong>2 000 F</strong>.</div>`
+    },
+    exercices: [
+      { niveau: `Facile`, enonceHtml: `<div>1. Le tableau suivant est-il proportionnel ? Nombre de dragées : 20 ; 38 ; 70 ; Prix (F) : 17 ; 32,30 ; 59,50. Justifie.</div>`
+        + `<div>2. Calcule 60 % de 30 élèves.</div>`,
+        correctionHtml: `<div>1. 17÷20 = 0,85 ; 32,30÷38 = 0,85 ; 59,50÷70 = 0,85. Même coefficient : le tableau <strong>est proportionnel</strong>.</div>`
+        + `<div>2. (60 × 30) ÷ 100 = <strong>18 élèves</strong>.</div>` },
+      { niveau: `Moyen`, enonceHtml: `<div>1. Une console vaut 1 750 F. Son prix augmente de 20 % avant Noël. Quel est le nouveau prix ?</div>`
+        + `<div>2. Sur une carte à l'échelle 1/200 000, deux villes sont distantes de 5,5 cm. Quelle est la distance réelle entre ces deux villes (en km) ?</div>`,
+        correctionHtml: `<div>1. Augmentation : (20×1750)÷100 = 350 F. Nouveau prix : 1750+350 = <strong>2 100 F</strong>.</div>`
+        + `<div>2. Distance réelle = 5,5 × 200 000 = 1 100 000 cm = <strong>11 km</strong>.</div>` },
+      { niveau: `Avancé`, enonceHtml: `<div>1. Une station est installée sur un domaine rectangulaire représenté à l'échelle 1/200 : sur le dessin, il mesure 32 cm sur 12 cm. a) Calcule les dimensions réelles (en m). b) Kandi et Malanville sont distantes de 102 km ; sur une carte, cette distance est de 34 cm. Détermine l'échelle de cette carte.</div>`,
+        correctionHtml: `<div>a) 32×200 = 6400 cm = 64 m ; 12×200 = 2400 cm = 24 m. Dimensions réelles : <strong>64 m × 24 m</strong>.</div>`
+        + `<div>b) 102 km = 10 200 000 cm ; échelle = 34 ÷ 10 200 000 = <strong>1/300 000</strong>.</div>` }
+    ]
+  },
+
+  '📈 SA4, Statistiques': {
+    titre: `Statistique`,
+    emoji: `📈`,
+    objectifs: [`Connaître le vocabulaire statistique (population, individu, caractère, modalité, effectif).`, `Calculer une fréquence (et l'exprimer en pourcentage).`, `Calculer la moyenne (simple et pondérée) d'une série.`, `Lire et construire un diagramme en bâtons et un diagramme semi-circulaire.`],
+    prerequis: [`Proportionnalité, pourcentage, fractions.`, `Angles et rapporteur (pour le diagramme semi-circulaire).`],
+    sections: [
+      { type: 'vocab', titre: `Vocabulaire général`, items: [
+        { terme: `Population`, description: `l'ensemble sur lequel porte l'étude statistique.` },
+        { terme: `Individu`, description: `chaque élément de la population étudiée.` },
+        { terme: `Caractère`, description: `ce sur quoi porte l'étude. Il peut être qualitatif (couleur, sport, film préféré…) ou quantitatif (taille, âge, temps…).` },
+        { terme: `Modalités`, description: `les différentes réponses que le caractère permet d'obtenir.` },
+        { terme: `Effectif d'une modalité`, description: `le nombre d'individus qui présentent cette modalité.` },
+        { terme: `Effectif total`, description: `le nombre total d'individus de la population.` }
+      ]},
+      { type: 'def', titre: `Fréquence d'une modalité`, texte: `La fréquence d'une modalité est le quotient de l'effectif de cette modalité par l'effectif total. Si nᵢ est l'effectif de la modalité et n l'effectif total : f = nᵢ ÷ n.<br><br>La fréquence peut s'exprimer en pourcentage : f = (nᵢ × 100) ÷ n.` },
+      { type: 'def', titre: `Moyenne d'une série`, texte: `<strong>Moyenne simple</strong> : on additionne toutes les valeurs du caractère, puis on divise la somme par le nombre de valeurs.<br><strong>Moyenne pondérée</strong> : on additionne les produits (effectif × valeur du caractère), puis on divise cette somme par l'effectif total.` },
+      { type: 'exemple', texte: `Notes 8 (×2), 12 (×3), 15 (×1). Somme pondérée : 8×2 + 12×3 + 15×1 = 16+36+15 = 67. Effectif total : 2+3+1 = 6. Moyenne : 67 ÷ 6 ≈ <strong>11,17</strong>.` },
+      { type: 'vocab', titre: `Diagrammes`, items: [
+        { terme: `Diagramme en bâtons`, description: `chaque modalité est représentée par un bâton (une barre) dont la hauteur est proportionnelle à l'effectif (ou à la fréquence).` },
+        { terme: `Diagramme semi-circulaire`, description: `les données sont représentées dans un demi-disque ; chaque modalité correspond à un secteur dont l'angle est proportionnel à l'effectif.` }
+      ]},
+      { type: 'texte', titre: `Méthode — Angle d'un secteur (diagramme semi-circulaire)`, texte: `Le demi-disque représente l'effectif total sur 180°. L'angle d'une modalité est : angle = (effectif de la modalité × 180) ÷ effectif total.` },
+      { type: 'texte', titre: `Remarque`, texte: `Dans un diagramme circulaire (disque entier), on utiliserait 360° au lieu de 180°.` }
+    ],
+    aRetenirFinal: { titre: `Statistique`, items: [
+      `Population, individu, caractère (qualitatif/quantitatif), modalité, effectif, effectif total.`,
+      `Fréquence : f = nᵢ ÷ n ; en % : f = (nᵢ × 100) ÷ n.`,
+      `Moyenne pondérée = (somme des effectif × valeur) ÷ effectif total.`,
+      `Diagramme en bâtons : hauteur ∝ effectif. Semi-circulaire : angle = (effectif × 180) ÷ effectif total.`
+    ]},
+    verification: {
+      enonceHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. La population est l'ensemble sur lequel porte l'étude statistique.</div>`
+        + `<div>2. La couleur des cheveux est un caractère quantitatif.</div>`
+        + `<div>3. La fréquence d'une modalité est l'effectif de cette modalité divisé par l'effectif total.</div>`
+        + `<div style="margin-bottom:10px;">4. Dans un diagramme semi-circulaire, l'effectif total correspond à 360°.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. Un caractère quantitatif est, par exemple : a) le sport préféré &nbsp; b) la taille &nbsp; c) la couleur préférée</div>`
+        + `<div>2. La fréquence en pourcentage est : a) nᵢ ÷ n &nbsp; b) (nᵢ × 100) ÷ n &nbsp; c) n ÷ nᵢ</div>`
+        + `<div style="margin-bottom:10px;">3. Dans un diagramme semi-circulaire, l'angle d'une modalité est : a) (nᵢ × 360) ÷ n &nbsp; b) (nᵢ × 180) ÷ n &nbsp; c) nᵢ ÷ n</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Associer (terme ↔ définition)</div>`
+        + `<div style="margin-bottom:10px;">1. Population &nbsp; 2. Individu &nbsp; 3. Modalité &nbsp; 4. Effectif &nbsp;&nbsp;|&nbsp;&nbsp; a. nombre d'individus d'une modalité &nbsp; b. l'ensemble étudié &nbsp; c. un élément de la population &nbsp; d. une réponse possible du caractère</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Donne la différence entre un caractère qualitatif et un caractère quantitatif.</div>`
+        + `<div>2. Comment calcule-t-on la moyenne pondérée d'une série ?</div>`,
+      correctionHtml: `<div style="font-weight:800;margin-bottom:6px;">A. Vrai ou Faux</div>`
+        + `<div>1. <strong>VRAI.</strong></div>`
+        + `<div>2. <strong>FAUX.</strong> La couleur des cheveux est un caractère QUALITATIF.</div>`
+        + `<div>3. <strong>VRAI.</strong></div>`
+        + `<div style="margin-bottom:10px;">4. <strong>FAUX.</strong> Dans un diagramme SEMI-circulaire, l'effectif total correspond à 180°.</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">B. QCM</div>`
+        + `<div>1. <strong>b) la taille.</strong></div><div>2. <strong>b) (nᵢ × 100) ÷ n.</strong></div>`
+        + `<div style="margin-bottom:10px;">3. <strong>b) (nᵢ × 180) ÷ n.</strong></div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">C. Associer</div>`
+        + `<div style="margin-bottom:10px;">1→b (ensemble étudié) ; 2→c (élément) ; 3→d (réponse possible) ; 4→a (nombre d'individus d'une modalité).</div>`
+        + `<div style="font-weight:800;margin-bottom:6px;">D. Questions ouvertes</div>`
+        + `<div>1. Un caractère qualitatif se décrit par un mot (couleur, sport…) ; un caractère quantitatif se mesure par un nombre (taille, âge…).</div>`
+        + `<div>2. On additionne les produits (effectif × valeur), puis on divise par l'effectif total.</div>`
+    },
+    exercices: [
+      { niveau: `Facile`, enonceHtml: `<div>1. Dans un tableau statistique, la modalité « Rouge » a un effectif de 6 et l'effectif total est 18. Calcule sa fréquence en pourcentage.</div>`
+        + `<div>2. Complète : effectif total = 18, effectifs connus : Jaune 5, Rouge 6, Bleu 4. Quel est l'effectif de Vert ?</div>`,
+        correctionHtml: `<div>1. Fréquence = (6 × 100) ÷ 18 = 600 ÷ 18 ≈ <strong>33,3 %</strong>.</div>`
+        + `<div>2. Effectif de Vert = 18 − (5+6+4) = <strong>3</strong>.</div>` },
+      { niveau: `Moyen`, enonceHtml: `<div>1. Voici les notes d'un élève : 8 (×5), 9 (×4), 11 (×8), 12 (×4), 14 (×2), 15 (×2). a) Quel est l'effectif total ? b) Calcule la moyenne de ces notes.</div>`
+        + `<div>2. Une série a les effectifs : Jaune 5, Rouge 6, Vert 3, Bleu 4 (total 18). Calcule les fréquences en pourcentage de chaque modalité (arrondir au dixième).</div>`,
+        correctionHtml: `<div>1. a) Effectif total = 5+4+8+4+2+2 = <strong>25</strong>. b) Somme pondérée = 40+36+88+48+28+30 = 270. Moyenne = 270÷25 = <strong>10,8</strong>.</div>`
+        + `<div>2. Jaune ≈ 27,8 % ; Rouge ≈ 33,3 % ; Vert ≈ 16,7 % ; Bleu ≈ 22,2 %.</div>` },
+      { niveau: `Avancé`, enonceHtml: `<div>1. On étudie la couleur du cahier de 40 élèves : kaki 5, verte 10, jaune 7, rouge 10, autre = le reste. a) Trouve l'effectif de « autre ». b) Calcule la fréquence en pourcentage de chaque couleur. c) Quelle est la couleur dominante ? d) Pour un diagramme semi-circulaire, calcule l'angle du secteur de la couleur « verte ».</div>`,
+        correctionHtml: `<div>a) autre = 40 − (5+10+7+10) = <strong>8</strong>.</div>`
+        + `<div>b) kaki 12,5 % ; verte 25 % ; jaune 17,5 % ; rouge 25 % ; autre 20 %.</div>`
+        + `<div>c) Deux couleurs dominantes à égalité : <strong>verte et rouge</strong> (25 % chacune).</div>`
+        + `<div>d) Angle « verte » = (10 × 180) ÷ 40 = <strong>45°</strong>.</div>` }
+    ]
   }
 };
 
