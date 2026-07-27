@@ -146,6 +146,29 @@
   .join-classes-grid { display: flex; flex-direction: column; gap: 10px; }
   .join-classe-card { background: white; border-radius: 14px; padding: 14px; border-left: 3px solid #00A86B; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
+  /* ===== Chat contextuel du cours (bouton flottant + panneau) — base mobile ===== */
+  .cours-chat-panel {
+    background: #F8FAFF;
+    border-radius: 20px 20px 0 0;
+    height: 88vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 -8px 28px rgba(0,0,0,0.25);
+  }
+  .cours-chat-messages { flex: 1; overflow-y: auto; padding: 14px 16px; }
+
+  @media (min-width: 768px) {
+    .cours-chat-panel {
+      height: 82vh;
+      max-width: 480px;
+      width: calc(100% - 48px);
+      margin: 0 24px 24px auto;
+      border-radius: 20px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.32);
+    }
+  }
+
   @media (min-width: 768px) {
     body {
       max-width: 100%;
@@ -2422,16 +2445,16 @@ window.addEventListener('load',function(){
   </button>
 
   <div id="cours-chat-overlay" style="display:none;position:fixed;inset:0;background:rgba(10,20,40,0.45);z-index:9998;flex-direction:column;justify-content:flex-end;">
-    <div style="background:#F8FAFF;border-radius:20px 20px 0 0;max-height:82%;display:flex;flex-direction:column;box-shadow:0 -8px 28px rgba(0,0,0,0.25);">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1.5px solid #E5EAF5;">
+    <div class="cours-chat-panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1.5px solid #E5EAF5;flex-shrink:0;">
         <div>
           <div style="font-size:14px;font-weight:900;color:#1A2332;">🤖 Assistant du cours</div>
           <div style="font-size:11px;color:#6B7A94;" id="cours-chat-seq-label">Séquence</div>
         </div>
         <button onclick="fermerChatCoursOverlay()" style="background:none;border:none;font-size:22px;color:#6B7A94;cursor:pointer;line-height:1;">×</button>
       </div>
-      <div id="cours-chat-messages" style="flex:1;overflow-y:auto;padding:14px 16px;min-height:180px;max-height:50vh;"></div>
-      <div style="display:flex;gap:8px;padding:10px 14px;border-top:1.5px solid #E5EAF5;">
+      <div id="cours-chat-messages" class="cours-chat-messages"></div>
+      <div style="display:flex;gap:8px;padding:10px 14px;border-top:1.5px solid #E5EAF5;flex-shrink:0;">
         <input id="cours-chat-input" type="text" placeholder="Pose ta question sur cette séquence..."
           onkeydown="if(event.key==='Enter')envoyerMessageCoursChat()"
           style="flex:1;padding:10px 14px;border:2px solid #DDEEFF;border-radius:20px;font-size:14px;font-family:'Nunito',sans-serif;">
@@ -29976,7 +29999,42 @@ function openChatWithTopic(topic) {
 // disponible en assistance via le bouton flottant.
 // ============================================================
 let coursActuelKey = null;
-let coursChatHistory = [];
+// Historique de chat par séquence : chaque séquence (topicKey) a sa propre
+// conversation, persistée dans localStorage pour survivre à la fermeture du
+// chat, à la navigation hors du cours, et même à un rechargement de la page.
+const coursChatHistories = {};
+
+function coursChatStorageKey(topicKey) {
+  let h = 0;
+  for (let i = 0; i < topicKey.length; i++) { h = ((h << 5) - h + topicKey.charCodeAt(i)) | 0; }
+  return 'eduayo_cours_chat_' + h;
+}
+
+function chargerHistoriqueCoursChat(topicKey) {
+  if (coursChatHistories[topicKey]) return coursChatHistories[topicKey];
+  let historique = [];
+  try {
+    const raw = localStorage.getItem(coursChatStorageKey(topicKey));
+    if (raw) historique = JSON.parse(raw);
+  } catch (e) { historique = []; }
+  coursChatHistories[topicKey] = historique;
+  return historique;
+}
+
+function sauvegarderHistoriqueCoursChat(topicKey) {
+  try {
+    localStorage.setItem(coursChatStorageKey(topicKey), JSON.stringify(coursChatHistories[topicKey] || []));
+  } catch (e) {}
+}
+
+function rejouerHistoriqueCoursChat(topicKey) {
+  const messagesEl = document.getElementById('cours-chat-messages');
+  messagesEl.innerHTML = '';
+  const historique = chargerHistoriqueCoursChat(topicKey);
+  historique.forEach(function(msg) {
+    ajouterMessageCoursChat(msg.role === 'user' ? 'user' : 'bot', msg.content);
+  });
+}
 
 function ouvrirCoursLecture(topicKey) {
   const cours = typeof COURS_CONTENU !== 'undefined' ? COURS_CONTENU[topicKey] : null;
@@ -29989,12 +30047,11 @@ function ouvrirCoursLecture(topicKey) {
   }
 
   coursActuelKey = topicKey;
-  coursChatHistory = [];
 
   document.getElementById('cours-lecture-titre').textContent = cours.titre;
   document.getElementById('cours-chat-seq-label').textContent = cours.titre;
-  document.getElementById('cours-chat-messages').innerHTML = '';
   document.getElementById('cours-chat-overlay').style.display = 'none';
+  rejouerHistoriqueCoursChat(topicKey);
 
   renderCoursLecture(cours);
   goToScreen('cours-lecture');
@@ -30120,10 +30177,13 @@ function renderCoursLecture(cours) {
 function ouvrirChatCoursOverlay() {
   const overlay = document.getElementById('cours-chat-overlay');
   overlay.style.display = 'flex';
-  if (coursChatHistory.length === 0) {
+  const historique = chargerHistoriqueCoursChat(coursActuelKey);
+  if (historique.length === 0) {
     const cours = COURS_CONTENU[coursActuelKey];
     ajouterMessageCoursChat('bot', '👋 Je suis là pour t\'aider sur **' + (cours ? cours.titre : 'cette séquence') + '**. Pose-moi une question sur ce cours !');
   }
+  const input = document.getElementById('cours-chat-input');
+  if (input) setTimeout(function() { input.focus(); }, 250);
 }
 
 function fermerChatCoursOverlay() {
@@ -30162,7 +30222,9 @@ async function envoyerMessageCoursChat() {
   if (!texte) return;
   input.value = '';
   ajouterMessageCoursChat('user', texte);
-  coursChatHistory.push({ role: 'user', content: texte });
+  const historique = chargerHistoriqueCoursChat(coursActuelKey);
+  historique.push({ role: 'user', content: texte });
+  sauvegarderHistoriqueCoursChat(coursActuelKey);
 
   const messagesEl = document.getElementById('cours-chat-messages');
   const typingDiv = document.createElement('div');
@@ -30184,12 +30246,13 @@ async function envoyerMessageCoursChat() {
     const response = await fetch('/api/proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1500, system: systemPrompt, messages: coursChatHistory.slice(-10) })
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1500, system: systemPrompt, messages: historique.slice(-10) })
     });
     const data = await response.json();
     const t1 = document.getElementById('cours-chat-typing'); if (t1) t1.remove();
     const reply = (data.content && data.content.map(function(b) { return b.text || ''; }).join('')) || 'Je n\'ai pas pu répondre, réessaie.';
-    coursChatHistory.push({ role: 'assistant', content: reply });
+    historique.push({ role: 'assistant', content: reply });
+    sauvegarderHistoriqueCoursChat(coursActuelKey);
     ajouterMessageCoursChat('bot', reply);
   } catch (e) {
     const t2 = document.getElementById('cours-chat-typing'); if (t2) t2.remove();
